@@ -9,7 +9,7 @@ on:
 
 # AWS 관련 값 변수로 설정
 env:
-  AWS_REGION: ap-northeast-2a
+  AWS_REGION: ap-northeast-2
   AWS_S3_BUCKET: wagu-book-gitget-deploy-bucket
   AWS_CODE_DEPLOY_APPLICATION: WAGU-Book-Application-CD
   AWS_CODE_DEPLOY_GROUP: WAGU-Book-Deployment-Group
