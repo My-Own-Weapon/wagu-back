@@ -3,6 +3,8 @@ package com.chimaera.wagubook.controller;
 import com.chimaera.wagubook.dto.LoginRequest;
 import com.chimaera.wagubook.dto.MemberRequest;
 import com.chimaera.wagubook.entity.Member;
+import com.chimaera.wagubook.exception.CustomException;
+import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -28,7 +30,7 @@ public class MemberController {
         Member member = memberService.login(loginRequest);
         System.out.println("멤버: " + member);
         if (member == null) {
-            return new ResponseEntity<>("로그인 실패", HttpStatus.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.LOGIN_FAIL);
         }
         HttpSession session = request.getSession();
         session.setAttribute("memberId", member.getId());
@@ -56,7 +58,7 @@ public class MemberController {
     public ResponseEntity<String> updateProfileImage(@RequestBody String image, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
-            return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
         memberService.updateProfileImage(memberId, image);
         return new ResponseEntity<>("프로필 사진이 변경되었습니다.", HttpStatus.OK);
@@ -66,7 +68,7 @@ public class MemberController {
     public ResponseEntity<String> updatePassword(@RequestBody String newPassword, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
-            return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
         memberService.updatePassword(memberId, newPassword);
         return new ResponseEntity<>("비밀번호가 변경되었습니다.", HttpStatus.OK);
@@ -76,7 +78,7 @@ public class MemberController {
     public ResponseEntity<String> deleteMember(HttpSession session) {
         Long memberId = (Long) session.getAttribute("userId");
         if (memberId == null) {
-            return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
         memberService.deleteMember(memberId);
         session.invalidate();
