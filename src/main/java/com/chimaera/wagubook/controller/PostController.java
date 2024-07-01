@@ -1,5 +1,7 @@
 package com.chimaera.wagubook.controller;
 
+import com.chimaera.wagubook.exception.CustomException;
+import com.chimaera.wagubook.exception.ErrorCode;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,59 +23,59 @@ public class PostController {
 
     @PostMapping("/posts")
     public ResponseEntity<String> createPost(@RequestBody PostRequest postRequest, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
-        postService.createPost(postRequest, userId);
+        postService.createPost(postRequest, memberId);
         return new ResponseEntity<>("포스팅이 생성되었습니다.", HttpStatus.CREATED);
     }
 
     @GetMapping("/posts")
     public ResponseEntity<List<Post>> getAllPosts(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
-        List<Post> posts = postService.getAllPostsByUser(userId);
+        List<Post> posts = postService.getAllPostsByUser(memberId);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     @GetMapping("/posts/{postId}")
     public ResponseEntity<Post> getPostById(@PathVariable Long postId, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
-        Post post = postService.getPostById(postId, userId);
+        Post post = postService.getPostById(postId, memberId);
         if (post == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new CustomException(ErrorCode.NOT_FOUND_POST);
         }
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     @PatchMapping("/posts/{postId}")
     public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody PostRequest postRequest, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
-        boolean updated = postService.updatePost(postId, postRequest, userId);
+        boolean updated = postService.updatePost(postId, postRequest, memberId);
         if (!updated) {
-            return new ResponseEntity<>("포스트를 수정할 수 없습니다.", HttpStatus.NOT_FOUND);
+            throw new CustomException(ErrorCode.UNABLE_TO_UPDATE_POST);
         }
         return new ResponseEntity<>("포스트가 수정되었습니다.", HttpStatus.OK);
     }
 
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable Long postId, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
-        boolean deleted = postService.deletePost(postId, userId);
+        boolean deleted = postService.deletePost(postId, memberId);
         if (!deleted) {
-            return new ResponseEntity<>("포스트를 삭제할 수 없습니다.", HttpStatus.NOT_FOUND);
+            throw new CustomException(ErrorCode.UNABLE_TO_DELETE_POST);
         }
         return new ResponseEntity<>("포스트가 삭제되었습니다.", HttpStatus.OK);
     }
