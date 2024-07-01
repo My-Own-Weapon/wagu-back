@@ -21,31 +21,31 @@ public class PostController {
 
     @PostMapping("/posts")
     public ResponseEntity<String> createPost(@RequestBody PostRequest postRequest, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
             return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
         }
-        postService.createPost(postRequest, userId);
+        postService.createPost(postRequest, memberId);
         return new ResponseEntity<>("포스팅이 생성되었습니다.", HttpStatus.CREATED);
     }
 
     @GetMapping("/posts")
     public ResponseEntity<List<Post>> getAllPosts(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        List<Post> posts = postService.getAllPostsByUser(userId);
+        List<Post> posts = postService.getAllPostsByUser(memberId);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     @GetMapping("/posts/{postId}")
     public ResponseEntity<Post> getPostById(@PathVariable Long postId, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        Post post = postService.getPostById(postId, userId);
+        Post post = postService.getPostById(postId, memberId);
         if (post == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -54,11 +54,11 @@ public class PostController {
 
     @PatchMapping("/posts/{postId}")
     public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody PostRequest postRequest, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
             return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
         }
-        boolean updated = postService.updatePost(postId, postRequest, userId);
+        boolean updated = postService.updatePost(postId, postRequest, memberId);
         if (!updated) {
             return new ResponseEntity<>("포스트를 수정할 수 없습니다.", HttpStatus.NOT_FOUND);
         }
@@ -67,11 +67,11 @@ public class PostController {
 
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable Long postId, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
             return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
         }
-        boolean deleted = postService.deletePost(postId, userId);
+        boolean deleted = postService.deletePost(postId, memberId);
         if (!deleted) {
             return new ResponseEntity<>("포스트를 삭제할 수 없습니다.", HttpStatus.NOT_FOUND);
         }
