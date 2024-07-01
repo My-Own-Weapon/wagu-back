@@ -36,7 +36,6 @@ public class MemberController {
         return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
     }
 
-
     @PostMapping("/join/username")
     public ResponseEntity<Boolean> checkUsername(@RequestBody String username) {
         boolean exists = memberService.findByUsername(username) != null;
