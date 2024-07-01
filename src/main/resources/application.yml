@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: Wagubook
+
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/test
+    username: sa
+    password: 123
+    driver-class-name: org.h2.Driver
+#    url: jdbc:mysql://localhost:3306/querydsl
+#    username: root
+#    password: 1234
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create # application start
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        use_sql_comments: true
+
+
+logging.level:
+  org.hibernate.SQL: debug
+
