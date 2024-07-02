@@ -44,7 +44,7 @@ public class MemberController {
         return new ResponseEntity<>(exists, HttpStatus.OK);
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout") //@PostMapping("/logout") 이 왜 안되는지 차후 논의 필요
     public ResponseEntity<String> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {

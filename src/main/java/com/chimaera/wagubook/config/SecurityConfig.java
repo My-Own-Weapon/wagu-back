@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -27,7 +28,7 @@ public class SecurityConfig {
 //        });
 //
 //
-//        http.csrf(csrf -> csrf.disable());
+//        http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> {
                     auth
                             .requestMatchers("/**", "/login", "/join", "/logout", "/swagger-ui/**", "/v3/api-docs/**", "/error", "/h2-console/**")
@@ -40,8 +41,11 @@ public class SecurityConfig {
                 .headers(headers -> {
                     headers.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN));
                 })
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(sessionManagement -> {
+                    sessionManagement.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED); // 세션이 필요할 때 생성
+                });
+
+
 
         return http.build();
     }
