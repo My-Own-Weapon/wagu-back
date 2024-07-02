@@ -1,4 +1,4 @@
-package com.chimaera.wagubook.repository;
+package com.chimaera.wagubook.repository.member;
 
 import com.chimaera.wagubook.entity.Member;
 

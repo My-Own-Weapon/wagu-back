@@ -1,4 +1,4 @@
-package com.chimaera.wagubook.repository;
+package com.chimaera.wagubook.repository.post;
 
 import com.chimaera.wagubook.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;

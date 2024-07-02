@@ -1,7 +1,7 @@
 package com.chimaera.wagubook.auth;
 
 import com.chimaera.wagubook.entity.Member;
-import com.chimaera.wagubook.repository.MemberRepository;
+import com.chimaera.wagubook.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

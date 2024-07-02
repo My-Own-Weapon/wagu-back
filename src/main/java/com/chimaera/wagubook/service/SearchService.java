@@ -2,7 +2,7 @@ package com.chimaera.wagubook.service;
 
 
 import com.chimaera.wagubook.entity.Member;
-import com.chimaera.wagubook.repository.MemberRepository;
+import com.chimaera.wagubook.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

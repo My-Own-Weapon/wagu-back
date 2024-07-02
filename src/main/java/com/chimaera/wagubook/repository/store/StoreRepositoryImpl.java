@@ -1,4 +1,4 @@
-package com.chimaera.wagubook.repository;
+package com.chimaera.wagubook.repository.store;
 
 import com.chimaera.wagubook.entity.QStore;
 import com.chimaera.wagubook.entity.Store;
