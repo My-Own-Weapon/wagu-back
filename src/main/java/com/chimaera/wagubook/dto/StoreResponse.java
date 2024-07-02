@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StoreResponse {
     private String name;
+    private String address;
     private float posx;
     private float posy;
 
     public StoreResponse(Store store){
         this.posx = store.getStoreLocation().getPosx();
         this.posy = store.getStoreLocation().getPosy();
+        this.address = store.getStoreLocation().getAddress();
         this.name = store.getStoreName();
     }
 }

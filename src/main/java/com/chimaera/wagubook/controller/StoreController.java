@@ -27,7 +27,11 @@ import java.util.stream.Collectors;
 public class StoreController {
     private final StoreService storeService;
 
-    //?left={left}&right={right}&up={up}&down={down}
+    /**
+     * 좌표에 맞는 식당 좌표 조회
+     * Method : GET
+     * url : /map?left={left}&right={right}&up={up}&down={down}
+     * */
     @GetMapping("/map")
     public ResponseEntity<List<StoreResponse>> findStores(
             @RequestParam(value = "left") String left,
