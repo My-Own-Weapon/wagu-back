@@ -12,7 +12,6 @@ import java.util.List;
 public class StoreService {
     private final StoreQueryRepository storeRepository;
     public List<Store> getStoresByScreen(String left, String right, String up, String down) {
-        System.out.println("right : "+ right);
         return storeRepository.findAllByScreen(left,right,up,down);
     }
 }

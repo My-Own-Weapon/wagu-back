@@ -36,17 +36,15 @@ public class StoreController {
             @RequestParam(value = "down") String down,
             HttpSession session){
 
-//        Long memberId = (Long) session.getAttribute("memberId");
-//        if (memberId == null) {
-//            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-//        }
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
 
-        System.out.println("left : "+ left);
         List<Store> findStores = storeService.getStoresByScreen(left,right,up,down);
         List<StoreResponse> collect = findStores.stream()
                 .map(s -> (new StoreResponse(s)))
                 .collect(Collectors.toList());
-        System.out.println("succ");
         return new ResponseEntity<>(collect, HttpStatus.OK);
     }
 
