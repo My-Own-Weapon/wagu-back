@@ -1,7 +1,9 @@
 package com.chimaera.wagubook.controller;
 
 import com.chimaera.wagubook.dto.LoginRequest;
+import com.chimaera.wagubook.dto.PostResponse;
 import com.chimaera.wagubook.dto.StoreResponse;
+import com.chimaera.wagubook.entity.Post;
 import com.chimaera.wagubook.entity.Store;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
@@ -31,6 +33,7 @@ public class StoreController {
      * 좌표에 맞는 식당 좌표 조회
      * Method : GET
      * url : /map?left={left}&right={right}&up={up}&down={down}
+     * ex : map?left=1&right=20&up=1&down=20
      * */
     @GetMapping("/map")
     public ResponseEntity<List<StoreResponse>> findStores(
@@ -52,4 +55,31 @@ public class StoreController {
         return new ResponseEntity<>(collect, HttpStatus.OK);
     }
 
+
+    /**
+     * 식당 이름, 주소로 포스트 조회
+     * Method : GET
+     * url : /map/posts?store={store_name}&address={address}
+     * */
+    @GetMapping("/map/posts")
+    public ResponseEntity<List<PostResponse>> getPostsByStore(
+            @RequestParam(value = "store") String name,
+            @RequestParam(value = "address") String address,
+            HttpSession session){
+
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+
+        List<Post> findPosts = storeService.getAllPostsByStore(name, address);
+        List<PostResponse> collect = findPosts.stream()
+                .map(p -> (new PostResponse(p.getId(),
+                        p.getPostMainMenu(),
+                        p.getPostImage(),
+                        p.getPostContent(),
+                        p.isAuto())))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(collect, HttpStatus.OK);
+    }
 }

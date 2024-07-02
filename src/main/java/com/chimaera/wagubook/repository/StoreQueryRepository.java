@@ -30,4 +30,15 @@ public class StoreQueryRepository {
                         , Store.class
         ).getResultList();
     }
+
+
+    public Store findByNameAddress(String name, String address) {
+        String str = String.format(" where s.store_name=%s and l.address=%s", name, address);
+        return em.createQuery(
+                "select s from Store s"+
+                        " join fetch s.storeLocation l"
+//                        str
+                        , Store.class
+        ).getResultList().get(0);
+    }
 }

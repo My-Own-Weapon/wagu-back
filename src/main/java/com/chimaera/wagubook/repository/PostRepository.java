@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findByIdAndMemberId(Long id, Long memberId);
     List<Post> findAllByMemberId(Long memberId);
+
+    List<Post> findAllByStoreId(Long id);
 }
