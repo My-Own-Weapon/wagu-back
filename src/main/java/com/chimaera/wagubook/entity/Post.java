@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -28,6 +30,20 @@ public class Post {
 
     private LocalDateTime createDate; // 작성일
     private LocalDateTime updateDate; // 수정일
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    @JsonIgnore
+    private Store store; // 가게
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Menu> menus = new ArrayList<>(); // posts의 메뉴
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    @JsonIgnore
+    private Category category;
 
     @Builder
     public Post(String postMainMenu, String postImage, String postContent, boolean isAuto, Member member, LocalDateTime createDate, LocalDateTime updateDate) {
