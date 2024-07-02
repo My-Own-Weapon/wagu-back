@@ -33,12 +33,15 @@ public class StoreQueryRepository {
 
 
     public Store findByNameAddress(String name, String address) {
-        String str = String.format(" where s.store_name=%s and l.address=%s", name, address);
-        return em.createQuery(
-                "select s from Store s"+
-                        " join fetch s.storeLocation l"
-//                        str
-                        , Store.class
-        ).getResultList().get(0);
+        String str = String.format(" where s.storeName='%s' and l.address='%s'", name, address);
+        List<Store> resultList = em.createQuery(
+                "select s from Store s" +
+                        " join fetch s.storeLocation l"+
+                        str
+                , Store.class
+        ).getResultList();
+        if(resultList.isEmpty())
+            return null;
+        return resultList.get(0);
     }
 }

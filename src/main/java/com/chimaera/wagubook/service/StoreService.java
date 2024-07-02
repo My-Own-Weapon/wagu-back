@@ -21,7 +21,6 @@ public class StoreService {
 
     public List<Post> getAllPostsByStore(String name, String address) {
         Store findStore = storeRepository.findByNameAddress(name, address);
-        System.out.println(findStore.getId());
         return postRepository.findAllByStoreId(findStore.getId());
     }
 }

@@ -67,10 +67,10 @@ public class StoreController {
             @RequestParam(value = "address") String address,
             HttpSession session){
 
-        Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
+//        Long memberId = (Long) session.getAttribute("memberId");
+//        if (memberId == null) {
+//            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+//        }
 
         List<Post> findPosts = storeService.getAllPostsByStore(name, address);
         List<PostResponse> collect = findPosts.stream()
