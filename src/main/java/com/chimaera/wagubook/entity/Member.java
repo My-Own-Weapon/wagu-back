@@ -28,5 +28,4 @@ public class Member {
     @OneToMany(mappedBy = "member")
     @Builder.Default
     private List<Post> posts = new ArrayList<>();
-
 }

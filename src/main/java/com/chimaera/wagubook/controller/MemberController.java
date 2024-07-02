@@ -28,19 +28,18 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<String> login(HttpServletRequest request, @RequestBody LoginRequest loginRequest) {
         Member member = memberService.login(loginRequest);
-        System.out.println("멤버: " + member);
         if (member == null) {
             throw new CustomException(ErrorCode.LOGIN_FAIL);
         }
         HttpSession session = request.getSession();
+
         session.setAttribute("memberId", member.getId());
-        session.setAttribute("username", member.getUsername());
-        session.setMaxInactiveInterval(300); // 세션 유효 시간 5분
+        session.setMaxInactiveInterval(3000); // 세션 유효 시간 50분
         return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
     }
 
-    @PostMapping("/join/username")
-    public ResponseEntity<Boolean> checkUsername(@RequestBody String username) {
+    @GetMapping("/join/username")
+    public ResponseEntity<Boolean> checkUsername(@RequestParam String username) {
         boolean exists = memberService.findByUsername(username) != null;
         return new ResponseEntity<>(exists, HttpStatus.OK);
     }
