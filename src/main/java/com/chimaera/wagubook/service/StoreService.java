@@ -2,7 +2,7 @@ package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.entity.Post;
 import com.chimaera.wagubook.entity.Store;
-import com.chimaera.wagubook.repository.PostRepository;
+import com.chimaera.wagubook.repository.post.PostRepository;
 import com.chimaera.wagubook.repository.StoreQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

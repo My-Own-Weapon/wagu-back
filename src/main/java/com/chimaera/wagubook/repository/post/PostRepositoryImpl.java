@@ -17,7 +17,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     public List<Post> searchPostsByMember(Long memberId, String keyword) {
         QPost post = QPost.post;
 
-        return queryFactory.selectFrom(post)
+        return queryFactory
+                .selectFrom(post)
                 .where(post.member.id.eq(memberId)
                         .and(post.postMainMenu.containsIgnoreCase(keyword)))
                 .fetch();
