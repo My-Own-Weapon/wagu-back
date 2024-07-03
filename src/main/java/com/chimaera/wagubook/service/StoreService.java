@@ -19,8 +19,7 @@ public class StoreService {
     }
 
 
-    public List<Post> getAllPostsByStore(String name, String address) {
-        Store findStore = storeRepository.findByNameAddress(name, address);
-        return postRepository.findAllByStoreId(findStore.getId());
+    public List<Post> getAllPostsByStore(Long storeId) {
+        return postRepository.findAllByStoreId(storeId);
     }
 }

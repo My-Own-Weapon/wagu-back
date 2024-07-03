@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 public class StoreResponse {
     private String name;
     private String address;
+    private Long storeId;
     private float posx;
     private float posy;
 
@@ -17,5 +18,6 @@ public class StoreResponse {
         this.posy = store.getStoreLocation().getPosy();
         this.address = store.getStoreLocation().getAddress();
         this.name = store.getStoreName();
+        this.storeId = store.getId();
     }
 }

@@ -32,11 +32,10 @@ public class StoreQueryRepository {
     }
 
 
-    public Store findByNameAddress(String name, String address) {
-        String str = String.format(" where s.storeName='%s' and l.address='%s'", name, address);
+    public Store findByStoreId(Long storeId) {
+        String str = String.format(" where s.storeId=%lld", storeId);
         List<Store> resultList = em.createQuery(
                 "select s from Store s" +
-                        " join fetch s.storeLocation l"+
                         str
                 , Store.class
         ).getResultList();
