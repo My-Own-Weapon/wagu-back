@@ -1,12 +1,16 @@
 package com.chimaera.wagubook.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@Builder(builderMethodName = "newBuilder")
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

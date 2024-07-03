@@ -35,6 +35,8 @@ public class MemberController {
 
         session.setAttribute("memberId", member.getId());
         session.setMaxInactiveInterval(3000); // 세션 유효 시간 50분
+
+
         return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
     }
 

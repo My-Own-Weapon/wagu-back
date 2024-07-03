@@ -1,5 +1,6 @@
 package com.chimaera.wagubook.controller;
 
+import com.chimaera.wagubook.entity.Store;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import jakarta.servlet.http.HttpSession;
@@ -20,12 +21,17 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
+    // store 를 만들고,
     @PostMapping("/posts")
     public ResponseEntity<String> createPost(@RequestBody PostRequest postRequest, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
+
         if (memberId == null) {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
+        //store, menu, category 객체 생성 필요
+
+
         postService.createPost(postRequest, memberId);
         return new ResponseEntity<>("포스팅이 생성되었습니다.", HttpStatus.CREATED);
     }

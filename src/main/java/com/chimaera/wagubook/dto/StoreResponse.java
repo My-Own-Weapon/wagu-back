@@ -10,8 +10,8 @@ public class StoreResponse {
     private String name;
     private String address;
     private Long storeId;
-    private float posx;
-    private float posy;
+    private double posx;
+    private double posy;
 
     public StoreResponse(Store store){
         this.posx = store.getStoreLocation().getPosx();

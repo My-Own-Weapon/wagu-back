@@ -46,7 +46,7 @@ public class Post {
     private Category category;
 
     @Builder
-    public Post(String postMainMenu, String postImage, String postContent, boolean isAuto, Member member, LocalDateTime createDate, LocalDateTime updateDate) {
+    public Post(String postMainMenu, String postImage, String postContent, boolean isAuto, Member member, LocalDateTime createDate, LocalDateTime updateDate, Store store, List<Menu> menus) {
         this.postMainMenu = postMainMenu;
         this.postImage = postImage;
         this.postContent = postContent;
@@ -54,5 +54,7 @@ public class Post {
         this.member = member;
         this.createDate = createDate;
         this.updateDate = updateDate;
+        this.store = store;
+        this.menus = menus;
     }
 }

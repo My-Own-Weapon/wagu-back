@@ -15,14 +15,13 @@ public class StoreQueryRepository {
 
 
     public List<Store> findAllByScreen(String left, String right, String up, String down) {
-        float l,r,u,d;
+        double dLeft = Double.parseDouble(left);
+        double dRight = Double.parseDouble(right);
+        double dDown = Double.parseDouble(down);
+        double dUp = Double.parseDouble(up);
 
-        l = Float.parseFloat(left);
-        r = Float.parseFloat(right);
-        u = Float.parseFloat(up);
-        d = Float.parseFloat(down);
 
-        String str = String.format(" where l.posx >%f and l.posx <%f and l.posy >%f and l.posy< %f", l,r,u,d);
+        String str = String.format(" where l.posx >%f and l.posx <%f and l.posy >%f and l.posy< %f", dLeft,dRight,dUp,dDown);
         return em.createQuery(
                 "select s from Store s"+
                         " join fetch s.storeLocation l"+
@@ -33,9 +32,10 @@ public class StoreQueryRepository {
 
 
     public Store findByStoreId(Long storeId) {
-        String str = String.format(" where s.storeId=%lld", storeId);
+        String str = String.format(" where s.storeId=%d", storeId);
         List<Store> resultList = em.createQuery(
-                "select s from Store s" +
+                "select s from Store s"+
+                        " join fetch s.storeLocation l"+
                         str
                 , Store.class
         ).getResultList();
