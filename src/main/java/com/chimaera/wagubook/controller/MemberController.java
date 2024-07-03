@@ -1,8 +1,6 @@
 package com.chimaera.wagubook.controller;
 
-import com.chimaera.wagubook.dto.FollowerResponse;
-import com.chimaera.wagubook.dto.LoginRequest;
-import com.chimaera.wagubook.dto.MemberRequest;
+import com.chimaera.wagubook.dto.*;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
@@ -121,9 +119,35 @@ public class MemberController {
     @GetMapping("/followers")
     public ResponseEntity<List<FollowerResponse>> getFollowers(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
+        checkVaildByMemberId(memberId);
+        List<FollowerResponse> followers = memberService.getFollowers(memberId);
+        return new ResponseEntity<>(followers, HttpStatus.OK);
+    }
 
+    /**
+     * 팔로워 목록 조회
+     * Method : GET
+     * url : /followings
+     * ex : /followings
+     **/
+    @GetMapping("/followings")
+    public ResponseEntity<List<FollowingResponse>> getFollowings(HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        checkVaildByMemberId(memberId);
+        return new ResponseEntity<>(memberService.getFollowings(memberId), HttpStatus.OK);
+    }
 
-        return new ResponseEntity<List<FollowerResponse>>(HttpStatus.OK);
+    /**
+     * 프로필 조회
+     * Method : GET
+     * url : /members/{memberId}
+     * ex : /members/5
+     **/
+    @GetMapping("/members/{memberId}")
+    public ResponseEntity<MemberInfoResponse> getMemberInfo(HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        checkVaildByMemberId(memberId);
+        return new ResponseEntity<>(memberService.getMemberInfo(memberId), HttpStatus.OK);
     }
 
     // 회원 검증

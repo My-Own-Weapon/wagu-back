@@ -1,24 +1,27 @@
 package com.chimaera.wagubook.service;
 
-import com.chimaera.wagubook.dto.LoginRequest;
-import com.chimaera.wagubook.dto.MemberRequest;
+import com.chimaera.wagubook.dto.*;
 import com.chimaera.wagubook.entity.Follow;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.member.MemberRepository;
+import com.chimaera.wagubook.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
+    private final PostRepository postRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
@@ -120,5 +123,30 @@ public class MemberService {
         Follow follow = followRepository.findByToMemberIdAndFromMemberId(toMemberId, fromMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_FOLLOW));
 
         followRepository.delete(follow);
+    }
+
+    // 팔로우 목록 조회
+    public List<FollowerResponse> getFollowers(Long memberId) {
+        memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        return followRepository.findByFromMemberId(memberId).stream()
+                .map(FollowerResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    // 팔로잉 목록 조회
+    public List<FollowingResponse> getFollowings(Long memberId) {
+        memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        return followRepository.findByToMemberId(memberId).stream()
+                .map(FollowingResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    // 프로필 조회
+    public MemberInfoResponse getMemberInfo(Long memberId) {
+        memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        int followerNum = followRepository.countByFromMemberId(memberId);
+        int followingNum = followRepository.countByToMemberId(memberId);
+        int postNum = postRepository.countByMemberId(memberId);
+        return new MemberInfoResponse(followerNum, followingNum, postNum);
     }
 }
