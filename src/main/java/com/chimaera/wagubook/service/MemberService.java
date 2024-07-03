@@ -9,11 +9,9 @@ import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -26,18 +24,23 @@ public class MemberService {
 
     // 회원가입
     public void join(MemberRequest request) {
+        if (!request.getPassword().equals(request.getPasswordConfirm())) {
+            throw new CustomException(ErrorCode.WRONG_PASSWORD_CONFIRM);
+        }
+
         Member user = Member.builder()
                 .username(request.getUsername())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
-                .profileImage(request.getProfileImage())
                 .build();
+
         // 중복 회원 검증
         Optional<Member> findUser = memberRepository.findByUsername(user.getUsername());
         if (findUser.isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
         }
+
         memberRepository.save(user);
     }
 
@@ -56,7 +59,7 @@ public class MemberService {
     }
 
     public Member findByUsername(String username) {
-        return memberRepository.findByUsername(username).orElse(null);
+        return memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.DUPLICATE_USERNAME));
     }
 
     public void updateProfileImage(Long memberId, String image) {
@@ -112,8 +115,8 @@ public class MemberService {
 
     // 회원 팔로우 삭제
     public void deleteFollow(Long toMemberId, Long fromMemberId) {
-        Member toMember = memberRepository.findById(toMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        memberRepository.findById(toMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        memberRepository.findById(fromMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Follow follow = followRepository.findByToMemberIdAndFromMemberId(toMemberId, fromMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_FOLLOW));
 
         followRepository.delete(follow);

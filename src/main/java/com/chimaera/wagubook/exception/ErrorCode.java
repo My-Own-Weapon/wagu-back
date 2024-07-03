@@ -13,7 +13,7 @@ public enum ErrorCode {
     UNABLE_TO_UPDATE_POST(BAD_REQUEST, "포스트를 수정할 수 없습니다."),
     UNABLE_TO_DELETE_POST(BAD_REQUEST, "포스트를 삭제할 수 없습니다."),
     NOT_ALLOW_FOLLOW(BAD_REQUEST, "허용되지 않는 팔로우입니다."),
-    
+    WRONG_PASSWORD_CONFIRM(BAD_REQUEST, "비밀번호를 다시 확인해주세요."),
     
     // 401 UNAUTHORIZED: 인증되지 않은 사용자
     REQUEST_LOGIN(UNAUTHORIZED, "로그인이 필요합니다."),
@@ -29,6 +29,7 @@ public enum ErrorCode {
 
 
     // 409 CONFLICT: 중복된 리소스 (요청이 현재 서버 상태와 충돌될 때)
+    DUPLICATE_USERNAME(CONFLICT, "중복된 아이디입니다."),
     ALREADY_FOLLOW(CONFLICT, "해당 사용자가 이미 팔로우한 회원입니다."),
 
     // 500 INTERNAL SERVER ERROR
