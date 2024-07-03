@@ -13,9 +13,9 @@ public class PostRequest {
     private String postImage;
     private String postContent;
     private boolean isAuto;
-    private String storeName; // New field for store name
-    private Location storeLocation; // New field for store location
-    private List<MenuRequest> menus; // New field for menus
+    private String storeName;
+    private Location storeLocation;
+    private List<MenuRequest> menus;
 
     @Data
     public static class MenuRequest {
