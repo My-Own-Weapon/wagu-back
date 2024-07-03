@@ -22,4 +22,14 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom{
                 .where(store.storeName.containsIgnoreCase(keyword)) // 대소문자 구분 없이 검색
                 .fetch();
     }
+
+    @Override
+    public List<Store> findAllByScreen(String left, String right, String up, String down){
+        QStore store = QStore.store;
+        return queryFactory
+                .selectFrom(store)
+                .where(store.storeLocation.posx.between(Double.parseDouble(left), Double.parseDouble(right))
+                        .and(store.storeLocation.posy.between(Double.parseDouble(up), Double.parseDouble(down))))
+                .fetch();
+    }
 }

@@ -23,6 +23,7 @@ public class Category {
     private String categoryName; // 카테고리 이름
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Post> posts = new ArrayList<>(); // 카테고리 게시글
 
     @ManyToOne(fetch = FetchType.LAZY)
