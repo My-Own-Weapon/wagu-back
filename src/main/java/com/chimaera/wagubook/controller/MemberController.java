@@ -58,7 +58,7 @@ public class MemberController {
     @PatchMapping("/members/image")
     public ResponseEntity<String> updateProfileImage(@RequestBody String image, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        checkVaildByMemberId(memberId);
+        checkValidByMemberId(memberId);
         memberService.updateProfileImage(memberId, image);
         return new ResponseEntity<>("프로필 사진이 변경되었습니다.", HttpStatus.OK);
     }
@@ -66,7 +66,7 @@ public class MemberController {
     @PatchMapping("/members/password")
     public ResponseEntity<String> updatePassword(@RequestBody String newPassword, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        checkVaildByMemberId(memberId);
+        checkValidByMemberId(memberId);
         memberService.updatePassword(memberId, newPassword);
         return new ResponseEntity<>("비밀번호가 변경되었습니다.", HttpStatus.OK);
     }
@@ -74,7 +74,7 @@ public class MemberController {
     @DeleteMapping("/members")
     public ResponseEntity<String> deleteMember(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        checkVaildByMemberId(memberId);
+        checkValidByMemberId(memberId);
         memberService.deleteMember(memberId);
         session.invalidate();
         return new ResponseEntity<>("회원 탈퇴가 완료되었습니다.", HttpStatus.OK);
@@ -89,8 +89,8 @@ public class MemberController {
     @PostMapping("/members/{fromMemberId}/follow")
     public ResponseEntity<String> createFollow(@PathVariable Long fromMemberId, HttpSession session) {
         Long toMemberId = (Long) session.getAttribute("memberId");
-        checkVaildByMemberId(toMemberId);
-        checkVaildByMemberId(fromMemberId);
+        checkValidByMemberId(toMemberId);
+        checkValidByMemberId(fromMemberId);
         memberService.createFollow(toMemberId, fromMemberId);
         return new ResponseEntity<>(toMemberId + "님이 " + fromMemberId + "님을 팔로우하였습니다.", HttpStatus.OK);
     }
@@ -104,8 +104,8 @@ public class MemberController {
     @DeleteMapping("/members/{fromMemberId}/follow")
     public ResponseEntity<String> deleteFollow(@PathVariable Long fromMemberId, HttpSession session) {
         Long toMemberId = (Long) session.getAttribute("memberId");
-        checkVaildByMemberId(toMemberId);
-        checkVaildByMemberId(fromMemberId);
+        checkValidByMemberId(toMemberId);
+        checkValidByMemberId(fromMemberId);
         memberService.deleteFollow(toMemberId, fromMemberId);
         return new ResponseEntity<>(toMemberId + "님이 " + fromMemberId + "님을 언팔로우하였습니다.", HttpStatus.OK);
     }
@@ -119,7 +119,7 @@ public class MemberController {
     @GetMapping("/followers")
     public ResponseEntity<List<FollowerResponse>> getFollowers(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        checkVaildByMemberId(memberId);
+        checkValidByMemberId(memberId);
         List<FollowerResponse> followers = memberService.getFollowers(memberId);
         return new ResponseEntity<>(followers, HttpStatus.OK);
     }
@@ -133,7 +133,7 @@ public class MemberController {
     @GetMapping("/followings")
     public ResponseEntity<List<FollowingResponse>> getFollowings(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        checkVaildByMemberId(memberId);
+        checkValidByMemberId(memberId);
         return new ResponseEntity<>(memberService.getFollowings(memberId), HttpStatus.OK);
     }
 
@@ -146,12 +146,12 @@ public class MemberController {
     @GetMapping("/members/{memberId}")
     public ResponseEntity<MemberInfoResponse> getMemberInfo(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        checkVaildByMemberId(memberId);
+        checkValidByMemberId(memberId);
         return new ResponseEntity<>(memberService.getMemberInfo(memberId), HttpStatus.OK);
     }
 
     // 회원 검증
-    private void checkVaildByMemberId(Long memberId) {
+    private void checkValidByMemberId(Long memberId) {
         if (memberId == null) {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
