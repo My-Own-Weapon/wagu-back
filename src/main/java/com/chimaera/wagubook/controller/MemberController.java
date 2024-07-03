@@ -36,7 +36,6 @@ public class MemberController {
         session.setAttribute("memberId", member.getId());
         session.setMaxInactiveInterval(3000); // 세션 유효 시간 50분
 
-
         return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
     }
 
@@ -58,9 +57,7 @@ public class MemberController {
     @PatchMapping("/members/image")
     public ResponseEntity<String> updateProfileImage(@RequestBody String image, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
+        checkVaildByMemberId(memberId);
         memberService.updateProfileImage(memberId, image);
         return new ResponseEntity<>("프로필 사진이 변경되었습니다.", HttpStatus.OK);
     }
@@ -68,21 +65,38 @@ public class MemberController {
     @PatchMapping("/members/password")
     public ResponseEntity<String> updatePassword(@RequestBody String newPassword, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
+        checkVaildByMemberId(memberId);
         memberService.updatePassword(memberId, newPassword);
         return new ResponseEntity<>("비밀번호가 변경되었습니다.", HttpStatus.OK);
     }
 
     @DeleteMapping("/members")
     public ResponseEntity<String> deleteMember(HttpSession session) {
-        Long memberId = (Long) session.getAttribute("userId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
+        Long memberId = (Long) session.getAttribute("memberId");
+        checkVaildByMemberId(memberId);
         memberService.deleteMember(memberId);
         session.invalidate();
         return new ResponseEntity<>("회원 탈퇴가 완료되었습니다.", HttpStatus.OK);
+    }
+
+    /**
+     * 회원 팔로우 추가
+     * Method : POST
+     * url : members/{followMemberId}/follow
+     * ex : members/5/follow
+     * */
+    @PostMapping("/members/{followerId}/follow")
+    public ResponseEntity<String> createFollow(@PathVariable Long followerId, HttpSession session) {
+        Long followingId = (Long) session.getAttribute("memberId");
+        checkVaildByMemberId(followingId);
+        memberService.createFollow(followingId, followerId);
+        return new ResponseEntity<>("{followingId: " + followingId + "}님이 " + "{followerId: " + followerId+ "}님을 팔로우하였습니다.", HttpStatus.OK);
+    }
+
+    // 회원 검증
+    private void checkVaildByMemberId(Long memberId) {
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
     }
 }

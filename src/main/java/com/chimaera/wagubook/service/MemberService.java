@@ -2,7 +2,11 @@ package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.dto.LoginRequest;
 import com.chimaera.wagubook.dto.MemberRequest;
+import com.chimaera.wagubook.entity.Follow;
 import com.chimaera.wagubook.entity.Member;
+import com.chimaera.wagubook.exception.CustomException;
+import com.chimaera.wagubook.exception.ErrorCode;
+import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final FollowRepository followRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
@@ -52,19 +57,36 @@ public class MemberService {
         return memberRepository.findByUsername(username).orElse(null);
     }
 
-    public void updateProfileImage(Long userId, String image) {
-        Member member = memberRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다."));
+    public void updateProfileImage(Long memberId, String image) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         member.setProfileImage(image);
         memberRepository.save(member);
     }
 
-    public void updatePassword(Long userId, String newPassword) {
-        Member member = memberRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다."));
+    public void updatePassword(Long memberId, String newPassword) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         member.setPassword(bCryptPasswordEncoder.encode(newPassword));
         memberRepository.save(member);
     }
 
-    public void deleteMember(Long userId) {
-        memberRepository.deleteById(userId);
+    public void deleteMember(Long memberId) {
+        memberRepository.deleteById(memberId);
+    }
+
+    // 회원 팔로우 추가
+    public void createFollow(Long followingId, Long followerId) {
+        Member following = memberRepository.findById(followingId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Member follower = memberRepository.findById(followerId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if (followRepository.existsByFollowerIdAndFollowingId(followerId, followingId)) {
+            throw new CustomException(ErrorCode.ALREADY_FOLLOW);
+        }
+
+        Follow follow = Follow.builder()
+                .follower(follower)
+                .following(following)
+                .build();
+
+        followRepository.save(follow);
     }
 }

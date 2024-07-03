@@ -1,6 +1,7 @@
 package com.chimaera.wagubook.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,10 @@ public class Follow {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_id")
     private Member following;
+
+    @Builder
+    public Follow(Member follower, Member following) {
+        this.follower = follower;
+        this.following = following;
+    }
 }
