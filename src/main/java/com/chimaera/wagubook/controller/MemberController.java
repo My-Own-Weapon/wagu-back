@@ -82,7 +82,7 @@ public class MemberController {
     /**
      * 회원 팔로우 추가
      * Method : POST
-     * url : members/{followMemberId}/follow
+     * url : members/{followerId}/follow
      * ex : members/5/follow
      * */
     @PostMapping("/members/{followerId}/follow")
@@ -91,6 +91,20 @@ public class MemberController {
         checkVaildByMemberId(followingId);
         memberService.createFollow(followingId, followerId);
         return new ResponseEntity<>("{followingId: " + followingId + "}님이 " + "{followerId: " + followerId+ "}님을 팔로우하였습니다.", HttpStatus.OK);
+    }
+
+    /**
+     * 회원 팔로우 삭제
+     * Method : DELETE
+     * url : members/{followerId}/follow
+     * ex : members/5/follow
+     * */
+    @DeleteMapping("/members/{followerId}/follow")
+    public ResponseEntity<String> deleteFollow(@PathVariable Long followerId, HttpSession session) {
+        Long followingId = (Long) session.getAttribute("memberId");
+        checkVaildByMemberId(followingId);
+        memberService.deleteFollow(followingId, followerId);
+        return new ResponseEntity<>("{followingId: " + followingId + "}님이 " + "{followerId: " + followerId+ "}님을 언팔로우하였습니다.", HttpStatus.OK);
     }
 
     // 회원 검증

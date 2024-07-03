@@ -24,10 +24,11 @@ public enum ErrorCode {
     // 404 NOT_FOUND: 잘못된 리소스 접근
     NOT_FOUND_POST(NOT_FOUND, "해당 포스트를 찾을 수 없습니다."),
     NOT_FOUND_MEMBER(NOT_FOUND, "해당 회원을 찾을 수 없습니다."),
+    NOT_FOUND_FOLLOW(NOT_FOUND, "성립되지 않은 팔로우 관계입니다."),
 
 
     // 409 CONFLICT: 중복된 리소스 (요청이 현재 서버 상태와 충돌될 때)
-    ALREADY_FOLLOW(CONFLICT, "이미 팔로우한 회원입니다."),
+    ALREADY_FOLLOW(CONFLICT, "해당 사용자가 이미 팔로우한 회원입니다."),
 
     // 500 INTERNAL SERVER ERROR
     ;

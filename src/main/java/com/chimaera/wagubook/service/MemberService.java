@@ -78,7 +78,7 @@ public class MemberService {
         Member following = memberRepository.findById(followingId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Member follower = memberRepository.findById(followerId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        if (followRepository.existsByFollowerIdAndFollowingId(followerId, followingId)) {
+        if (followRepository.existsByFollowingIdAndFollowerId(followingId, followerId)) {
             throw new CustomException(ErrorCode.ALREADY_FOLLOW);
         }
 
@@ -88,5 +88,14 @@ public class MemberService {
                 .build();
 
         followRepository.save(follow);
+    }
+
+    // 회원 팔로우 삭제
+    public void deleteFollow(Long followingId, Long followerId) {
+        Member following = memberRepository.findById(followingId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Member follower = memberRepository.findById(followerId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Follow follow = followRepository.findByFollowingIdAndFollowerId(followingId, followerId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_FOLLOW));
+
+        followRepository.delete(follow);
     }
 }
