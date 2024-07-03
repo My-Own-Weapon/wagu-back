@@ -22,8 +22,10 @@ public class Store {
     private Location storeLocation; // 가게 위치
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Post> posts = new ArrayList<>();// 가게 게시글
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Menu> menus = new ArrayList<>(); // 가게 메뉴
 }

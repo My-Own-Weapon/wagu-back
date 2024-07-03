@@ -17,7 +17,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none # application start
+      ddl-auto: create # application start
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
