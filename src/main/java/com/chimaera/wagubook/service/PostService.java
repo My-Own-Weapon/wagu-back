@@ -3,8 +3,8 @@ package com.chimaera.wagubook.service;
 import com.chimaera.wagubook.dto.PostRequest;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.Post;
-import com.chimaera.wagubook.repository.MemberRepository;
-import com.chimaera.wagubook.repository.PostRepository;
+import com.chimaera.wagubook.repository.member.MemberRepository;
+import com.chimaera.wagubook.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
