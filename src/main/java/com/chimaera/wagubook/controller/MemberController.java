@@ -1,7 +1,6 @@
 package com.chimaera.wagubook.controller;
 
-import com.chimaera.wagubook.dto.LoginRequest;
-import com.chimaera.wagubook.dto.MemberRequest;
+import com.chimaera.wagubook.dto.*;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
@@ -12,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -36,7 +37,6 @@ public class MemberController {
         session.setAttribute("memberId", member.getId());
         session.setMaxInactiveInterval(3000); // 세션 유효 시간 50분
 
-
         return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
     }
 
@@ -58,9 +58,7 @@ public class MemberController {
     @PatchMapping("/members/image")
     public ResponseEntity<String> updateProfileImage(@RequestBody String image, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
+        checkValidByMemberId(memberId);
         memberService.updateProfileImage(memberId, image);
         return new ResponseEntity<>("프로필 사진이 변경되었습니다.", HttpStatus.OK);
     }
@@ -68,21 +66,94 @@ public class MemberController {
     @PatchMapping("/members/password")
     public ResponseEntity<String> updatePassword(@RequestBody String newPassword, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
+        checkValidByMemberId(memberId);
         memberService.updatePassword(memberId, newPassword);
         return new ResponseEntity<>("비밀번호가 변경되었습니다.", HttpStatus.OK);
     }
 
     @DeleteMapping("/members")
     public ResponseEntity<String> deleteMember(HttpSession session) {
-        Long memberId = (Long) session.getAttribute("userId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
+        Long memberId = (Long) session.getAttribute("memberId");
+        checkValidByMemberId(memberId);
         memberService.deleteMember(memberId);
         session.invalidate();
         return new ResponseEntity<>("회원 탈퇴가 완료되었습니다.", HttpStatus.OK);
+    }
+
+    /**
+     * 회원 팔로우 추가
+     * Method : POST
+     * url : members/{fromMemberId}/follow
+     * ex : members/5/follow
+     **/
+    @PostMapping("/members/{fromMemberId}/follow")
+    public ResponseEntity<String> createFollow(@PathVariable Long fromMemberId, HttpSession session) {
+        Long toMemberId = (Long) session.getAttribute("memberId");
+        checkValidByMemberId(toMemberId);
+        checkValidByMemberId(fromMemberId);
+        memberService.createFollow(toMemberId, fromMemberId);
+        return new ResponseEntity<>(toMemberId + "님이 " + fromMemberId + "님을 팔로우하였습니다.", HttpStatus.OK);
+    }
+
+    /**
+     * 회원 팔로우 삭제
+     * Method : DELETE
+     * url : members/{fromMemberId}/follow
+     * ex : members/5/follow
+     **/
+    @DeleteMapping("/members/{fromMemberId}/follow")
+    public ResponseEntity<String> deleteFollow(@PathVariable Long fromMemberId, HttpSession session) {
+        Long toMemberId = (Long) session.getAttribute("memberId");
+        checkValidByMemberId(toMemberId);
+        checkValidByMemberId(fromMemberId);
+        memberService.deleteFollow(toMemberId, fromMemberId);
+        return new ResponseEntity<>(toMemberId + "님이 " + fromMemberId + "님을 언팔로우하였습니다.", HttpStatus.OK);
+    }
+
+    /**
+     * 팔로워 목록 조회
+     * Method : GET
+     * url : /followers
+     * ex : /followers
+     **/
+    @GetMapping("/followers")
+    public ResponseEntity<List<FollowerResponse>> getFollowers(HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        checkValidByMemberId(memberId);
+        List<FollowerResponse> followers = memberService.getFollowers(memberId);
+        return new ResponseEntity<>(followers, HttpStatus.OK);
+    }
+
+    /**
+     * 팔로워 목록 조회
+     * Method : GET
+     * url : /followings
+     * ex : /followings
+     **/
+    @GetMapping("/followings")
+    public ResponseEntity<List<FollowingResponse>> getFollowings(HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        checkValidByMemberId(memberId);
+        return new ResponseEntity<>(memberService.getFollowings(memberId), HttpStatus.OK);
+    }
+
+    /**
+     * 프로필 조회
+     * Method : GET
+     * url : /members/{memberId}
+     * ex : /members/5
+     **/
+    @GetMapping("/members/{memberId}")
+    public ResponseEntity<MemberInfoResponse> getMemberInfo(HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        checkValidByMemberId(memberId);
+        return new ResponseEntity<>(memberService.getMemberInfo(memberId), HttpStatus.OK);
+    }
+
+    // 회원 검증
+    private void checkValidByMemberId(Long memberId) {
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
     }
 }

@@ -25,11 +25,11 @@ public class Member {
     private String phoneNumber; // 사용자 전화번호
     private String profileImage; // 프로필 이미지
 
-    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "toMember", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Follow> followers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "fromMember", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Follow> followings = new ArrayList<>();
 
