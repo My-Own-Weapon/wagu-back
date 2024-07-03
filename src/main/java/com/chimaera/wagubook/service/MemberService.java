@@ -9,9 +9,11 @@ import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -74,27 +76,45 @@ public class MemberService {
     }
 
     // 회원 팔로우 추가
-    public void createFollow(Long followingId, Long followerId) {
-        Member following = memberRepository.findById(followingId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        Member follower = memberRepository.findById(followerId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+    public void createFollow(Long toMemberId, Long fromMemberId) {
+        Member toMember = memberRepository.findById(toMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        if (followRepository.existsByFollowingIdAndFollowerId(followingId, followerId)) {
+        // 사용자가 자기 자신을 팔로우하는 경우
+        if (toMemberId.equals(fromMemberId)) {
+            throw new CustomException(ErrorCode.NOT_ALLOW_FOLLOW);
+        }
+        
+        // 이미 팔로우 관계가 성립되었을 경우
+        if (followRepository.existsByToMemberIdAndFromMemberId(toMemberId, fromMemberId)) {
             throw new CustomException(ErrorCode.ALREADY_FOLLOW);
         }
 
+        // 맞팔로우 여부 확인
+        boolean isEach = false;
+        Optional<Follow> findFollow = followRepository.findByToMemberIdAndFromMemberId(fromMemberId, toMemberId);
+
+        if (findFollow.isPresent()) {
+            isEach = true;
+
+            Follow oppositeFollow = findFollow.get();
+            oppositeFollow.update(true);
+        }
+
         Follow follow = Follow.builder()
-                .follower(follower)
-                .following(following)
+                .toMember(toMember)
+                .fromMember(fromMember)
+                .isEach(isEach)
                 .build();
 
         followRepository.save(follow);
     }
 
     // 회원 팔로우 삭제
-    public void deleteFollow(Long followingId, Long followerId) {
-        Member following = memberRepository.findById(followingId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        Member follower = memberRepository.findById(followerId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        Follow follow = followRepository.findByFollowingIdAndFollowerId(followingId, followerId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_FOLLOW));
+    public void deleteFollow(Long toMemberId, Long fromMemberId) {
+        Member toMember = memberRepository.findById(toMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Follow follow = followRepository.findByToMemberIdAndFromMemberId(toMemberId, fromMemberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_FOLLOW));
 
         followRepository.delete(follow);
     }

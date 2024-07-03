@@ -1,5 +1,6 @@
 package com.chimaera.wagubook.controller;
 
+import com.chimaera.wagubook.dto.FollowerResponse;
 import com.chimaera.wagubook.dto.LoginRequest;
 import com.chimaera.wagubook.dto.MemberRequest;
 import com.chimaera.wagubook.entity.Member;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -82,29 +85,45 @@ public class MemberController {
     /**
      * 회원 팔로우 추가
      * Method : POST
-     * url : members/{followerId}/follow
+     * url : members/{fromMemberId}/follow
      * ex : members/5/follow
-     * */
-    @PostMapping("/members/{followerId}/follow")
-    public ResponseEntity<String> createFollow(@PathVariable Long followerId, HttpSession session) {
-        Long followingId = (Long) session.getAttribute("memberId");
-        checkVaildByMemberId(followingId);
-        memberService.createFollow(followingId, followerId);
-        return new ResponseEntity<>("{followingId: " + followingId + "}님이 " + "{followerId: " + followerId+ "}님을 팔로우하였습니다.", HttpStatus.OK);
+     **/
+    @PostMapping("/members/{fromMemberId}/follow")
+    public ResponseEntity<String> createFollow(@PathVariable Long fromMemberId, HttpSession session) {
+        Long toMemberId = (Long) session.getAttribute("memberId");
+        checkVaildByMemberId(toMemberId);
+        checkVaildByMemberId(fromMemberId);
+        memberService.createFollow(toMemberId, fromMemberId);
+        return new ResponseEntity<>(toMemberId + "님이 " + fromMemberId + "님을 팔로우하였습니다.", HttpStatus.OK);
     }
 
     /**
      * 회원 팔로우 삭제
      * Method : DELETE
-     * url : members/{followerId}/follow
+     * url : members/{fromMemberId}/follow
      * ex : members/5/follow
-     * */
-    @DeleteMapping("/members/{followerId}/follow")
-    public ResponseEntity<String> deleteFollow(@PathVariable Long followerId, HttpSession session) {
-        Long followingId = (Long) session.getAttribute("memberId");
-        checkVaildByMemberId(followingId);
-        memberService.deleteFollow(followingId, followerId);
-        return new ResponseEntity<>("{followingId: " + followingId + "}님이 " + "{followerId: " + followerId+ "}님을 언팔로우하였습니다.", HttpStatus.OK);
+     **/
+    @DeleteMapping("/members/{fromMemberId}/follow")
+    public ResponseEntity<String> deleteFollow(@PathVariable Long fromMemberId, HttpSession session) {
+        Long toMemberId = (Long) session.getAttribute("memberId");
+        checkVaildByMemberId(toMemberId);
+        checkVaildByMemberId(fromMemberId);
+        memberService.deleteFollow(toMemberId, fromMemberId);
+        return new ResponseEntity<>(toMemberId + "님이 " + fromMemberId + "님을 언팔로우하였습니다.", HttpStatus.OK);
+    }
+
+    /**
+     * 팔로워 목록 조회
+     * Method : GET
+     * url : /followers
+     * ex : /followers
+     **/
+    @GetMapping("/followers")
+    public ResponseEntity<List<FollowerResponse>> getFollowers(HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
+
+
+        return new ResponseEntity<List<FollowerResponse>>(HttpStatus.OK);
     }
 
     // 회원 검증

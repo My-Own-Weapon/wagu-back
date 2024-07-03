@@ -16,16 +16,23 @@ public class Follow {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "follower_id")
-    private Member follower;
+    @JoinColumn(name = "to_member_id")
+    private Member toMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "following_id")
-    private Member following;
+    @JoinColumn(name = "from_member_id")
+    private Member fromMember;
+
+    private boolean isEach;
 
     @Builder
-    public Follow(Member follower, Member following) {
-        this.follower = follower;
-        this.following = following;
+    public Follow(Member toMember, Member fromMember, boolean isEach) {
+        this.toMember = toMember;
+        this.fromMember = fromMember;
+        this.isEach = isEach;
+    }
+
+    public void update(boolean isEach) {
+        this.isEach = isEach;
     }
 }

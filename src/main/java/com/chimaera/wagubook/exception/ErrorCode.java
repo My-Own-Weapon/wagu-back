@@ -12,13 +12,14 @@ public enum ErrorCode {
     // 400 BAD_REQUEST: 잘못된 요청
     UNABLE_TO_UPDATE_POST(BAD_REQUEST, "포스트를 수정할 수 없습니다."),
     UNABLE_TO_DELETE_POST(BAD_REQUEST, "포스트를 삭제할 수 없습니다."),
-
-
+    NOT_ALLOW_FOLLOW(BAD_REQUEST, "허용되지 않는 팔로우입니다."),
+    
+    
     // 401 UNAUTHORIZED: 인증되지 않은 사용자
     REQUEST_LOGIN(UNAUTHORIZED, "로그인이 필요합니다."),
     LOGIN_FAIL(UNAUTHORIZED, "로그인이 실패했습니다."),
 
-    // 403 FORBIDDEN: 접근 권한이 없는 사용자
+    // 403 FORBIDDEN: 허용되지 않은 접근
 
 
     // 404 NOT_FOUND: 잘못된 리소스 접근
