@@ -6,9 +6,9 @@ spring:
     console:
       enabled: true
   datasource:
-    url: jdbc:h2:tcp://localhost/~/test
+    url: jdbc:h2:tcp://localhost/~/book
     username: sa
-    password: 123
+    password:
     driver-class-name: org.h2.Driver
 #    url: jdbc:mysql://localhost:3306/querydsl
 #    username: root
@@ -17,7 +17,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create # application start
+      ddl-auto: none # application start
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
