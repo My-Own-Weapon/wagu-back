@@ -10,7 +10,7 @@ spring:
   #   username: sa
   #   password:
   #   driver-class-name: org.h2.Driver
-      url: jdbc:mysql://localhost:3306/querydsl
+      url: jdbc:mysql://3.39.118.22:3306/gitget
       username: testId1
       password: testPw1
       driver-class-name: com.mysql.cj.jdbc.Driver
