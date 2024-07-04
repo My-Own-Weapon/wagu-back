@@ -1,31 +1,27 @@
 spring:
-#  config:
-#    activate:
-#      on-profile: docker
-
   application:
     name: Wagubook
 
-#  h2:
-#    console:
-#      enabled: true
+  h2:
+    console:
+      enabled: true
   datasource:
+    url: jdbc:mysql://localhost:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: mwogkr0113!
+    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:h2:tcp://localhost/~/test
 #    username: sa
 #    password: 123
 #    driver-class-name: org.h2.Driver
-    url: jdbc:mysql://3.39.118.22:3306/gitget?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
-    username: testId1
-    password: testPw1
-    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update # application start
+      ddl-auto: create # application start
     properties:
       hibernate:
-#        dialect: org.hibernate.dialect.Dialect
         dialect: org.hibernate.dialect.MySQL8Dialect
+#        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         use_sql_comments: true
 
