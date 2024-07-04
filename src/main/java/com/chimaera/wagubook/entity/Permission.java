@@ -1,2 +1,5 @@
-package com.chimaera.wagubook.entity;public class Permission {
+package com.chimaera.wagubook.entity;
+
+public enum Permission {
+    PRIVATE, PUBLIC, FRIENDS
 }

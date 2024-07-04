@@ -2,6 +2,7 @@ package com.chimaera.wagubook.dto;
 
 
 import com.chimaera.wagubook.entity.Location;
+import com.chimaera.wagubook.entity.Permission;
 import lombok.Data;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class PostRequest {
     private String storeName;
     private Location storeLocation;
     private List<MenuRequest> menus;
+    private Permission permission;
 
     @Data
     public static class MenuRequest {
