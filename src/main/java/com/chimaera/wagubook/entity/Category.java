@@ -11,8 +11,8 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Builder(builderMethodName = "newBuilder")
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class Category {
     @Id

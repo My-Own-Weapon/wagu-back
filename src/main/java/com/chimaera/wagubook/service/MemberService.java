@@ -31,7 +31,7 @@ public class MemberService {
             throw new CustomException(ErrorCode.WRONG_PASSWORD_CONFIRM);
         }
 
-        Member user = Member.builder()
+        Member user = Member.newBuilder()
                 .username(request.getUsername())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .name(request.getName())
@@ -67,13 +67,13 @@ public class MemberService {
 
     public void updateProfileImage(Long memberId, String image) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        member.setProfileImage(image);
+        member.updateProfileImage(image);
         memberRepository.save(member);
     }
 
     public void updatePassword(Long memberId, String newPassword) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        member.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        member.updatePassword(bCryptPasswordEncoder.encode(newPassword));
         memberRepository.save(member);
     }
 
