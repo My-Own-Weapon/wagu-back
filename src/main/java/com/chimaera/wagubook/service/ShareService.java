@@ -1,14 +1,14 @@
 package com.chimaera.wagubook.service;
 
-import ch.qos.logback.core.testUtil.RandomUtil;
 import com.chimaera.wagubook.dto.ShareResponse;
 import com.chimaera.wagubook.entity.Share;
 import com.chimaera.wagubook.repository.ShareRepository;
-import com.chimaera.wagubook.util.RedisUtil;
+import com.chimaera.wagubook.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 
@@ -17,8 +17,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class ShareService {
     private final ShareRepository shareRepository;
-    private final RedisUtil redisUtil;
-    private static final String INVITE_LINK_PREFIX = "memberId=%d";
+    private final MemberRepository memberRepository;
 
     /**
      *
@@ -26,13 +25,29 @@ public class ShareService {
      * */
     public ShareResponse createUrl(Long memberId) {
 
-        final Optional<String> link = redisUtil.getData(INVITE_LINK_PREFIX.formatted(memberId), String.class);
-        if(link.isEmpty()){
-            final String randomCode = generateRandomCode('0','z',10);
-            redisUtil.setDataExpire(INVITE_LINK_PREFIX.formatted(memberId), randomCode, RedisUtil.toTomorrow());
-            Share share = new Share();
-            return new ShareResponse();
+
+        //랜덤 10자리 숫자 생성
+        boolean loop = true;
+        String randomCode = "";
+        while(loop){
+            randomCode = generateRandomCode('0','z',10);
+            // 중복검사
+            Optional<Share> os = shareRepository.findByUrl(randomCode);
+            if(os.isEmpty()){
+                loop = false;
+                System.out.println("randomCode : " + randomCode);
+            }
         }
+
+        //share entity 생성
+        Share share = Share.newBuilder()
+                .url(randomCode)
+                .localDateTime(LocalDateTime.now())
+                .isValid(true)
+                .build();
+        shareRepository.save(share);
+
+        return new ShareResponse(share);
     }
 
     private static final Random RANDOM = new Random();
