@@ -107,7 +107,7 @@ public class MemberService {
             oppositeFollow.update(true);
         }
 
-        Follow follow = Follow.builder()
+        Follow follow = Follow.newBuilder()
                 .toMember(toMember)
                 .fromMember(fromMember)
                 .isEach(isEach)
