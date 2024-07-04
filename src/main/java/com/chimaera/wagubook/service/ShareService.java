@@ -3,6 +3,7 @@ package com.chimaera.wagubook.service;
 import ch.qos.logback.core.testUtil.RandomUtil;
 import com.chimaera.wagubook.dto.ShareResponse;
 import com.chimaera.wagubook.entity.Share;
+import com.chimaera.wagubook.repository.ShareRepository;
 import com.chimaera.wagubook.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.Random;
 @Transactional
 @RequiredArgsConstructor
 public class ShareService {
+    private final ShareRepository shareRepository;
     private final RedisUtil redisUtil;
     private static final String INVITE_LINK_PREFIX = "memberId=%d";
 
@@ -23,6 +25,7 @@ public class ShareService {
      *
      * */
     public ShareResponse createUrl(Long memberId) {
+
         final Optional<String> link = redisUtil.getData(INVITE_LINK_PREFIX.formatted(memberId), String.class);
         if(link.isEmpty()){
             final String randomCode = generateRandomCode('0','z',10);

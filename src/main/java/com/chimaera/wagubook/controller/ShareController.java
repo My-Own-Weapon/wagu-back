@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShareController {
     private final ShareService shareService;
 
-    @PostMapping("/vote")
+    @PostMapping("/share")
     public ResponseEntity<ShareResponse> createUrl(HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");
