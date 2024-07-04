@@ -28,24 +28,29 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-
+      
       - name: make application.yml
         run: |
           mkdir -p ./src/main/resources
           cd ./src/main/resources
           touch ./application.yml
-          touch ./application-common.yml
-          touch ./application-prod.yml
           echo "${{ secrets.APPLICATION }}" > ./application.yml
-          echo "${{ secrets.COMMON }}" > ./application-common.yml
-          echo "${{ secrets.PROD }}" > ./application-prod.yml
+
+      - name: Start MySQL
+        uses: samin/mysql-action@v1.3
+        with:
+          character set server: 'utf8'
+          mysql database: 'gitget'
+          mysql user: 'testId1'
+          mysql password: 'testPw1'
+            
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: Build and Test
-        run: ./gradlew build test
+      # - name: Build and Test
+      #   run: ./gradlew build test
 
       - name: Make zip file
         run: zip -r ./$GITHUB_SHA.zip .

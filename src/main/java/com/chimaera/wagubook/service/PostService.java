@@ -45,7 +45,7 @@ public class PostService {
                     .build();
         }).collect(Collectors.toList());
 
-        Post post = Post.builder()
+        Post post = Post.newBuilder()
                 .postMainMenu(postRequest.getPostMainMenu())
                 .postImage(postRequest.getPostImage())
                 .postContent(postRequest.getPostContent())
@@ -54,6 +54,7 @@ public class PostService {
                 .store(store)
                 .menus(menus)
                 .createDate(LocalDateTime.now())
+                .permission(postRequest.getPermission())
                 .build();
 
         postRepository.save(post);
@@ -71,15 +72,23 @@ public class PostService {
     }
 
     public boolean updatePost(Long postId, PostRequest postRequest, Long userId) {
+
         Post post = getPostById(postId, userId);
         if (post == null) {
             return false;
         }
-        post.setPostMainMenu(postRequest.getPostMainMenu());
-        post.setPostImage(postRequest.getPostImage());
-        post.setPostContent(postRequest.getPostContent());
-        post.setAuto(postRequest.isAuto());
-        post.setUpdateDate(LocalDateTime.now());
+        post = Post.newBuilder()
+                .id(postId)
+                .postMainMenu(postRequest.getPostMainMenu())
+                .postImage(postRequest.getPostImage())
+                .postContent(postRequest.getPostContent())
+                .isAuto(postRequest.isAuto())
+                .member(post.getMember())
+                .store(post.getStore())
+                .menus(post.getMenus())
+                .createDate(post.getCreateDate())
+                .permission(postRequest.getPermission())
+                .build();
         postRepository.save(post);
         return true;
     }

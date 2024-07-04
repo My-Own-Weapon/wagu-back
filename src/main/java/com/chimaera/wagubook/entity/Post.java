@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
+@Builder(builderMethodName = "newBuilder")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @ToString(of = {"id", "postMainMenu", "postContent"})
 public class Post {
     @Id
@@ -45,16 +47,6 @@ public class Post {
     @JsonIgnore
     private Category category;
 
-    @Builder
-    public Post(String postMainMenu, String postImage, String postContent, boolean isAuto, Member member, LocalDateTime createDate, LocalDateTime updateDate, Store store, List<Menu> menus) {
-        this.postMainMenu = postMainMenu;
-        this.postImage = postImage;
-        this.postContent = postContent;
-        this.isAuto = isAuto;
-        this.member = member;
-        this.createDate = createDate;
-        this.updateDate = updateDate;
-        this.store = store;
-        this.menus = menus;
-    }
+    private Permission permission; // post 공개 범위 설정
+
 }
