@@ -42,11 +42,9 @@ public class StoreController {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
 
-        List<Store> findStores = storeService.getStoresByScreen(left,right,up,down);
-        List<StoreResponse> collect = findStores.stream()
-                .map(s -> (new StoreResponse(s)))
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(collect, HttpStatus.OK);
+        List<StoreResponse> findStores = storeService.getStoresByScreen(left,right,up,down);
+
+        return new ResponseEntity<>(findStores, HttpStatus.OK);
     }
 
 

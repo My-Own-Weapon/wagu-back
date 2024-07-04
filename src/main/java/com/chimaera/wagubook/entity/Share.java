@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,5 +17,7 @@ public class Share {
     private Long id;
     private String url; // 공유 url
     private LocalDateTime localDateTime; // 공유 시간
-    private boolean isValid;
+
+    @OneToMany
+    private List<Member> memberList;
 }

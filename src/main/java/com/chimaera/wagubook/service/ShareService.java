@@ -1,19 +1,18 @@
 package com.chimaera.wagubook.service;
 
-import com.chimaera.wagubook.dto.ShareResponse;
+import com.chimaera.wagubook.dto.FriendResponse;
+import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.Share;
 import com.chimaera.wagubook.repository.ShareRepository;
 import com.chimaera.wagubook.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -22,8 +21,9 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class ShareService {
     private final ShareRepository shareRepository;
+    private final MemberRepository memberRepository;
 
-    public ShareResponse createUrl() {
+    public String createUrl(Long memberId) {
 
         //랜덤 10자리 숫자 생성
         boolean loop = true;
@@ -38,15 +38,19 @@ public class ShareService {
             }
         }
 
+        Member findMember = memberRepository.findById(memberId).get();
+
         //share entity 생성
         Share share = Share.newBuilder()
                 .url(randomCode)
                 .localDateTime(LocalDateTime.now())
-                .isValid(true)
+                .memberList(new ArrayList<>())
                 .build();
+
+        share.getMemberList().add(findMember);
         shareRepository.save(share);
 
-        return new ShareResponse(share);
+        return randomCode;
     }
 
     private static final Random RANDOM = new Random();
@@ -73,4 +77,11 @@ public class ShareService {
         }
         return "해당 url이 존재하지 않습니다.";
     }
+
+    public void addMember(String shareId, Long memberId) {
+        Member findMember = memberRepository.findById(memberId).get();
+        Share findShare = shareRepository.findById(Long.parseLong(shareId)).get();
+        findShare.getMemberList().add(findMember);
+    }
+
 }
