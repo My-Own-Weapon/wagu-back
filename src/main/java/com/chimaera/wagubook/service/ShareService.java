@@ -43,6 +43,7 @@ public class ShareService {
                 .url(randomCode)
                 .localDateTime(LocalDateTime.now())
                 .memberList(new ArrayList<>())
+                .storeList(new ArrayList<>())
                 .build();
 
         share.getMemberList().add(findMember);

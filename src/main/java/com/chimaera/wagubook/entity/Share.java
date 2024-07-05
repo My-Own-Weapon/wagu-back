@@ -19,5 +19,10 @@ public class Share {
     private LocalDateTime localDateTime; // 공유 시간
 
     @OneToMany
+    @JoinColumn(name = "member_id")
     private List<Member> memberList;
+
+    @OneToMany
+    @JoinColumn(name = "store_id")
+    private List<Store> storeList;
 }

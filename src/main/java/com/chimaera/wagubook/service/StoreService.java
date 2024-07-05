@@ -27,4 +27,8 @@ public class StoreService {
     public List<Post> getAllPostsByStore(Long storeId) {
         return postRepository.findAllByStoreId(storeId);
     }
+
+    public Store findByStoreId(String store_id) {
+        return storeRepository.findById(Long.parseLong(store_id)).get();
+    }
 }
