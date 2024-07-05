@@ -6,10 +6,12 @@ spring:
     console:
       enabled: true
   datasource:
-#    url: jdbc:mysql://localhost:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
-#    username: root
-#    password:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    #    url: jdbc:mysql://localhost:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    #    username: root
+    #    password:
+    #    driver-class-name: com.mysql.cj.jdbc.Driver
+
     url: jdbc:h2:tcp://localhost/~/book
     username: sa
     password:
@@ -20,7 +22,7 @@ spring:
       ddl-auto: create # application start
     properties:
       hibernate:
-#        dialect: org.hibernate.dialect.MySQL8Dialect
+        #        dialect: org.hibernate.dialect.MySQL8Dialect
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         use_sql_comments: true
@@ -31,7 +33,11 @@ spring:
 #    host: localhost
 #    port: 6379
 
+
 logging.level:
   org.hibernate.SQL: debug
 
 
+
+logging.level:
+  org.hibernate.SQL: debug

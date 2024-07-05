@@ -36,11 +36,22 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private LiveRoom liveRoom; // 현재 생방송 중인 라이브 룸
+
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void turnLive(boolean onLive) {
+        this.onLive = onLive;
+    }
+
+    public Member(Long id){
+        this.id = id;
     }
 }
