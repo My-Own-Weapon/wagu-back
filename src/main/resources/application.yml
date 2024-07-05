@@ -35,4 +35,7 @@ logging.level:
 server:
   servlet:
     session:
-      tracking-modes: cookie
+      cookie:
+        domain: wagubook.o-r.kr
+        same-site: none
+        secure: ture
