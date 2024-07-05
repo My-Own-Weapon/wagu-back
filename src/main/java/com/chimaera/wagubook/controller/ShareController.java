@@ -53,7 +53,7 @@ public class ShareController {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
 
-        return new ResponseEntity<>(shareService.findShareId(url), HttpStatus.OK);
+        return new ResponseEntity<>(shareService.findShareId(url, memberId), HttpStatus.OK);
     }
 
 
@@ -76,8 +76,6 @@ public class ShareController {
         if (memberId == null) {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
-        // share 에 member 등록
-        shareService.addMember(shareId, memberId);
 
         // 화면에 보이는 스토어 찾기
         List<StoreResponse> findStores = storeService.getStoresByScreen(left,right,up,down);
