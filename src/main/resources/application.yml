@@ -32,4 +32,7 @@ spring:
 logging.level:
   org.hibernate.SQL: debug
 
-
+server:
+  servlet:
+    session:
+      tracking-modes: cookie
