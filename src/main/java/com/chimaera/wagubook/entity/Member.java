@@ -50,4 +50,8 @@ public class Member {
     public void turnLive(boolean onLive) {
         this.onLive = onLive;
     }
+
+    public Member(Long id){
+        this.id = id;
+    }
 }

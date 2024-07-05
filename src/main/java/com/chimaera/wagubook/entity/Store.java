@@ -36,4 +36,9 @@ public class Store {
     @Builder.Default
     @JsonIgnore
     private List<LiveRoom> liveRooms = new ArrayList<>(); // 라이브 스트리밍 방 목록
+
+    public Store(String storeName) {
+        this.storeName = storeName;
+    }
+
 }
