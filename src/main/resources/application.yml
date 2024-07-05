@@ -6,13 +6,13 @@ spring:
     console:
       enabled: true
   datasource:
-#    url: jdbc:mysql://localhost:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
-#    username: root
-#    password:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:h2:tcp://localhost/~/test
+    #    url: jdbc:mysql://localhost:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    #    username: root
+    #    password:
+    #    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:h2:tcp://localhost/~/book
     username: sa
-    password: 123
+    password:
     driver-class-name: org.h2.Driver
 
   jpa:
@@ -20,12 +20,16 @@ spring:
       ddl-auto: create # application start
     properties:
       hibernate:
-#        dialect: org.hibernate.dialect.MySQL8Dialect
+        #        dialect: org.hibernate.dialect.MySQL8Dialect
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         use_sql_comments: true
 
+#  redis
+#  로컬에서는 6379가 기본값이지만 운영,개발 서버는 redis의 host,port를 설정해야함
+#  redis:
+#    host: localhost
+#    port: 6379
+
 logging.level:
   org.hibernate.SQL: debug
-
-
