@@ -24,6 +24,10 @@ public class MemberService {
     private final PostRepository postRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    public Member findById(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+    }
+
 
     // 회원가입
     public void join(MemberRequest request) {

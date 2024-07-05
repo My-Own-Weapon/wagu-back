@@ -12,9 +12,9 @@ spring:
     #    password:
     #    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    url: jdbc:h2:tcp://localhost/~/book
+    url: jdbc:h2:tcp://localhost/~/test
     username: sa
-    password:
+    password: 123
     driver-class-name: org.h2.Driver
 
   jpa:
@@ -37,7 +37,3 @@ spring:
 logging.level:
   org.hibernate.SQL: debug
 
-
-
-logging.level:
-  org.hibernate.SQL: debug

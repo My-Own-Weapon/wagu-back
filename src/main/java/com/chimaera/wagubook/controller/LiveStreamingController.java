@@ -7,6 +7,7 @@ import com.chimaera.wagubook.entity.LiveRoom;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.Store;
 import com.chimaera.wagubook.service.LiveRoomService;
+import com.chimaera.wagubook.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +20,13 @@ import java.util.List;
 public class LiveStreamingController {
 
     private final LiveRoomService liveRoomService;
+    private final MemberService memberService;
 
 
     @PostMapping
     public LiveRoom createLiveRoom(@RequestBody CreateLiveRoomRequest request, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        Member member = new Member(memberId);
+        Member member = memberService.findById(memberId);
 
         Store store = request.getStoreName() == null ? null : new Store(request.getStoreName());
         return liveRoomService.createLiveRoom(member, store, request.getTitle());
