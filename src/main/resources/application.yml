@@ -31,3 +31,11 @@ spring:
 
 logging.level:
   org.hibernate.SQL: debug
+
+server:
+  servlet:
+    session:
+      cookie:
+        domain: api.wagubook.shop
+        same-site: none
+        secure: true
