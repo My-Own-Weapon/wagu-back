@@ -1,18 +1,18 @@
 package com.chimaera.wagubook.controller;
 
-import com.chimaera.wagubook.dto.PostResponse;
+import com.chimaera.wagubook.dto.*;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
-import com.chimaera.wagubook.service.S3ImageService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chimaera.wagubook.dto.PostRequest;
 import com.chimaera.wagubook.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,11 +26,11 @@ public class PostController {
      * Method : POST
      * url : /posts
      * */
-    @PostMapping("/posts")
-    public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest postRequest, HttpSession session) {
+    @PostMapping(value = "/posts", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<PostResponse> createPost(@RequestPart List<MultipartFile> images, @RequestPart PostCreateRequest data, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
-        return new ResponseEntity<>(postService.createPost(postRequest, memberId), HttpStatus.CREATED);
+        return new ResponseEntity<>(postService.createPost(images, data, memberId), HttpStatus.CREATED);
     }
 
     /**
@@ -39,7 +39,7 @@ public class PostController {
      * url : /posts
      * */
     @GetMapping("/posts")
-    public ResponseEntity<List<PostResponse>> getAllPostsByUser(HttpSession session) {
+    public ResponseEntity<List<StorePostResponse>> getAllPostsByUser(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         return new ResponseEntity<>(postService.getAllPostsByUser(memberId), HttpStatus.OK);
@@ -62,11 +62,11 @@ public class PostController {
      * Method : PATCH
      * url : /posts/{postId}
      * */
-    @PatchMapping("/posts/{postId}")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestBody PostRequest postRequest, HttpSession session) {
+    @PatchMapping(value = "/posts/{postId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestPart List<MultipartFile> files, @RequestPart PostUpdateRequest data, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
-        return new ResponseEntity<>(postService.updatePost(postId, postRequest, memberId), HttpStatus.OK);
+        return new ResponseEntity<>(postService.updatePost(postId, files, data, memberId), HttpStatus.OK);
     }
 
     /**
