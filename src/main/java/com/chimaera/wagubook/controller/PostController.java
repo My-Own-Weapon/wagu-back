@@ -27,7 +27,7 @@ public class PostController {
      * url : /posts
      * */
     @PostMapping(value = "/posts", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<PostResponse> createPost(@RequestPart List<MultipartFile> images, @RequestPart PostCreateRequest data, HttpSession session) {
+    public ResponseEntity<PostResponse> createPost(@RequestPart(required = false) List<MultipartFile> images, @RequestPart PostCreateRequest data, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         return new ResponseEntity<>(postService.createPost(images, data, memberId), HttpStatus.CREATED);
@@ -63,7 +63,7 @@ public class PostController {
      * url : /posts/{postId}
      * */
     @PatchMapping(value = "/posts/{postId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestPart List<MultipartFile> files, @RequestPart PostUpdateRequest data, HttpSession session) {
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestPart(required = false) List<MultipartFile> files, @RequestPart PostUpdateRequest data, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         return new ResponseEntity<>(postService.updatePost(postId, files, data, memberId), HttpStatus.OK);
