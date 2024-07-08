@@ -46,6 +46,9 @@ dependencies {
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
+    // Add OpenVidu Java Client library
+    implementation 'io.openvidu:openvidu-java-client:2.30.0'
+
     //Redis
 //    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }

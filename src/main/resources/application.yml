@@ -37,3 +37,5 @@ spring:
 logging.level:
   org.hibernate.SQL: debug
 
+OPENVIDU_URL: http://localhost:4443/
+OPENVIDU_SECRET: MY_SECRET
