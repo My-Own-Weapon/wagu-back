@@ -3,6 +3,7 @@ package com.chimaera.wagubook.controller;
 import com.chimaera.wagubook.dto.*;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +28,7 @@ public class PostController {
      * url : /posts
      * */
     @PostMapping(value = "/posts", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @Operation(summary = "포스트 생성")
     public ResponseEntity<PostResponse> createPost(@RequestPart(required = false) List<MultipartFile> images, @RequestPart PostCreateRequest data, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
@@ -39,6 +41,7 @@ public class PostController {
      * url : /posts
      * */
     @GetMapping("/posts")
+    @Operation(summary = "포스트 조회 (전체)")
     public ResponseEntity<List<StorePostResponse>> getAllPostsByUser(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
@@ -51,6 +54,7 @@ public class PostController {
      * url : /posts/{postId}
      * */
     @GetMapping("/posts/{postId}")
+    @Operation(summary = "포스트 조회 (상세)")
     public ResponseEntity<PostResponse> getPostById(@PathVariable Long postId, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
@@ -63,6 +67,7 @@ public class PostController {
      * url : /posts/{postId}
      * */
     @PatchMapping(value = "/posts/{postId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @Operation(summary = "포스트 수정")
     public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestPart(required = false) List<MultipartFile> files, @RequestPart PostUpdateRequest data, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
@@ -75,6 +80,7 @@ public class PostController {
      * url : /posts/{postId}
      * */
     @DeleteMapping("/posts/{postId}")
+    @Operation(summary = "포스트 삭제")
     public ResponseEntity<String> deletePost(@PathVariable Long postId, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);

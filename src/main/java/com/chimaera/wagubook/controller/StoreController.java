@@ -5,6 +5,7 @@ import com.chimaera.wagubook.dto.StoreResponse;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.service.StoreService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class StoreController {
      * ex : map?left=1&right=20&up=1&down=20
      * */
     @GetMapping("/map")
+    @Operation(summary = "좌표에 맞는 식당 좌표 조회")
     public ResponseEntity<List<StoreResponse>> findStores(
             @RequestParam(value = "left") String left,
             @RequestParam(value = "right") String right,
@@ -49,6 +51,7 @@ public class StoreController {
      * url : /map/posts?storeId={storeId}
      * */
     @GetMapping("/map/posts")
+    @Operation(summary = "식당 이름, 주소로 포스트 조회")
     public ResponseEntity<List<StorePostResponse>> getPostsByStore(
             @RequestParam(value = "storeId") Long storeId,
             HttpSession session){
