@@ -10,8 +10,6 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 public enum ErrorCode {
     // 400 BAD_REQUEST: 잘못된 요청
-    UNABLE_TO_UPDATE_POST(BAD_REQUEST, "포스트를 수정할 수 없습니다."),
-    UNABLE_TO_DELETE_POST(BAD_REQUEST, "포스트를 삭제할 수 없습니다."),
     NOT_ALLOW_FOLLOW(BAD_REQUEST, "허용되지 않는 팔로우입니다."),
     WRONG_PASSWORD_CONFIRM(BAD_REQUEST, "비밀번호를 다시 확인해주세요."),
 
@@ -28,6 +26,7 @@ public enum ErrorCode {
     LOGIN_FAIL(UNAUTHORIZED, "로그인이 실패했습니다."),
 
     // 403 FORBIDDEN: 허용되지 않은 접근
+    FORBIDDEN_MEMBER(FORBIDDEN, "허용되지 않은 사용자입니다."),
 
 
     // 404 NOT_FOUND: 잘못된 리소스 접근
@@ -39,6 +38,8 @@ public enum ErrorCode {
     // 409 CONFLICT: 중복된 리소스 (요청이 현재 서버 상태와 충돌될 때)
     DUPLICATE_USERNAME(CONFLICT, "중복된 아이디입니다."),
     ALREADY_FOLLOW(CONFLICT, "해당 사용자가 이미 팔로우한 회원입니다."),
+    DUPLICATE_POST_MENU(CONFLICT, "중복된 메뉴 이름입니다."),
+    DUPLICATE_POST_STORE(CONFLICT, "이미 포스트가 작성된 식당입니다."),
 
     // 500 INTERNAL SERVER ERROR
     ;

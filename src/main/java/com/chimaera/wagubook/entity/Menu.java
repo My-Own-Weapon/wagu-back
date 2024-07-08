@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Builder(builderMethodName = "newBuilder")
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class Menu {
     @Id
@@ -19,16 +19,24 @@ public class Menu {
 
     private String menuName; // 메뉴 이름
     private int menuPrice; // 메뉴 가격
+    private String menuImage; // 이미지
+    private String menuContent; // 메뉴 리뷰
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store; // 가게
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category; // 메뉴 카테고리
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post; // 게시글
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    public void updateMenu(String menuName, int menuPrice, String menuContent) {
+        this.menuName = menuName;
+        this.menuPrice = menuPrice;
+        this.menuContent = menuContent;
+    }
 }
