@@ -10,6 +10,8 @@ import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.member.MemberImageRepository;
 import com.chimaera.wagubook.repository.member.MemberRepository;
 import com.chimaera.wagubook.repository.post.PostRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,26 +55,32 @@ public class MemberService {
     }
 
     // 로그인
-    public Member login(LoginRequest request) {
-        String username = request.getUsername();
+    public MemberResponse login(HttpServletRequest httpServletRequest, LoginRequest loginRequest) {
+        String username = loginRequest.getUsername();
         Optional<Member> getUser = memberRepository.findByUsername(username);
 
         if (getUser.isPresent()) {
             Member member = getUser.get();
-            if (bCryptPasswordEncoder.matches(request.getPassword(), member.getPassword())) {
-                return member;
+            if (bCryptPasswordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
+                HttpSession session = httpServletRequest.getSession();
+
+                session.setAttribute("memberId", member.getId());
+                session.setMaxInactiveInterval(3000); // 세션 유효 시간 50분
+
+                return new MemberResponse(member);
             }
         }
+
         return null;
     }
 
     // 아이디 중복 확인
     public Member findByUsername(String username) {
-        return memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.DUPLICATE_USERNAME));
+        return memberRepository.findByUsername(username).orElseThrow(() -> null);
     }
 
     // 프로필 사진 변경
-    public void updateProfileImage(Long memberId, MultipartFile image) {
+    public MemberResponse updateMemberImage(Long memberId, MultipartFile image) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Optional<MemberImage> findMemberImage = memberImageRepository.findByMemberId(memberId);
 
@@ -92,6 +100,8 @@ public class MemberService {
         }
 
         memberRepository.save(member);
+
+        return new MemberResponse(member);
     }
 
     // 비밀번호 변경

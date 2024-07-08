@@ -25,21 +25,18 @@ public class MemberController {
     @PostMapping("/join")
     public ResponseEntity<String> join(@RequestBody MemberRequest request) {
         memberService.join(request);
-        return new ResponseEntity<>("회원가입 성공", HttpStatus.CREATED);
+        return new ResponseEntity<>("회원가입을 성공하였습니다.", HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(HttpServletRequest request, @RequestBody LoginRequest loginRequest) {
-        Member member = memberService.login(loginRequest);
-        if (member == null) {
+    public ResponseEntity<MemberResponse> login(HttpServletRequest httpServletRequest, @RequestBody LoginRequest loginRequest) {
+        MemberResponse memberResponse = memberService.login(httpServletRequest, loginRequest);
+
+        if (memberResponse == null) {
             throw new CustomException(ErrorCode.LOGIN_FAIL);
         }
-        HttpSession session = request.getSession();
 
-        session.setAttribute("memberId", member.getId());
-        session.setMaxInactiveInterval(3000); // 세션 유효 시간 50분
-
-        return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
+        return new ResponseEntity<>(memberResponse, HttpStatus.OK);
     }
 
     @GetMapping("/join/username")
@@ -54,15 +51,14 @@ public class MemberController {
         if (session != null) {
             session.invalidate();
         }
-        return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
+        return new ResponseEntity<>("로그아웃을 성공하였습니다.", HttpStatus.OK);
     }
 
     @PatchMapping(value = "/members/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> updateProfileImage(@RequestPart MultipartFile image, HttpSession session) {
+    public ResponseEntity<MemberResponse> updateMemberImage(@RequestPart MultipartFile image, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
-        memberService.updateProfileImage(memberId, image);
-        return new ResponseEntity<>("프로필 사진이 변경되었습니다.", HttpStatus.OK);
+        return new ResponseEntity<>(memberService.updateMemberImage(memberId, image), HttpStatus.OK);
     }
 
     @PatchMapping("/members/password")

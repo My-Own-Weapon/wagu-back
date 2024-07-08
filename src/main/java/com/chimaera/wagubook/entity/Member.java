@@ -24,7 +24,7 @@ public class Member {
     private String phoneNumber; // 사용자 전화번호
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private MemberImage profileImage; // 프로필 이미지
+    private MemberImage memberImage; // 프로필 이미지
 
     @OneToMany(mappedBy = "toMember", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers = new ArrayList<>();

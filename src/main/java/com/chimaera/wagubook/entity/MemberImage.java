@@ -20,6 +20,7 @@ public class MemberImage {
     private String url;
 
     @OneToOne
+    @JoinColumn(name = "member_id")
     private Member member;
 
     public void updateProfileImage(String url) {

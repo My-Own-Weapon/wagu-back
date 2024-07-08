@@ -19,7 +19,10 @@ public class Menu {
 
     private String menuName; // 메뉴 이름
     private int menuPrice; // 메뉴 가격
-    private String menuImage; // 이미지
+
+    @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
+    private MenuImage menuImage; // 이미지
+
     private String menuContent; // 메뉴 리뷰
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,6 +35,10 @@ public class Menu {
 
     public void setPost(Post post) {
         this.post = post;
+    }
+
+    public void setMenuImage(MenuImage menuImage) {
+        this.menuImage = menuImage;
     }
 
     public void updateMenu(String menuName, int menuPrice, String menuContent) {

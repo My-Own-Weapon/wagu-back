@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,13 +31,18 @@ public class StoreService {
         return postRepository.findAllByStoreId(storeId).stream()
                 .filter(Post::isFinished)
                 .filter(post -> post.getPostMainMenu() != null)
+                .filter(post -> post.getMenus() != null)
                 .map(post -> {
                     // 보내지는 정보는 사용자가 작성한 Main Menu 기준으로
-                    //todo: mainMenu와 menu 객체의 menuName이 일치하지 않은 경우 고려하기
+                    // 일치하는 것이 없을 경우, 첫번째 menu를 보내주기
                     String mainMenu = post.getPostMainMenu();
-                    Menu menu = menuRepository.findByMenuName(mainMenu);
+                    Optional<Menu> menu = menuRepository.findByMenuName(mainMenu);
 
-                    return new StorePostResponse(post.getId(), mainMenu, menu.getMenuImage(), menu.getMenuContent());
+                    if (menu.isPresent()) {
+                        return new StorePostResponse(post, menu.get());
+                    } else {
+                        return new StorePostResponse(post, post.getMenus().get(0));
+                    }
                 })
                 .collect(Collectors.toList());
     }
