@@ -9,8 +9,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -46,7 +48,7 @@ public class MemberController {
         return new ResponseEntity<>(exists, HttpStatus.OK);
     }
 
-    @GetMapping("/logout") //@PostMapping("/logout") 이 왜 안되는지 차후 논의 필요
+    @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -55,8 +57,8 @@ public class MemberController {
         return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
     }
 
-    @PatchMapping("/members/image")
-    public ResponseEntity<String> updateProfileImage(@RequestBody String image, HttpSession session) {
+    @PatchMapping(value = "/members/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> updateProfileImage(@RequestPart MultipartFile image, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         memberService.updateProfileImage(memberId, image);
@@ -84,8 +86,7 @@ public class MemberController {
      * 회원 팔로우 추가
      * Method : POST
      * url : members/{fromMemberId}/follow
-     * ex : members/5/follow
-     **/
+     * */
     @PostMapping("/members/{fromMemberId}/follow")
     public ResponseEntity<String> createFollow(@PathVariable Long fromMemberId, HttpSession session) {
         Long toMemberId = (Long) session.getAttribute("memberId");
@@ -99,8 +100,7 @@ public class MemberController {
      * 회원 팔로우 삭제
      * Method : DELETE
      * url : members/{fromMemberId}/follow
-     * ex : members/5/follow
-     **/
+     * */
     @DeleteMapping("/members/{fromMemberId}/follow")
     public ResponseEntity<String> deleteFollow(@PathVariable Long fromMemberId, HttpSession session) {
         Long toMemberId = (Long) session.getAttribute("memberId");
@@ -114,8 +114,7 @@ public class MemberController {
      * 팔로워 목록 조회
      * Method : GET
      * url : /followers
-     * ex : /followers
-     **/
+     * */
     @GetMapping("/followers")
     public ResponseEntity<List<FollowerResponse>> getFollowers(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
@@ -128,8 +127,7 @@ public class MemberController {
      * 팔로워 목록 조회
      * Method : GET
      * url : /followings
-     * ex : /followings
-     **/
+     * */
     @GetMapping("/followings")
     public ResponseEntity<List<FollowingResponse>> getFollowings(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
@@ -141,8 +139,7 @@ public class MemberController {
      * 프로필 조회
      * Method : GET
      * url : /members/{memberId}
-     * ex : /members/5
-     **/
+     * */
     @GetMapping("/members/{memberId}")
     public ResponseEntity<MemberInfoResponse> getMemberInfo(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");

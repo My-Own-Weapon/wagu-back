@@ -22,7 +22,9 @@ public class Member {
     private boolean onLive; // 생방송 중인지 여부
     private String name; // 사용자 이름
     private String phoneNumber; // 사용자 전화번호
-    private String profileImage; // 프로필 이미지
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private MemberImage profileImage; // 프로필 이미지
 
     @OneToMany(mappedBy = "toMember", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers = new ArrayList<>();
@@ -32,10 +34,6 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
-
-    public void updateProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
 
     public void updatePassword(String password) {
         this.password = password;
