@@ -82,21 +82,32 @@ public class PostService {
                 .build();
         postRepository.save(post);
 
+        // 이미지 개수는 순서대로 Menu와 1:1 대응시켜 저장해준다.
+        // 이미지 개수가 초과할 경우, 예외를 발생시키고, 메뉴 개수보다 작을 경우, Menu Image를 null로 저장한다.
+        if (images != null && images.size() > menus.size()) {
+            throw new CustomException(ErrorCode.IMAGE_SIZE_IS_FULL);
+        }
+
         for (int i = 0; i < menus.size(); i++) {
             Menu menu = menus.get(i);
             menu.setPost(post);
             menuRepository.save(menu);
 
-            if (images != null) {
-                if (menus.size() < images.size()) {
-                    throw new CustomException(ErrorCode.IMAGE_SIZE_IS_FULL);
-                }
-
+            if (images != null && i < images.size()) {
                 MultipartFile image = images.get(i);
                 String url = s3ImageService.upload(image);
 
                 MenuImage menuImage = MenuImage.newBuilder()
                         .url(url)
+                        .menu(menu)
+                        .build();
+                menuImageRepository.save(menuImage);
+
+                menu.setMenuImage(menuImage);
+                menuRepository.save(menu);
+            } else {
+                MenuImage menuImage = MenuImage.newBuilder()
+                        .url(null)
                         .menu(menu)
                         .build();
                 menuImageRepository.save(menuImage);
@@ -221,30 +232,42 @@ public class PostService {
         post.updatePost(store, menus, postUpdateRequest.getPostMainMenu(), postUpdateRequest.getPostCategory(), postUpdateRequest.getPermission(), postUpdateRequest.isAuto());
         postRepository.save(post);
 
+        // 이미지 개수는 순서대로 Menu와 1:1 대응시켜 저장해준다.
+        // 이미지 개수가 초과할 경우, 예외를 발생시키고, 메뉴 개수보다 작을 경우, Menu Image를 null로 저장한다.
+        if (images != null && images.size() > menus.size()) {
+            throw new CustomException(ErrorCode.IMAGE_SIZE_IS_FULL);
+        }
+
         for (int i = 0; i < menus.size(); i++) {
             Menu menu = menus.get(i);
             menu.setPost(post);
             menuRepository.save(menu);
 
-            if (images != null) {
-                if (menus.size() < images.size()) {
-                    throw new CustomException(ErrorCode.IMAGE_SIZE_IS_FULL);
-                }
+            // 새로운 이미지 업로드를 위해 기존 이미지 삭제
+            //todo: 사용자가 어떤 사진을 수정하고 싶은지 식별할 수 있는 방법이 있을지 고민해보기
+            MenuImage oldMenuImage = menu.getMenuImage();
 
-                // 새로운 이미지 업로드를 위해 기존 이미지 삭제
-                //todo: 사용자가 어떤 사진을 수정하고 싶은지 식별할 수 있는 방법이 있을지 고민해보기
-                MenuImage oldMenuImage = menu.getMenuImage();
+            if (oldMenuImage != null) {
+                s3ImageService.deleteImageFromS3(oldMenuImage.getUrl());
+                menuImageRepository.delete(oldMenuImage);
+            }
 
-                if (oldMenuImage != null) {
-                    s3ImageService.deleteImageFromS3(oldMenuImage.getUrl());
-                    menuImageRepository.delete(oldMenuImage);
-                }
-
-                MultipartFile image = images.get(i);
-                String url = s3ImageService.upload(image);
+            // 수정 이미지로 재업로드
+            if (images != null && i < images.size()) {
+                MultipartFile newMenuImage = images.get(i);
+                String url = s3ImageService.upload(newMenuImage);
 
                 MenuImage menuImage = MenuImage.newBuilder()
                         .url(url)
+                        .menu(menu)
+                        .build();
+                menuImageRepository.save(menuImage);
+
+                menu.setMenuImage(menuImage);
+                menuRepository.save(menu);
+            } else {
+                MenuImage menuImage = MenuImage.newBuilder()
+                        .url(null)
                         .menu(menu)
                         .build();
                 menuImageRepository.save(menuImage);
