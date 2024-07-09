@@ -2,13 +2,11 @@ package com.chimaera.wagubook.dto;
 
 import com.chimaera.wagubook.entity.Store;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
 public class StoreResponse {
-    private String name;
-    private String address;
+    private String storeName;
+    private String storeAddress;
     private Long storeId;
     private double posx;
     private double posy;
@@ -16,8 +14,8 @@ public class StoreResponse {
     public StoreResponse(Store store){
         this.posx = store.getStoreLocation().getPosx();
         this.posy = store.getStoreLocation().getPosy();
-        this.address = store.getStoreLocation().getAddress();
-        this.name = store.getStoreName();
+        this.storeAddress = store.getStoreLocation().getAddress();
+        this.storeName = store.getStoreName();
         this.storeId = store.getId();
     }
 }

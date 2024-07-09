@@ -1,6 +1,5 @@
 package com.chimaera.wagubook.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,13 +22,9 @@ public class Store {
     private Location storeLocation; // 가게 위치
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    @JsonIgnore
     private List<Post> posts = new ArrayList<>();// 가게 게시글
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    @JsonIgnore
     private List<Menu> menus = new ArrayList<>(); // 가게 메뉴
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
