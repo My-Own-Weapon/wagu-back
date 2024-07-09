@@ -14,10 +14,11 @@ import java.util.List;
 public class Share {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "share_id")
     private Long id;
     private String url; // 공유 url
     private LocalDateTime localDateTime; // 공유 시간
 
-    @OneToMany
+    @OneToMany(mappedBy = "share", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Member> memberList;
 }

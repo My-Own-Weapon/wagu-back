@@ -23,7 +23,7 @@ public class SwaggerConfig {
                 .type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.COOKIE).name("JSESSIONID");
         SecurityRequirement securityRequirement = new SecurityRequirement().addList("basicAuth");
 
-        return new OpenAPI().addServersItem(new Server().url("/"))
+        return new OpenAPI()
                 .components(new Components().addSecuritySchemes("basicAuth", auth))
                 .addSecurityItem(securityRequirement)
                 .info(info);
