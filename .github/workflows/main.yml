@@ -55,7 +55,7 @@ jobs:
   run-docker-image-on-ec2:
     # deploy (위)과정이 완료되어야 실행됩니다.
     needs: deploy
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
   
     steps:
       # 1. 최신 이미지를 풀받습니다
