@@ -53,7 +53,7 @@ server:
   servlet:
     session:
       cookie:
-        domain: api.wagubook.shop
+        domain: wagubook.shop
         same-site: none
         secure: true
 
