@@ -48,12 +48,6 @@ public class MemberController {
             throw new CustomException(ErrorCode.LOGIN_FAIL);
         }
 
-        HttpSession session = request.getSession();
-
-        session.setAttribute("memberId", member.getId());
-        session.setMaxInactiveInterval(30000); // 세션 유효 시간 500분
-
-
         return new ResponseEntity<>(memberResponse, HttpStatus.OK);
     }
 

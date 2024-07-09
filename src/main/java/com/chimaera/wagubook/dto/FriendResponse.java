@@ -1,7 +1,7 @@
 package com.chimaera.wagubook.dto;
 
 import com.chimaera.wagubook.entity.Member;
-import com.chimaera.wagubook.entity.Store;
+import com.chimaera.wagubook.entity.MemberImage;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FriendResponse {
     private String name;
-    private String profileImage;
+    private MemberImage memberImage;
     private String posx;
     private String posy;
 
@@ -17,7 +17,7 @@ public class FriendResponse {
         this.posx = ""+x;
         this.posy = ""+y;
         this.name = member.getName();
-        this.profileImage = member.getProfileImage();
+        this.memberImage = member.getMemberImage();
     }
 }
 
