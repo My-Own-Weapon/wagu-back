@@ -1,6 +1,5 @@
 package com.chimaera.wagubook.service;
 
-import com.chimaera.wagubook.dto.FriendResponse;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.Share;
 import com.chimaera.wagubook.repository.ShareRepository;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -62,7 +60,7 @@ public class ShareService {
                 .toString();
     }
 
-    public String findShareId(String url) {
+    public String findShareId(String url, Long memberId) {
         Optional<Share> os = shareRepository.findByUrl(url);
         if(os.isPresent()){
             Share findShare = os.get();
@@ -72,16 +70,22 @@ public class ShareService {
             System.out.println("ShareDAteTime : " + findShare.getLocalDateTime());
             System.out.println("duration : "+duration.getSeconds());
             if(duration.getSeconds() < 1800){
-                return "" + os.get().getId();
+
+                // share 에 member 등록
+                addMember(findShare, memberId);
+
+                return "" + findShare.getId();
             }
         }
         return "해당 url이 존재하지 않습니다.";
     }
 
-    public void addMember(String shareId, Long memberId) {
+    private void addMember(Share share, Long memberId) {
         Member findMember = memberRepository.findById(memberId).get();
-        Share findShare = shareRepository.findById(Long.parseLong(shareId)).get();
-        findShare.getMemberList().add(findMember);
+        //이미 포함된 사람인지 확인
+        if(share.getMemberList().contains(findMember))
+            return;
+        share.getMemberList().add(findMember);
     }
 
 }

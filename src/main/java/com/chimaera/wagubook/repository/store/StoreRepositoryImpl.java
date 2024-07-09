@@ -29,7 +29,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom{
         return queryFactory
                 .selectFrom(store)
                 .where(store.storeLocation.posx.between(Double.parseDouble(left), Double.parseDouble(right))
-                        .and(store.storeLocation.posy.between(Double.parseDouble(up), Double.parseDouble(down))))
+                        .and(store.storeLocation.posy.between(Double.parseDouble(down), Double.parseDouble(up))))
                 .fetch();
     }
 }
