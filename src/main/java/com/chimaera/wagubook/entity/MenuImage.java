@@ -24,4 +24,8 @@ public class MenuImage {
     @JoinColumn(name = "menu_id")
     @JsonIgnore
     private Menu menu; // 메뉴
+
+    public void updateMenuImage(String url) {
+        this.url = url;
+    }
 }

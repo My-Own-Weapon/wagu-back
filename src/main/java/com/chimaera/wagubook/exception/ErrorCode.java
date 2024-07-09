@@ -18,7 +18,7 @@ public enum ErrorCode {
     FAIL_TO_UPLOAD_IMAGE(BAD_REQUEST, "이미지 업로드에 실패했습니다."),
     IO_EXCEPTION_ON_IMAGE_UPLOAD(BAD_REQUEST, "파일에 입출력 문제가 발생하였습니다."),
     IO_EXCEPTION_ON_IMAGE_DELETE(BAD_REQUEST, "파일에 입출력 문제가 발생하였습니다."),
-    IMAGE_SIZE_IS_FULL(BAD_REQUEST, "허용되는 이미지 업로드 개수가 초과했습니다."),
+    IMAGE_NOT_EQUAL_WITH_MENU(BAD_REQUEST, "허용되는 이미지 업로드 개수가 아닙니다."),
 
     
     // 401 UNAUTHORIZED: 인증되지 않은 사용자
