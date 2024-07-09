@@ -10,8 +10,6 @@ import lombok.*;
 @Builder(builderMethodName = "newBuilder")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder(builderMethodName = "newBuilder")
-
 public class Follow {
 
     @Id
