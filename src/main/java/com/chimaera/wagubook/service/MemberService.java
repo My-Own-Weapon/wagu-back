@@ -42,7 +42,7 @@ public class MemberService {
             throw new CustomException(ErrorCode.WRONG_PASSWORD_CONFIRM);
         }
 
-        Member user = Member.newBuilder()
+        Member member = Member.newBuilder()
                 .username(request.getUsername())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .name(request.getName())
@@ -50,12 +50,20 @@ public class MemberService {
                 .build();
 
         // 중복 회원 검증
-        Optional<Member> findUser = memberRepository.findByUsername(user.getUsername());
+        Optional<Member> findUser = memberRepository.findByUsername(member.getUsername());
         if (findUser.isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
         }
 
-        memberRepository.save(user);
+        memberRepository.save(member);
+
+        MemberImage memberImage = MemberImage.newBuilder()
+                .member(member)
+                .url(null)
+                .build();
+
+        member.updateMemberImage(memberImage);
+        memberImageRepository.save(memberImage);
     }
 
     // 로그인
@@ -69,7 +77,7 @@ public class MemberService {
                 HttpSession session = httpServletRequest.getSession();
 
                 session.setAttribute("memberId", member.getId());
-                session.setMaxInactiveInterval(3000); // 세션 유효 시간 50분
+                session.setMaxInactiveInterval(30000); // 세션 유효 시간 500분
 
                 return new MemberResponse(member);
             }
@@ -90,20 +98,18 @@ public class MemberService {
 
         if (findMemberImage.isPresent()) {
             MemberImage memberImage = findMemberImage.get();
-            s3ImageService.deleteImageFromS3(memberImage.getUrl());
-            String url = s3ImageService.upload(image);
-            memberImage.updateProfileImage(url);
-            memberImageRepository.save(memberImage);
-        } else {
-            String url = s3ImageService.upload(image);
-            MemberImage memberImage = MemberImage.newBuilder()
-                    .url(url)
-                    .member(member)
-                    .build();
-            memberImageRepository.save(memberImage);
-        }
 
-        memberRepository.save(member);
+            // 원래 이미지가 있을 경우, 삭제 후 재업로드 필요
+            if (memberImage.getUrl() !=  null) {
+                s3ImageService.deleteImageFromS3(memberImage.getUrl());
+            }
+
+            String url = s3ImageService.upload(image);
+            memberImage.updateMemberImage(url);
+            memberImageRepository.save(memberImage);
+            member.updateMemberImage(memberImage);
+            memberRepository.save(member);
+        }
 
         return new MemberResponse(member);
     }

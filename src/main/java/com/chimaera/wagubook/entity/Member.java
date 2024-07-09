@@ -42,6 +42,10 @@ public class Member {
         this.password = password;
     }
 
+    public void updateMemberImage(MemberImage memberImage) {
+        this.memberImage = memberImage;
+    }
+
     public void turnLive(boolean onLive) {
         this.onLive = onLive;
     }

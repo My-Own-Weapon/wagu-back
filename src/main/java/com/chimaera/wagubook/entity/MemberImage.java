@@ -25,7 +25,7 @@ public class MemberImage {
     @JsonIgnore
     private Member member;
 
-    public void updateProfileImage(String url) {
+    public void updateMemberImage(String url) {
         this.url = url;
     }
 }
