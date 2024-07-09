@@ -22,10 +22,16 @@ public class Store {
     private Location storeLocation; // 가게 위치
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Post> posts = new ArrayList<>();// 가게 게시글
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Menu> menus = new ArrayList<>(); // 가게 메뉴
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LiveRoom> liveRooms = new ArrayList<>(); // 라이브 스트리밍 방 목록
+
+    public Store(String storeName) {
+        this.storeName = storeName;
+    }
+
 }

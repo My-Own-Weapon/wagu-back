@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom{
-    Optional<Post> findByIdAndMemberId(Long id, Long memberId);
+    Optional<Post> findByIdAndMemberId(Long postId, Long memberId);
     List<Post> findAllByMemberId(Long memberId);
-    List<Post> findAllByStoreId(Long id);
+    List<Post> findAllByStoreId(Long storeId);
     int countByMemberId(Long memberId);
 }

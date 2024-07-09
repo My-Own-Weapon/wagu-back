@@ -1,5 +1,7 @@
 package com.chimaera.wagubook.config;
 
+import com.chimaera.wagubook.auth.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,7 +18,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomUserDetailsService customUserDetailsService;// DI
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 //        http.authorizeHttpRequests(auth -> {
@@ -43,7 +49,9 @@ public class SecurityConfig {
                 })
                 .sessionManagement(sessionManagement -> {
                     sessionManagement.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED); // 세션이 필요할 때 생성
-                });
+                })
+                .userDetailsService(customUserDetailsService); // 사용자 정의 UserDetailsService 설정
+
 
 
 

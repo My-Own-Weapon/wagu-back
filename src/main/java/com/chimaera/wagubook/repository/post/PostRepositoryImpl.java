@@ -1,5 +1,6 @@
 package com.chimaera.wagubook.repository.post;
 
+import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.Post;
 import com.chimaera.wagubook.entity.QPost;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,7 +15,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Post> searchPostsByMember(Long memberId, String keyword) {
+    public List<Post> searchPostsByMemberId(Long memberId, String keyword) {
         QPost post = QPost.post;
 
         return queryFactory
