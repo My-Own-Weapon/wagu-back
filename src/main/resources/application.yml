@@ -1,4 +1,8 @@
 spring:
+  #.env import
+  config:
+    import: optional:file:.env[.properties]
+
   application:
     name: Wagubook
 
@@ -11,23 +15,23 @@ spring:
       path : /h2-console
   datasource:
 
-#    url: jdbc:h2:tcp://localhost/~/test
+#    url: jdbc:h2:tcp://localhost/~/book
 #    username: sa
-#    password: 123
+#    password:
 #    driver-class-name: org.h2.Driver
     url: jdbc:mysql://3.38.77.231:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
-    username: testId1
-    password: testPw1
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 
   jpa:
     hibernate:
-      ddl-auto: create # application start
+      ddl-auto: update # application start
     properties:
       hibernate:
-        #        dialect: org.hibernate.dialect.MySQL8Dialect
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
+#        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         use_sql_comments: true
 
@@ -43,7 +47,7 @@ logging.level:
 
 
 OPENVIDU_URL: http://localhost:4443/
-OPENVIDU_SECRET: MY_SECRET
+OPENVIDU_SECRET: ${VIDU_SECRET}
 
 server:
   servlet:
@@ -53,3 +57,13 @@ server:
         same-site: none
         secure: true
 
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    s3:
+      bucketName: ${S3_BUCKET_NAME}
+    region:
+      static: ap-northeast-2
