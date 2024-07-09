@@ -26,4 +26,14 @@ public class Store {
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menus = new ArrayList<>(); // 가게 메뉴
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @JsonIgnore
+    private List<LiveRoom> liveRooms = new ArrayList<>(); // 라이브 스트리밍 방 목록
+
+    public Store(String storeName) {
+        this.storeName = storeName;
+    }
+
 }

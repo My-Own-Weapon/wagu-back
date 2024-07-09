@@ -41,7 +41,9 @@ public class StoreController {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
 
+
         return new ResponseEntity<>(storeService.getStoresByScreen(left,right,up,down), HttpStatus.OK);
+
     }
 
 

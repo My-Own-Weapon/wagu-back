@@ -1,8 +1,10 @@
 package com.chimaera.wagubook.service;
 
+
 import com.chimaera.wagubook.dto.StorePostResponse;
 import com.chimaera.wagubook.dto.StoreResponse;
 import com.chimaera.wagubook.entity.Menu;
+
 import com.chimaera.wagubook.entity.Post;
 import com.chimaera.wagubook.repository.menu.MenuRepository;
 import com.chimaera.wagubook.repository.post.PostRepository;
@@ -11,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 import java.util.Optional;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +24,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final PostRepository postRepository;
     private final MenuRepository menuRepository;
+
 
     public List<StoreResponse> getStoresByScreen(String left, String right, String up, String down) {
         return storeRepository.findAllByScreen(left,right,up,down).stream()
