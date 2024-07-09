@@ -1,6 +1,7 @@
 package com.chimaera.wagubook.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class Menu {
     private int menuPrice; // 메뉴 가격
 
     @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
+    @NotNull
     private MenuImage menuImage; // 이미지
 
     private String menuContent; // 메뉴 리뷰

@@ -1,5 +1,6 @@
 package com.chimaera.wagubook.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,9 +22,10 @@ public class MemberImage {
 
     @OneToOne
     @JoinColumn(name = "member_id")
+    @JsonIgnore
     private Member member;
 
-    public void updateProfileImage(String url) {
+    public void updateMemberImage(String url) {
         this.url = url;
     }
 }

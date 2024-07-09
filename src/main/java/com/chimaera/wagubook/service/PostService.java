@@ -79,8 +79,15 @@ public class PostService {
                 .permission(postCreateRequest.getPermission())
                 .isAuto(postCreateRequest.isAuto())
                 .createDate(LocalDateTime.now())
+                .isFinished(true)
                 .build();
         postRepository.save(post);
+
+        // 이미지 개수 = 메뉴 개수일 경우, 이미지 개수는 순서대로 Menu와 1:1 대응시켜 저장해준다.
+        // 이미지 개수 != 메뉴 개수일 경우, 예외 처리 해준다.
+        if (images == null || images.size() != menus.size()) {
+            throw new CustomException(ErrorCode.IMAGE_NOT_EQUAL_WITH_MENU);
+        }
 
         for (int i = 0; i < menus.size(); i++) {
             Menu menu = menus.get(i);
@@ -88,10 +95,6 @@ public class PostService {
             menuRepository.save(menu);
 
             if (images != null) {
-                if (menus.size() < images.size()) {
-                    throw new CustomException(ErrorCode.IMAGE_SIZE_IS_FULL);
-                }
-
                 MultipartFile image = images.get(i);
                 String url = s3ImageService.upload(image);
 
@@ -112,15 +115,11 @@ public class PostService {
                 postCreateRequest.getPermission() == null || postCreateRequest.getMenus() == null) {
 
             post.updateFinished(false);
-        } else {
-            post.updateFinished(true);
         }
 
         for (PostCreateRequest.MenuCreateRequest menuCreateRequest : postCreateRequest.getMenus()) {
             if (menuCreateRequest.getMenuContent() == null || menuCreateRequest.getMenuName() == null || menuCreateRequest.getMenuPrice() == 0) {
                 post.updateFinished(false);
-            } else {
-                post.updateFinished(true);
             }
         }
 
@@ -197,6 +196,7 @@ public class PostService {
         // 기존에 작성한 메뉴를 수정하거나, 새로운 메뉴를 추가할 수 있다. (menuId가 null이 아닌 경우, 기존에 작성한 메뉴를 수정한 것이고, 아닐 경우, 새로운 메뉴를 추가한다.)
         List<Menu> menus = new ArrayList<>();
         Set<String> menuNames = new HashSet<>();
+
         for (PostUpdateRequest.MenuUpdateRequest menuUpdateRequest : postUpdateRequest.getMenus()) {
             Optional<Menu> findMenu = menuRepository.findByIdAndPost(menuUpdateRequest.getMenuId(), post);
 
@@ -204,6 +204,7 @@ public class PostService {
                 Menu menu = findMenu.get();
                 menu.updateMenu(menuUpdateRequest.getMenuName(), menuUpdateRequest.getMenuPrice(), menuUpdateRequest.getMenuContent());
                 menus.add(menu);
+                menuRepository.save(menu);
             } else if (!menuNames.add(menuUpdateRequest.getMenuName())) {
                 throw new CustomException(ErrorCode.DUPLICATE_POST_MENU);
             } else {
@@ -221,36 +222,31 @@ public class PostService {
         post.updatePost(store, menus, postUpdateRequest.getPostMainMenu(), postUpdateRequest.getPostCategory(), postUpdateRequest.getPermission(), postUpdateRequest.isAuto());
         postRepository.save(post);
 
+        // 이미지 개수 = 메뉴 개수일 경우, 이미지 개수는 순서대로 Menu와 1:1 대응시켜 저장해준다.
+        // 이미지 개수 != 메뉴 개수일 경우, 예외 처리 해준다.
+        if (images == null || images.size() != menus.size()) {
+            throw new CustomException(ErrorCode.IMAGE_NOT_EQUAL_WITH_MENU);
+        }
+
         for (int i = 0; i < menus.size(); i++) {
             Menu menu = menus.get(i);
             menu.setPost(post);
             menuRepository.save(menu);
 
             if (images != null) {
-                if (menus.size() < images.size()) {
-                    throw new CustomException(ErrorCode.IMAGE_SIZE_IS_FULL);
-                }
-
                 // 새로운 이미지 업로드를 위해 기존 이미지 삭제
                 //todo: 사용자가 어떤 사진을 수정하고 싶은지 식별할 수 있는 방법이 있을지 고민해보기
-                MenuImage oldMenuImage = menu.getMenuImage();
+                MenuImage menuImage = menu.getMenuImage();
 
-                if (oldMenuImage != null) {
-                    s3ImageService.deleteImageFromS3(oldMenuImage.getUrl());
-                    menuImageRepository.delete(oldMenuImage);
+                if (menuImage != null) {
+                    s3ImageService.deleteImageFromS3(menuImage.getUrl());
                 }
 
-                MultipartFile image = images.get(i);
-                String url = s3ImageService.upload(image);
+                // 수정 이미지로 재업로드
+                String url = s3ImageService.upload(images.get(i));
 
-                MenuImage menuImage = MenuImage.newBuilder()
-                        .url(url)
-                        .menu(menu)
-                        .build();
+                menuImage.updateMenuImage(url);
                 menuImageRepository.save(menuImage);
-
-                menu.setMenuImage(menuImage);
-                menuRepository.save(menu);
             }
         }
 
@@ -279,6 +275,11 @@ public class PostService {
     public void deletePost(Long postId, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Post post = postRepository.findByIdAndMemberId(postId, member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
+        List<Menu> menus = post.getMenus();
+        for (Menu menu : menus) {
+            String url = menu.getMenuImage().getUrl();
+            s3ImageService.deleteImageFromS3(url);
+        }
         postRepository.delete(post);
     }
 }

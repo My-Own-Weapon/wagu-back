@@ -25,8 +25,8 @@ public class SearchService {
     private final PostRepository postRepository;
     private final StoreRepository storeRepository;
 
-    public List<PostResponse> searchPostsByMemberAndStore(Long memberId, String keyword) {
-        List<Post> posts = postRepository.searchPostsByMemberId(memberId, keyword);
+    public List<PostResponse> searchPostsByMemberIdAndStoreName(Long memberId, String keyword) {
+        List<Post> posts = postRepository.searchPostsByMemberIdAndStoreName(memberId, keyword);
         return posts.stream()
                 .map(post -> new PostResponse(post))
                 .collect(Collectors.toList());

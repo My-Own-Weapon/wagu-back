@@ -1,5 +1,6 @@
 package com.chimaera.wagubook.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,5 +22,10 @@ public class MenuImage {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
+    @JsonIgnore
     private Menu menu; // 메뉴
+
+    public void updateMenuImage(String url) {
+        this.url = url;
+    }
 }
