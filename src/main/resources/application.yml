@@ -45,7 +45,7 @@ spring:
 logging.level:
   org.hibernate.SQL: debug
 
-OPENVIDU_URL: https://wagubook.shop:4443/
+OPENVIDU_URL: http://localhost:4443/
 OPENVIDU_SECRET: ${VIDU_SECRET}
 
 server:
