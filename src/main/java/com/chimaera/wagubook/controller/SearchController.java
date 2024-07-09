@@ -26,13 +26,14 @@ public class SearchController {
      * 식당 검색 (사용자)
      * Method : GET
      * url : /stores/member?keyword={keyword}
+     * 사용자가 main page 에서 자신의 store 를 검색
      * */
     @GetMapping("/stores/member")
     @Operation(summary = "식당 검색 (사용자)")
-    public ResponseEntity<List<PostResponse>> searchPostsByMemberAndStore(@RequestParam String keyword, HttpSession session) {
+    public ResponseEntity<List<PostResponse>> searchPostsByMemberIdAndStore(@RequestParam String keyword, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
-        return new ResponseEntity<>(searchService.searchPostsByMemberAndStore(memberId, keyword), HttpStatus.OK);
+        return new ResponseEntity<>(searchService.searchPostsByMemberIdAndStoreName(memberId, keyword), HttpStatus.OK);
     }
 
     /**
