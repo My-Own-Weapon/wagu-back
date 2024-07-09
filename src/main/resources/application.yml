@@ -14,7 +14,7 @@ spring:
 #    username: sa
 #    password: 123
 #    driver-class-name: org.h2.Driver
-    url: jdbc:mysql://3.39.118.22:3306/gitget?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://3.38.77.231:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
     username: testId1
     password: testPw1
     driver-class-name: com.mysql.cj.jdbc.Driver
