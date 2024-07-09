@@ -11,16 +11,15 @@ spring:
       path : /h2-console
   datasource:
 
+#    url: jdbc:h2:tcp://localhost/~/test
+#    username: sa
+#    password: 123
+#    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://3.38.77.231:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    username: testId1
+    password: testPw1
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    #    url: jdbc:mysql://localhost:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
-    #    username: root
-    #    password:
-    #    driver-class-name: com.mysql.cj.jdbc.Driver
-
-    url: jdbc:h2:tcp://localhost/~/test
-    username: sa
-    password: 123
-    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
@@ -42,5 +41,15 @@ spring:
 logging.level:
   org.hibernate.SQL: debug
 
+
 OPENVIDU_URL: http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
+
+server:
+  servlet:
+    session:
+      cookie:
+        domain: api.wagubook.shop
+        same-site: none
+        secure: true
+
