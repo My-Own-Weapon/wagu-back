@@ -3,7 +3,10 @@ package com.chimaera.wagubook.controller;
 import java.util.Map;
 
 
+import com.chimaera.wagubook.service.MemberService;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +23,11 @@ import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.Session;
 import io.openvidu.java.client.SessionProperties;
 
-import java.util.Map;
-
 @RestController
+@RequiredArgsConstructor
 public class OpenviduController {
+
+    private final MemberService memberService;
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
 
@@ -42,8 +46,13 @@ public class OpenviduController {
      * @return The Session ID
      */
     @PostMapping("/api/sessions")
-    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
+    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
             throws OpenViduJavaClientException, OpenViduHttpException {
+
+        // 멤버 확인
+        Long memberId = (Long) httpSession.getAttribute("memberId");
+
+        // 세션 생성
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
         return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
@@ -56,8 +65,13 @@ public class OpenviduController {
      */
     @PostMapping("/api/sessions/{sessionId}/connections")
     public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
-                                                   @RequestBody(required = false) Map<String, Object> params)
+                                                   @RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
             throws OpenViduJavaClientException, OpenViduHttpException {
+
+        // 멤버 확인
+        Long memberId = (Long) httpSession.getAttribute("memberId");
+
+        //세션 연결
         Session session = openvidu.getActiveSession(sessionId);
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
