@@ -26,8 +26,8 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Set up application.properties
-      run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
+    - name: Set up application.yml
+      run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
 
     - name: Build with Gradle
       run: ./gradlew build
