@@ -19,6 +19,6 @@ public class Share {
     private String url; // 공유 url
     private LocalDateTime localDateTime; // 공유 시간
 
-    @OneToMany(mappedBy = "share")
+    @OneToMany
     private List<Member> memberList;
 }

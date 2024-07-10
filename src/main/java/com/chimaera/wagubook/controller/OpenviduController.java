@@ -49,12 +49,14 @@ public class OpenviduController {
     public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
             throws OpenViduJavaClientException, OpenViduHttpException {
 
+
         // 멤버 확인
         Long memberId = (Long) httpSession.getAttribute("memberId");
 
         // 세션 생성
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
+        System.out.println("=====================session 연결 : " + session.getSessionId());
         return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
     }
 
