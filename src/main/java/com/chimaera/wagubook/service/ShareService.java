@@ -46,7 +46,7 @@ public class ShareService {
                 .build();
 
         share.getMemberList().add(findMember);
-        shareRepository.save(share);
+//        shareRepository.save(share);
 
         return randomCode;
     }

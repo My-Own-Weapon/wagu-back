@@ -37,10 +37,6 @@ public class Member {
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private LiveRoom liveRoom; // 현재 생방송 중인 라이브 룸
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "share_id")
-    private Share share; // 현재 생방송 중인 라이브 룸
     
     public void updatePassword(String password) {
         this.password = password;
