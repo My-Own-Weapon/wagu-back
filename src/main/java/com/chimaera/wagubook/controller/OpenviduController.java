@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.openvidu.java.client.Connection;
 import io.openvidu.java.client.ConnectionProperties;
@@ -23,6 +20,7 @@ import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.Session;
 import io.openvidu.java.client.SessionProperties;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 public class OpenviduController {
@@ -49,12 +47,14 @@ public class OpenviduController {
     public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
             throws OpenViduJavaClientException, OpenViduHttpException {
 
+
         // 멤버 확인
         Long memberId = (Long) httpSession.getAttribute("memberId");
 
         // 세션 생성
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
+        System.out.println("=====================session 연결 : " + session.getSessionId());
         return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
     }
 
