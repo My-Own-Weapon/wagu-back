@@ -46,8 +46,8 @@ logging.level:
   org.hibernate.SQL: debug
 
 #OPENVIDU_URL: https://video.wagubook.shop:4443/
-OPENVIDU_URL: http://localhost:5443/
-#OPENVIDU_URL: http://3.38.77.231:4443/
+#OPENVIDU_URL: http://3.38.77.231:5443/
+OPENVIDU_URL: http://3.38.77.231:4443/
 OPENVIDU_SECRET: ${VIDU_SECRET}
 
 server:
