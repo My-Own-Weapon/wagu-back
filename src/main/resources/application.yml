@@ -24,7 +24,6 @@ spring:
      password: ${MYSQL_PASSWORD}
      driver-class-name: com.mysql.cj.jdbc.Driver
 
-
   jpa:
     hibernate:
       ddl-auto: update # application start
@@ -41,7 +40,6 @@ spring:
 #    host: localhost
 #    port: 6379
 
-
 logging.level:
   org.hibernate.SQL: debug
 
@@ -49,16 +47,14 @@ OPENVIDU_URL: https://video.wagubook.shop/
 #OPENVIDU_URL: http://3.38.77.231:5443/
 #OPENVIDU_URL: http://3.38.77.231:4443/
 OPENVIDU_SECRET: ${VIDU_SECRET}
-#
-#server:
-#  servlet:
-#    session:
-#      cookie:
-#        domain: wagubook.shop
-#        same-site: none
-#        secure: true
 
-
+server:
+  servlet:
+    session:
+      cookie:
+        domain: wagubook.shop
+        same-site: none
+        secure: true
 
 cloud:
   aws:
