@@ -38,8 +38,8 @@ public enum ErrorCode {
     // 409 CONFLICT: 중복된 리소스 (요청이 현재 서버 상태와 충돌될 때)
     DUPLICATE_USERNAME(CONFLICT, "중복된 아이디입니다."),
     ALREADY_FOLLOW(CONFLICT, "해당 사용자가 이미 팔로우한 회원입니다."),
-    DUPLICATE_POST_MENU(CONFLICT, "중복된 메뉴 이름입니다."),
-    DUPLICATE_POST_STORE(CONFLICT, "이미 포스트가 작성된 식당입니다."),
+    DUPLICATE_POST_MENU(CONFLICT, "이미 해당 포스트에 작성된 메뉴 이름입니다."),
+    DUPLICATE_POST_STORE(CONFLICT, "이미 해당 사용자가 포스트를 작성한 식당입니다."),
 
     // 500 INTERNAL SERVER ERROR
     ;

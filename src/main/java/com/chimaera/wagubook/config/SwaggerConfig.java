@@ -5,9 +5,12 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+
+import java.util.ArrayList;
 
 @Configuration
 public class SwaggerConfig {
@@ -20,8 +23,12 @@ public class SwaggerConfig {
                 .description("크래프톤 정글 5기 3조 키메라팀");
 
         SecurityScheme auth = new SecurityScheme()
-                .type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.COOKIE).name("JSESSIONID");
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList("basicAuth");
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.COOKIE)
+                .name("JSESSIONID");
+
+        SecurityRequirement securityRequirement = new SecurityRequirement()
+                .addList("basicAuth");
 
         return new OpenAPI()
                 .components(new Components().addSecuritySchemes("basicAuth", auth))
