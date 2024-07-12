@@ -32,13 +32,18 @@ public class PostService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         // 전체에 있어 식당은 하나만 저장한다.
-        //todo: 사용자가 이미 한번 생성한 식당은 포스트를 새로 생성할 수 없다.
+        // 사용자가 이미 한번 생성한 식당은 포스트를 새로 생성할 수 없다.
         Store store = null;
         if (postCreateRequest.getStoreLocation() != null) {
             Optional<Store> findStore = storeRepository.findByStoreLocation(postCreateRequest.getStoreLocation());
 
             if (findStore.isPresent()) {
                 store = findStore.get();
+
+                if (postRepository.findByStoreIdAndMemberId(store.getId(), memberId)) {
+                    throw new CustomException(ErrorCode.DUPLICATE_POST_STORE);
+                }
+
             } else {
                 store = Store.newBuilder()
                         .storeName(postCreateRequest.getStoreName())
@@ -175,13 +180,18 @@ public class PostService {
         Post post = postRepository.findByIdAndMemberId(postId, member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
 
         // 전체에 있어 식당은 하나만 저장한다.
-        //todo: 사용자가 이미 한번 생성한 식당은 포스트를 새로 생성할 수 없다.
+        //사용자가 이미 한번 생성한 식당은 포스트를 새로 생성할 수 없다.
         Store store = null;
         if (postUpdateRequest.getStoreLocation() != null) {
             Optional<Store> findStore = storeRepository.findByStoreLocation(postUpdateRequest.getStoreLocation());
 
             if (findStore.isPresent()) {
                 store = findStore.get();
+
+                if (postRepository.findByStoreIdAndMemberId(store.getId(), memberId)) {
+                    throw new CustomException(ErrorCode.DUPLICATE_POST_STORE);
+                }
+
             } else if (postUpdateRequest.getStoreName() != null) {
                 store = Store.newBuilder()
                         .storeName(postUpdateRequest.getStoreName())
