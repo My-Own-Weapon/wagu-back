@@ -15,6 +15,7 @@ public class StorePostResponse {
     private int menuPrice;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
+    private Category category;
 
     public StorePostResponse(Post post, Menu menu) {
         this.postId = post.getId();
@@ -25,5 +26,6 @@ public class StorePostResponse {
         this.menuPrice = menu.getMenuPrice();
         this.createdDate = post.getCreateDate();
         this.updatedDate = post.getUpdateDate();
+        this.category = post.getCategory();
     }
 }
