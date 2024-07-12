@@ -40,7 +40,7 @@ public class PostService {
             if (findStore.isPresent()) {
                 store = findStore.get();
 
-                if (postRepository.findByStoreIdAndMemberId(store.getId(), memberId)) {
+                if (postRepository.existsByStoreIdAndMemberId(store.getId(), memberId)) {
                     throw new CustomException(ErrorCode.DUPLICATE_POST_STORE);
                 }
 
@@ -142,16 +142,16 @@ public class PostService {
                     // 일치하는 것이 없을 경우, 첫번째 menu를 보내주기
                     // 사용자의 생성 포스트를 확인함으로 임시 포스트일 경우도 고려한다.
                     List<Menu> menus = post.getMenus();
-                    if (menus == null) {
+                    if (menus == null || menus.isEmpty()) {
                         return new StorePostResponse(post, null);
                     }
 
                     String mainMenu = post.getPostMainMenu();
-                    if (mainMenu == null) {
+                    if (mainMenu == null || menus.isEmpty()) {
                         return new StorePostResponse(post, menus.get(0));
                     }
 
-                    Optional<Menu> findMenu = menuRepository.findByMenuName(mainMenu);
+                    Optional<Menu> findMenu = menuRepository.findByMenuNameAndPostId(mainMenu, post.getId());
                     if (findMenu.isPresent()) {
                         Menu menu = findMenu.get();
                         return new StorePostResponse(post, menu);
@@ -180,7 +180,7 @@ public class PostService {
         Post post = postRepository.findByIdAndMemberId(postId, member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
 
         // 전체에 있어 식당은 하나만 저장한다.
-        //사용자가 이미 한번 생성한 식당은 포스트를 새로 생성할 수 없다.
+        // 사용자가 이미 한번 생성한 식당은 포스트를 새로 생성할 수 없다.
         Store store = null;
         if (postUpdateRequest.getStoreLocation() != null) {
             Optional<Store> findStore = storeRepository.findByStoreLocation(postUpdateRequest.getStoreLocation());
@@ -188,16 +188,19 @@ public class PostService {
             if (findStore.isPresent()) {
                 store = findStore.get();
 
-                if (postRepository.findByStoreIdAndMemberId(store.getId(), memberId)) {
-                    throw new CustomException(ErrorCode.DUPLICATE_POST_STORE);
-                }
-
             } else if (postUpdateRequest.getStoreName() != null) {
                 store = Store.newBuilder()
                         .storeName(postUpdateRequest.getStoreName())
                         .storeLocation(postUpdateRequest.getStoreLocation())
                         .build();
                 storeRepository.save(store);
+
+            }
+
+            if (!store.getId().equals(post.getStore().getId())) {
+                if (postRepository.existsByStoreIdAndMemberId(store.getId(), memberId)) {
+                    throw new CustomException(ErrorCode.DUPLICATE_POST_STORE);
+                }
             }
         }
 

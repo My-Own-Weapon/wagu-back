@@ -12,5 +12,5 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
     List<Post> findAllByStoreId(Long storeId);
     int countByMemberId(Long memberId);
     List<Post> searchPostsByMemberIdAndStoreName(Long memberId, String keyword);
-    boolean findByStoreIdAndMemberId(Long storeId, Long memberId);
+    boolean existsByStoreIdAndMemberId(Long storeId, Long memberId);
 }
