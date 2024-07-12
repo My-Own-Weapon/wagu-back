@@ -34,6 +34,16 @@ public class MemberController {
         return new ResponseEntity<>("회원가입을 성공하였습니다.", HttpStatus.CREATED);
     }
 
+    @GetMapping("/session")
+    @Operation(summary = "세션 만료 확인")
+    public ResponseEntity<String> session(HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+        return new ResponseEntity<>("세션 만료되지 않았습니다.", HttpStatus.OK);
+    }
+
     /**
      * 로그인
      * Method : POST
