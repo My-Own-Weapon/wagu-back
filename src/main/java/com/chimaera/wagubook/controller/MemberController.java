@@ -42,7 +42,7 @@ public class MemberController {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
         return new ResponseEntity<>("세션 만료되지 않았습니다.", HttpStatus.OK);
-    }
+    }a
 
     /**
      * 로그인
