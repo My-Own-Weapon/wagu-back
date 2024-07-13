@@ -79,14 +79,14 @@ jobs:
             # 블루-그린 배포를 위한 컨테이너 실행
             if [ $(docker ps -q -f name=github-actions-demo-green) ]; then
               # 그린 컨테이너가 실행 중인 경우, 블루 컨테이너로 새 버전 실행
-              docker run -d --name github-actions-demo-blue --env-file ./.env -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+              docker run -d --name github-actions-demo-blue --rm --env-file ./.env_blue -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
               NEW_CONTAINER=github-actions-demo-blue
               OLD_CONTAINER=github-actions-demo-green
               NEW_PORT=8080
               OLD_PORT=8081
             else
               # 블루 컨테이너가 실행 중인 경우, 그린 컨테이너로 새 버전 실행
-              docker run -d --name github-actions-demo-green --env-file ./.env -p 8081:8081 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+              docker run -d --name github-actions-demo-green --rm --env-file ./.env_green -p 8081:8081 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
               NEW_CONTAINER=github-actions-demo-green
               OLD_CONTAINER=github-actions-demo-blue
               NEW_PORT=8081
