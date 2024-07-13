@@ -55,25 +55,75 @@ jobs:
   run-docker-image-on-ec2:
     # deploy (위)과정이 완료되어야 실행됩니다.
     needs: deploy
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
   
     steps:
-      # 1. 최신 이미지를 풀받습니다
-      - name: docker pull
-        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-      
-      # 2. 기존의 컨테이너를 중지시킵니다
-      - name: docker stop container
-        run: sudo docker stop github-actions-demo
+      # 0. aws cli에 접근
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      # 3. MySQL 재실행
-      - name: docker run mysql
-        run: sudo docker start mysql-container
-  
-      # 4. 최신 이미지를 컨테이너화하여 실행시킵니다
-      - name: docker run new container
-        run: sudo docker run --name github-actions-demo --rm --env-file ./.env -p 8080:8080 -d ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-  
-      # 5. 미사용 이미지를 정리합니다
-      - name: delete old docker image
-        run: sudo docker system prune -f
+      - name: SSH to EC2 and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}     # 아이피
+          username: ${{ secrets.EC2_USER }} # 접속할 대상
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}   # private key
+          script: |
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+            
+            # 블루-그린 배포를 위한 컨테이너 실행
+            if [ $(docker ps -q -f name=github-actions-demo-green) ]; then
+              # 그린 컨테이너가 실행 중인 경우, 블루 컨테이너로 새 버전 실행
+              docker run -d --name github-actions-demo-blue --env-file ./.env -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+              NEW_CONTAINER=github-actions-demo-blue
+              OLD_CONTAINER=github-actions-demo-green
+              NEW_PORT=8080
+              OLD_PORT=8081
+            else
+              # 블루 컨테이너가 실행 중인 경우, 그린 컨테이너로 새 버전 실행
+              docker run -d --name github-actions-demo-green --env-file ./.env -p 8081:8081 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+              NEW_CONTAINER=github-actions-demo-green
+              OLD_CONTAINER=github-actions-demo-blue
+              NEW_PORT=8081
+              OLD_PORT=8080
+            fi
+            
+            # 잘 동작하면 로드밸런서 변경
+            if curl -s http://localhost:$PORT > /dev/null; then
+              aws elbv2 register-targets --target-group-arn arn:aws:elasticloadbalancing:ap-northeast-2:767398017748:targetgroup/wagu-book-lb-tg/cbd583c7310ea316 --targets Id=i-09037c296cda9b574,Port=$NEW_PORT
+              aws elbv2 deregister-targets --target-group-arn arn:aws:elasticloadbalancing:ap-northeast-2:767398017748:targetgroup/wagu-book-lb-tg/cbd583c7310ea316 --targets Id=i-09037c296cda9b574,Port=$OLD_PORT
+              docker stop $OLD_CONTAINER || true
+              exit 0
+            else
+              docker stop $NEW_CONTAINER || true
+              echo "새 애플리케이션이 실행되지 않음"
+              exit 1
+            fi
+
+
+
+#
+#      # 1. 최신 이미지를 풀받습니다
+#      - name: docker pull
+#        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+#
+#      # 2. 기존의 컨테이너를 중지시킵니다
+#      - name: docker stop container
+#        run: sudo docker stop github-actions-demo
+#
+#      # 3. MySQL 재실행
+#      - name: docker run mysql
+#        run: sudo docker start mysql-container
+#
+#      # 4. 최신 이미지를 컨테이너화하여 실행시킵니다
+#      - name: docker run new container
+#        run: sudo docker run --name github-actions-demo --rm --env-file ./.env -p 8080:8080 -d ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+#
+#      # 5. 미사용 이미지를 정리합니다
+#      - name: delete old docker image
+#        run: sudo docker system prune -f

@@ -41,7 +41,7 @@ public class StoreService {
                     // 보내지는 정보는 사용자가 작성한 Main Menu 기준으로
                     // 일치하는 것이 없을 경우, 첫번째 menu를 보내주기
                     String mainMenu = post.getPostMainMenu();
-                    Optional<Menu> menu = menuRepository.findByMenuName(mainMenu);
+                    Optional<Menu> menu = menuRepository.findByMenuNameAndPostId(mainMenu, post.getId());
 
                     if (menu.isPresent()) {
                         return new StorePostResponse(post, menu.get());
