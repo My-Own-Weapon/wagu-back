@@ -49,13 +49,6 @@ public class Post {
     @NotNull
     private Permission permission; // post 공개 범위 설정
 
-    @NotNull
-    private boolean isFinished; // 포스트 완성 여부
-
-    public void updateFinished(boolean isFinished) {
-        this.isFinished = isFinished;
-    }
-
     public void updatePost(Store store, List<Menu> menus, String postMainMenu, Category category, Permission permission, boolean isAuto) {
         this.postMainMenu = postMainMenu;
         this.store = store;

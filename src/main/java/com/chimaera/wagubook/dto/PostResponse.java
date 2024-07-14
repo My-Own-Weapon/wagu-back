@@ -16,7 +16,6 @@ public class PostResponse {
     private Category postCategory;
     private Permission permission;
     private boolean isAuto;
-    private boolean isFinished;
     private List<MenuResponse> menus;
 
     public PostResponse (Post post) {
@@ -28,7 +27,6 @@ public class PostResponse {
         this.postMainMenu = post.getPostMainMenu();
         this.permission = post.getPermission();
         this.isAuto = post.isAuto();
-        this.isFinished = post.isFinished();
         this.menus = post.getMenus().stream()
                 .map(menu -> new MenuResponse(menu))
                 .collect(Collectors.toList());

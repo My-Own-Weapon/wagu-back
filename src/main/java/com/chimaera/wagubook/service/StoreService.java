@@ -34,7 +34,6 @@ public class StoreService {
     
     public List<StorePostResponse> getAllPostsByStore(Long storeId) {
         return postRepository.findAllByStoreId(storeId).stream()
-                .filter(Post::isFinished)
                 .filter(post -> post.getPostMainMenu() != null)
                 .filter(post -> post.getMenus() != null)
                 .map(post -> {
