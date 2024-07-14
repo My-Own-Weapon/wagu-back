@@ -11,6 +11,7 @@ import com.chimaera.wagubook.repository.post.PostRepository;
 import com.chimaera.wagubook.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class PostService {
     private final S3ImageService s3ImageService;
 
     // 포스트 생성
+    @Transactional
     public PostResponse createPost(List<MultipartFile> images, PostCreateRequest postCreateRequest, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
@@ -49,7 +51,6 @@ public class PostService {
                         .storeName(postCreateRequest.getStoreName())
                         .storeLocation(postCreateRequest.getStoreLocation())
                         .build();
-                storeRepository.save(store);
             }
         }
 
@@ -158,6 +159,7 @@ public class PostService {
     }
 
     // 포스트 수정
+    @Transactional
     public PostResponse updatePost(Long postId, List<MultipartFile> images, PostUpdateRequest postUpdateRequest, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Post post = postRepository.findByIdAndMemberId(postId, member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
@@ -177,7 +179,6 @@ public class PostService {
                         .storeLocation(postUpdateRequest.getStoreLocation())
                         .build();
                 storeRepository.save(store);
-
             }
 
             if (!store.getId().equals(post.getStore().getId())) {
@@ -201,8 +202,10 @@ public class PostService {
                 menu.updateMenu(menuUpdateRequest.getMenuName(), menuUpdateRequest.getMenuPrice(), menuUpdateRequest.getMenuContent());
                 menus.add(menu);
                 menuRepository.save(menu);
+
             } else if (!menuNames.add(menuUpdateRequest.getMenuName())) {
                 throw new CustomException(ErrorCode.DUPLICATE_POST_MENU);
+
             } else {
                 Menu menu = Menu.newBuilder()
                         .menuName(menuUpdateRequest.getMenuName())
