@@ -15,9 +15,9 @@ spring:
       path : /h2-console
   datasource:
 
-     url: jdbc:h2:tcp://localhost/~/book
+     url: jdbc:h2:tcp://localhost/~/test
      username: sa
-     password:
+     password: 123
      driver-class-name: org.h2.Driver
 #     url: jdbc:mysql://3.38.77.231:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
 #     username: ${MYSQL_USERNAME}
@@ -27,7 +27,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create # application start
+      ddl-auto: update # application start
     properties:
       hibernate:
 #        dialect: org.hibernate.dialect.MySQL8Dialect
