@@ -8,6 +8,7 @@ import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.service.ShareService;
 import com.chimaera.wagubook.service.StoreService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ public class ShareController {
      * url : members/share
      * */
     @PostMapping("/share")
+    @Operation(summary = "랜덤 url 생성")
     public ResponseEntity<String> createUrl(HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");
@@ -46,6 +48,7 @@ public class ShareController {
      * ex : /share/wv1Vpc4Eqt
      */
     @GetMapping("/share/{url}")
+    @Operation(summary = "랜덤 url로 접근 했을 때 share_id를 반환/ 사용할 수 없으면 null 반환")
     public ResponseEntity<String> findShareId(@PathVariable String url, HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");
@@ -64,6 +67,7 @@ public class ShareController {
      * ex : /share/2/map?left=1&right=20&up=1&down=20
      */
     @GetMapping("/share/{share_id}/map")
+    @Operation(summary = "share_id를 통해 들어왔을 때 표시되는 지도")
     public ResponseEntity<List<StoreResponse>> findStores(
             @PathVariable String share_id,
             @RequestParam(value = "left") String left,
@@ -88,6 +92,7 @@ public class ShareController {
      * url : /share/{share_id}?store_id={store_id}
      * */
     @PostMapping("/share/{share_id}")
+    @Operation(summary = "투표에 추가 기능")
     public ResponseEntity<String> addVoteStore(
             @PathVariable String share_id,
             @RequestParam String store_id,
@@ -106,6 +111,7 @@ public class ShareController {
      * url : /share/{share_id}?store={store_id}
      * */
     @DeleteMapping("/share/{share_id}")
+    @Operation(summary = "투표에서 삭제 기능")
     public ResponseEntity<String> deleteVoteStore(
             @PathVariable String share_id,
             @RequestParam String store_id,
@@ -124,6 +130,7 @@ public class ShareController {
      * url : /share/{share_id}/vote?store={store_id}
      * */
     @PostMapping("/share/{share_id}/vote")
+    @Operation(summary = "투표 좋아요")
     public ResponseEntity<String> like(@PathVariable String share_id, @RequestParam String store_id,HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");
@@ -140,6 +147,7 @@ public class ShareController {
      * url : /share/{share_id}/vote?store={store_id}
      * */
     @PatchMapping("/share/{share_id}/vote")
+    @Operation(summary = "투표 좋아요 취소")
     public ResponseEntity<String> likeCancel(@PathVariable String share_id, @RequestParam String store_id,HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");
@@ -155,6 +163,7 @@ public class ShareController {
      * url : /share/{share_id}/result
      * */
     @GetMapping("/share/{share_id}/result")
+    @Operation(summary = "투표 결과 보기")
     public ResponseEntity<List<StoreResponse>> showResult(@PathVariable String share_id,HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");

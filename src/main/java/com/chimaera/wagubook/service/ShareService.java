@@ -1,11 +1,9 @@
 package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.dto.StoreResponse;
-import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.Share;
 import com.chimaera.wagubook.entity.Store;
 import com.chimaera.wagubook.repository.share.ShareRepository;
-import com.chimaera.wagubook.repository.member.MemberRepository;
 import com.chimaera.wagubook.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +18,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ShareService {
     private final ShareRepository shareRepository;
-    private final MemberRepository memberRepository;
     private final StoreRepository storeRepository;
 
     public String createUrl(Long memberId) {
@@ -38,18 +35,13 @@ public class ShareService {
             }
         }
 
-        Member findMember = memberRepository.findById(memberId).get();
-
         //share entity 생성
         Share share = Share.newBuilder()
                 .url(randomCode)
                 .localDateTime(LocalDateTime.now())
-//                .memberList(new ArrayList<>())
                 .voteStoreList(new HashMap<>())
-//                .storeList(new ArrayList<>())
                 .build();
 
-//        share.getMemberList().add(findMember);
         shareRepository.save(share);
 
         return randomCode;
@@ -75,22 +67,11 @@ public class ShareService {
             System.out.println("duration : "+duration.getSeconds());
             if(duration.getSeconds() < 1800){
 
-                // share 에 member 등록
-//                addMember(findShare, memberId);
-
                 return "" + findShare.getId();
             }
         }
         return "해당 url이 존재하지 않습니다.";
     }
-
-//    private void addMember(Share share, Long memberId) {
-//        Member findMember = memberRepository.findById(memberId).get();
-//        //이미 포함된 사람인지 확인
-//        if(share.getMemberIdList().contains(findMember.getId()))
-//            return;
-//        share.getMemberIdList().add(findMember.getId());
-//    }
 
     @Transactional
     public String addVoteStore(String shareId, String storeId) {
@@ -100,16 +81,9 @@ public class ShareService {
         Share share = shareRepository.findById(Long.parseLong(shareId)).get();
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
 
-
-//        List<VoteStore> storeList = share.getStoreList();
-
         //이미 포함하고 있으면
         if(voteStoreList.containsKey(findStore.getId()))
             return "이미 추가된 가게입니다.";
-//        for (VoteStore voteStore : storeList) {
-//            if(voteStore.getStore_id()== findStore.getId())
-//                return "이미 추가된 가게입니다.";
-//        }
 
         //최대 개수를 넘은 경우
         if(voteStoreList.size() == 10){
@@ -148,13 +122,8 @@ public class ShareService {
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
         Long key = Long.parseLong(storeId);
         voteStoreList.replace(key, voteStoreList.get(key)+1);
+        System.out.println("value : " + voteStoreList.get(key));
 
-//        List<VoteStore> storeList = share.getStoreList();
-//        for (VoteStore voteStore : storeList) {
-//            if(voteStore.getStore_id() == Long.parseLong(storeId)){
-//                voteStore.setLike_cnt(voteStore.getLike_cnt()+1);
-//            }
-//        }
         shareRepository.save(share);
         return "투표 성공";
     }
@@ -176,9 +145,8 @@ public class ShareService {
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
         int max = 0;
         for (Integer value : voteStoreList.values()) {
-            Math.max(max, value);
+            max = Math.max(max, value);
         }
-
         List<StoreResponse> ret = new ArrayList<>();
         for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
             if(entry.getValue() == max){
