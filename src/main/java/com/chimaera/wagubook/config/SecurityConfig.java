@@ -69,7 +69,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000", "http://www.wagubook.shop:3000") // React 앱의 주소
+                        .allowedOrigins("http://localhost:3000", "http://www.wagubook.shop:3000", "http://3.37.8.147:3000") // React 앱의 주소
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("Authorization", "Cache-Control", "Content-Type")  // 필요한 헤더만 허용. allowedHeaders("*")
                         .allowCredentials(true);
