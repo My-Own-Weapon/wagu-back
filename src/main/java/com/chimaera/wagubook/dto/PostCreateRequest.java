@@ -3,6 +3,7 @@ package com.chimaera.wagubook.dto;
 import com.chimaera.wagubook.entity.Category;
 import com.chimaera.wagubook.entity.Location;
 import com.chimaera.wagubook.entity.Permission;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -28,6 +29,7 @@ public class PostCreateRequest {
     @NotNull(message = "포스트 자동화 여부는 필수 값입니다.")
     private boolean isAuto;
 
+    @Valid
     @NotNull(message = "포스트 당 하나의 메뉴는 필수적으로 작성해야 합니다.")
     private List<MenuCreateRequest> menus;
 
