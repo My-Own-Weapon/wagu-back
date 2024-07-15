@@ -63,9 +63,9 @@ public class ShareController {
      * url : /share/{share_id}/map?left={left}&right={right}&up={up}&down={down}
      * ex : /share/2/map?left=1&right=20&up=1&down=20
      */
-    @GetMapping("/share/{shareId}/map")
+    @GetMapping("/share/{share_id}/map")
     public ResponseEntity<List<StoreResponse>> findStores(
-            @PathVariable String shareId,
+            @PathVariable String share_id,
             @RequestParam(value = "left") String left,
             @RequestParam(value = "right") String right,
             @RequestParam(value = "up") String up,
@@ -83,6 +83,86 @@ public class ShareController {
         return new ResponseEntity<>(findStores, HttpStatus.OK);
     }
 
+    /**
+     * 투표에 추가 기능
+     * url : /share/{share_id}?store_id={store_id}
+     * */
+    @PostMapping("/share/{share_id}")
+    public ResponseEntity<String> addVoteStore(
+            @PathVariable String share_id,
+            @RequestParam String store_id,
+            HttpSession session){
 
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+
+        return new ResponseEntity<>(shareService.addVoteStore(share_id,store_id), HttpStatus.OK);
+    }
+
+    /**
+     * 투표에서 삭제 기능
+     * url : /share/{share_id}?store={store_id}
+     * */
+    @DeleteMapping("/share/{share_id}")
+    public ResponseEntity<String> deleteVoteStore(
+            @PathVariable String share_id,
+            @RequestParam String store_id,
+            HttpSession session){
+
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+
+        return new ResponseEntity<>(shareService.deleteVoteStore(share_id,store_id), HttpStatus.OK);
+    }
+
+    /**
+     * 투표 좋아요
+     * url : /share/{share_id}/vote?store={store_id}
+     * */
+    @PostMapping("/share/{share_id}/vote")
+    public ResponseEntity<String> like(@PathVariable String share_id, @RequestParam String store_id,HttpSession session){
+
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+
+        return new ResponseEntity<>(shareService.like(share_id, store_id), HttpStatus.OK);
+    }
+
+
+    /**
+     * 투표 좋아요 취소
+     * url : /share/{share_id}/vote?store={store_id}
+     * */
+    @PatchMapping("/share/{share_id}/vote")
+    public ResponseEntity<String> likeCancel(@PathVariable String share_id, @RequestParam String store_id,HttpSession session){
+
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+
+        return new ResponseEntity<>(shareService.likeCancel(share_id, store_id), HttpStatus.OK);
+    }
+
+    /**
+     * 투표 결과 보기
+     * url : /share/{share_id}/result
+     * */
+    @GetMapping("/share/{share_id}/result")
+    public ResponseEntity<List<StoreResponse>> showResult(@PathVariable String share_id,HttpSession session){
+
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+
+        return new ResponseEntity<>(shareService.showResult(share_id),HttpStatus.OK);
+    }
 
 }
