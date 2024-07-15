@@ -1,4 +1,8 @@
 spring:
+  http:
+  multipart:
+    max-file-size: 10MB
+    max-request-size: 10MB
   #.env import
   config:
     import: optional:file:.env[.properties]
