@@ -3,6 +3,7 @@ package com.chimaera.wagubook.dto;
 import com.chimaera.wagubook.entity.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,8 @@ public class PostResponse {
     private Category postCategory;
     private Permission permission;
     private boolean isAuto;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
     private List<MenuResponse> menus;
 
     public PostResponse (Post post) {
@@ -27,6 +30,8 @@ public class PostResponse {
         this.postMainMenu = post.getPostMainMenu();
         this.permission = post.getPermission();
         this.isAuto = post.isAuto();
+        this.createdDate = post.getCreateDate();
+        this.updatedDate = post.getUpdateDate();
         this.menus = post.getMenus().stream()
                 .map(menu -> new MenuResponse(menu))
                 .collect(Collectors.toList());
