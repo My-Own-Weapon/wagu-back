@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @Entity
@@ -14,15 +15,13 @@ import java.util.List;
 public class Share {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "share_id")
     private Long id;
     private String url; // 공유 url
     private LocalDateTime localDateTime; // 공유 시간
 
-    @OneToMany
-    @JoinColumn(name = "member_id")
-    private List<Member> memberList;
+//    private List<Long> memberIdList;
+    private HashMap<Long, Integer> voteStoreList;
 
-    @OneToMany
-    @JoinColumn(name = "store_id")
-    private List<Store> storeList;
 }
+

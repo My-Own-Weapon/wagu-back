@@ -1,18 +1,19 @@
 package com.chimaera.wagubook.controller;
 
-import com.chimaera.wagubook.entity.Store;
+import com.chimaera.wagubook.dto.*;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chimaera.wagubook.dto.PostRequest;
-import com.chimaera.wagubook.entity.Post;
 import com.chimaera.wagubook.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,68 +22,77 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
-    // store 를 만들고,
-    @PostMapping("/posts")
-    public ResponseEntity<String> createPost(@RequestBody PostRequest postRequest, HttpSession session) {
+    /**
+     * 포스트 생성
+     * Method : POST
+     * url : /posts
+     * */
+    @PostMapping(value = "/posts", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @Operation(summary = "포스트 생성")
+    public ResponseEntity<PostResponse> createPost(@RequestPart List<MultipartFile> images, @RequestPart PostCreateRequest data, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
-        //store, menu, category 객체 생성 필요
-
-
-        postService.createPost(postRequest, memberId);
-        return new ResponseEntity<>("포스팅이 생성되었습니다.", HttpStatus.CREATED);
+        checkValidByMemberId(memberId);
+        return new ResponseEntity<>(postService.createPost(images, data, memberId), HttpStatus.CREATED);
     }
 
+    /**
+     * 포스트 조회 (전체)
+     * Method : GET
+     * url : /posts
+     * */
     @GetMapping("/posts")
-    public ResponseEntity<List<Post>> getAllPosts(HttpSession session) {
+    @Operation(summary = "포스트 조회 (전체)")
+    public ResponseEntity<List<StorePostResponse>> getAllPostsByUser(HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
-        List<Post> posts = postService.getAllPostsByUser(memberId);
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+        checkValidByMemberId(memberId);
+        return new ResponseEntity<>(postService.getAllPostsByUser(memberId), HttpStatus.OK);
     }
 
+    /**
+     * 포스트 조회 (상세)
+     * Method : GET
+     * url : /posts/{postId}
+     * */
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<Post> getPostById(@PathVariable Long postId, HttpSession session) {
+    @Operation(summary = "포스트 조회 (상세)")
+    public ResponseEntity<PostResponse> getPostById(@PathVariable Long postId, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
-        Post post = postService.getPostById(postId, memberId);
-        if (post == null) {
-            throw new CustomException(ErrorCode.NOT_FOUND_POST);
-        }
-        return new ResponseEntity<>(post, HttpStatus.OK);
+        checkValidByMemberId(memberId);
+        return new ResponseEntity<>(postService.getPostById(postId, memberId), HttpStatus.OK);
     }
 
-    @PatchMapping("/posts/{postId}")
-    public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody PostRequest postRequest, HttpSession session) {
+    /**
+     * 포스트 수정
+     * Method : PATCH
+     * url : /posts/{postId}
+     * */
+    @PatchMapping(value = "/posts/{postId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @Operation(summary = "포스트 수정")
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestPart List<MultipartFile> images, @RequestPart PostUpdateRequest data, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
-        boolean updated = postService.updatePost(postId, postRequest, memberId);
-        if (!updated) {
-            throw new CustomException(ErrorCode.UNABLE_TO_UPDATE_POST);
-        }
-        return new ResponseEntity<>("포스트가 수정되었습니다.", HttpStatus.OK);
+        checkValidByMemberId(memberId);
+        return new ResponseEntity<>(postService.updatePost(postId, images, data, memberId), HttpStatus.OK);
     }
 
+    /**
+     * 포스트 삭제
+     * Method : DELETE
+     * url : /posts/{postId}
+     * */
     @DeleteMapping("/posts/{postId}")
+    @Operation(summary = "포스트 삭제")
     public ResponseEntity<String> deletePost(@PathVariable Long postId, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
+        checkValidByMemberId(memberId);
+        postService.deletePost(postId, memberId);
+        return new ResponseEntity<>(postId + "번 포스트가 삭제되었습니다.", HttpStatus.OK);
+    }
+
+    // 회원 검증
+    private void checkValidByMemberId(Long memberId) {
         if (memberId == null) {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
-        boolean deleted = postService.deletePost(postId, memberId);
-        if (!deleted) {
-            throw new CustomException(ErrorCode.UNABLE_TO_DELETE_POST);
-        }
-        return new ResponseEntity<>("포스트가 삭제되었습니다.", HttpStatus.OK);
     }
 }
 

@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### private-yml ###
+src/main/resources/application-private.yml
+
+.env

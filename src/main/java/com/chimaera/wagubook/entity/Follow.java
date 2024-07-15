@@ -1,13 +1,15 @@
 package com.chimaera.wagubook.entity;
 
 import jakarta.persistence.*;
+
 import lombok.*;
+
 
 @Entity
 @Getter
+@Builder(builderMethodName = "newBuilder")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder(builderMethodName = "newBuilder")
 public class Follow {
 
     @Id
@@ -24,15 +26,9 @@ public class Follow {
     private Member fromMember;
 
     private boolean isEach;
-//
-//    @Builder
-//    public Follow(Member toMember, Member fromMember, boolean isEach) {
-//        this.toMember = toMember;
-//        this.fromMember = fromMember;
-//        this.isEach = isEach;
-//    }
 
-    public void update(boolean isEach) {
+    public void updateEach(boolean isEach) {
+
         this.isEach = isEach;
     }
 }
