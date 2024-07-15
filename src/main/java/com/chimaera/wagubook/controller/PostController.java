@@ -5,6 +5,7 @@ import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +30,7 @@ public class PostController {
      * */
     @PostMapping(value = "/posts", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "포스트 생성")
-    public ResponseEntity<PostResponse> createPost(@RequestPart List<MultipartFile> images, @RequestPart PostCreateRequest data, HttpSession session) {
+    public ResponseEntity<PostResponse> createPost(@RequestPart List<MultipartFile> images, @Valid @RequestPart PostCreateRequest data, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         return new ResponseEntity<>(postService.createPost(images, data, memberId), HttpStatus.CREATED);
@@ -68,7 +69,7 @@ public class PostController {
      * */
     @PatchMapping(value = "/posts/{postId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "포스트 수정")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestPart List<MultipartFile> images, @RequestPart PostUpdateRequest data, HttpSession session) {
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestPart List<MultipartFile> images, @Valid @RequestPart PostUpdateRequest data, HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         return new ResponseEntity<>(postService.updatePost(postId, images, data, memberId), HttpStatus.OK);

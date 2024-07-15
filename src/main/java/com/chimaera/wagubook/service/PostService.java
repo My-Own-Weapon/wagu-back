@@ -51,6 +51,7 @@ public class PostService {
                         .storeName(postCreateRequest.getStoreName())
                         .storeLocation(postCreateRequest.getStoreLocation())
                         .build();
+                storeRepository.save(store);
             }
         }
 
@@ -74,6 +75,7 @@ public class PostService {
                         .store(store)
                         .build();
                 menus.add(menu);
+                menuRepository.save(menu);
             }
         }
 
