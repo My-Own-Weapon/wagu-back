@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashMap;
 
 @Entity
 @Getter
@@ -18,7 +18,7 @@ public class Share {
     private Long id;
     private String url; // 공유 url
     private LocalDateTime localDateTime; // 공유 시간
+    private HashMap<Long, Integer> voteStoreList;
 
-    @OneToMany
-    private List<Member> memberList;
 }
+

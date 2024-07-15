@@ -6,6 +6,7 @@ import com.chimaera.wagubook.dto.StoreResponse;
 import com.chimaera.wagubook.entity.Menu;
 
 import com.chimaera.wagubook.entity.Post;
+import com.chimaera.wagubook.entity.Store;
 import com.chimaera.wagubook.repository.menu.MenuRepository;
 import com.chimaera.wagubook.repository.post.PostRepository;
 import com.chimaera.wagubook.repository.store.StoreRepository;
