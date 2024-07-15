@@ -1,11 +1,8 @@
 package com.chimaera.wagubook.dto;
 
-import com.chimaera.wagubook.entity.Menu;
 import com.chimaera.wagubook.entity.MenuImage;
 import com.chimaera.wagubook.entity.Store;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class StoreSearchResponse {
