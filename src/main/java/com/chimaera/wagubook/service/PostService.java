@@ -11,6 +11,7 @@ import com.chimaera.wagubook.repository.post.PostRepository;
 import com.chimaera.wagubook.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class PostService {
     private final S3ImageService s3ImageService;
 
     // 포스트 생성
+    @Transactional
     public PostResponse createPost(List<MultipartFile> images, PostCreateRequest postCreateRequest, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
@@ -61,6 +63,7 @@ public class PostService {
         if (postCreateRequest.getMenus() != null) {
             for (PostCreateRequest.MenuCreateRequest menuCreateRequest : postCreateRequest.getMenus()) {
                 String menuName = menuCreateRequest.getMenuName();
+
                 if (menuName != null && !menuNames.add(menuName)) {
                     throw new CustomException(ErrorCode.DUPLICATE_POST_MENU);
                 }
@@ -72,6 +75,7 @@ public class PostService {
                         .store(store)
                         .build();
                 menus.add(menu);
+                menuRepository.save(menu);
             }
         }
 
@@ -84,7 +88,6 @@ public class PostService {
                 .permission(postCreateRequest.getPermission())
                 .isAuto(postCreateRequest.isAuto())
                 .createDate(LocalDateTime.now())
-                .isFinished(true)
                 .build();
         postRepository.save(post);
 
@@ -96,36 +99,19 @@ public class PostService {
 
         for (int i = 0; i < menus.size(); i++) {
             Menu menu = menus.get(i);
+
+            MultipartFile image = images.get(i);
+            String url = s3ImageService.upload(image);
+
+            MenuImage menuImage = MenuImage.newBuilder()
+                    .url(url)
+                    .menu(menu)
+                    .build();
+            menuImageRepository.save(menuImage);
+
             menu.setPost(post);
+            menu.setMenuImage(menuImage);
             menuRepository.save(menu);
-
-            if (images != null) {
-                MultipartFile image = images.get(i);
-                String url = s3ImageService.upload(image);
-
-                MenuImage menuImage = MenuImage.newBuilder()
-                        .url(url)
-                        .menu(menu)
-                        .build();
-                menuImageRepository.save(menuImage);
-
-                menu.setMenuImage(menuImage);
-                menuRepository.save(menu);
-            }
-        }
-
-        // Request 값이 하나라도 null인 경우, isFinished 값을 false로 처리한다. (임시 포스트 생성)
-        if (postCreateRequest.getStoreName() == null || postCreateRequest.getStoreLocation() == null ||
-                postCreateRequest.getPostCategory() == null || postCreateRequest.getPostMainMenu() == null ||
-                postCreateRequest.getPermission() == null || postCreateRequest.getMenus() == null) {
-
-            post.updateFinished(false);
-        }
-
-        for (PostCreateRequest.MenuCreateRequest menuCreateRequest : postCreateRequest.getMenus()) {
-            if (menuCreateRequest.getMenuContent() == null || menuCreateRequest.getMenuName() == null || menuCreateRequest.getMenuPrice() == 0) {
-                post.updateFinished(false);
-            }
         }
 
         return new PostResponse(post);
@@ -175,6 +161,7 @@ public class PostService {
     }
 
     // 포스트 수정
+    @Transactional
     public PostResponse updatePost(Long postId, List<MultipartFile> images, PostUpdateRequest postUpdateRequest, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Post post = postRepository.findByIdAndMemberId(postId, member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
@@ -194,7 +181,6 @@ public class PostService {
                         .storeLocation(postUpdateRequest.getStoreLocation())
                         .build();
                 storeRepository.save(store);
-
             }
 
             if (!store.getId().equals(post.getStore().getId())) {
@@ -218,8 +204,10 @@ public class PostService {
                 menu.updateMenu(menuUpdateRequest.getMenuName(), menuUpdateRequest.getMenuPrice(), menuUpdateRequest.getMenuContent());
                 menus.add(menu);
                 menuRepository.save(menu);
+
             } else if (!menuNames.add(menuUpdateRequest.getMenuName())) {
                 throw new CustomException(ErrorCode.DUPLICATE_POST_MENU);
+
             } else {
                 Menu menu = Menu.newBuilder()
                         .menuName(menuUpdateRequest.getMenuName())
@@ -248,7 +236,6 @@ public class PostService {
 
             if (images != null) {
                 // 새로운 이미지 업로드를 위해 기존 이미지 삭제
-                //todo: 사용자가 어떤 사진을 수정하고 싶은지 식별할 수 있는 방법이 있을지 고민해보기
                 MenuImage menuImage = menu.getMenuImage();
 
                 if (menuImage != null) {
@@ -260,24 +247,6 @@ public class PostService {
 
                 menuImage.updateMenuImage(url);
                 menuImageRepository.save(menuImage);
-            }
-        }
-
-        // Request 값이 하나라도 null인 경우, isFinished 값을 false로 처리한다. (임시 포스트 생성)
-        if (postUpdateRequest.getStoreName() == null || postUpdateRequest.getStoreLocation() == null ||
-                postUpdateRequest.getPostCategory() == null || postUpdateRequest.getPostMainMenu() == null ||
-                postUpdateRequest.getPermission() == null || postUpdateRequest.getMenus() == null) {
-
-            post.updateFinished(false);
-        } else {
-            post.updateFinished(true);
-        }
-
-        for (PostUpdateRequest.MenuUpdateRequest menuUpdateRequest : postUpdateRequest.getMenus()) {
-            if (menuUpdateRequest.getMenuContent() == null || menuUpdateRequest.getMenuName() == null || menuUpdateRequest.getMenuPrice() == 0) {
-                post.updateFinished(false);
-            } else {
-                post.updateFinished(true);
             }
         }
 
