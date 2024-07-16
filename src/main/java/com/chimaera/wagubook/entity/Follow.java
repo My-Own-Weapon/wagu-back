@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
@@ -26,6 +28,7 @@ public class Follow {
     private Member fromMember;
 
     private boolean isEach;
+    private LocalDateTime createdDate;
 
     public void updateEach(boolean isEach) {
 
