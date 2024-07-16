@@ -4,6 +4,9 @@ import com.chimaera.wagubook.entity.QStore;
 import com.chimaera.wagubook.entity.Store;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,12 +18,20 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Store> searchStores(String keyword) {
+    public Page<Store> searchStores(String keyword, Pageable pageable) {
         QStore store = QStore.store;
-        return queryFactory
-                .selectFrom(store)
-                .where(store.storeName.containsIgnoreCase(keyword)) // 대소문자 구분 없이 검색
+
+        List<Store> stores = queryFactory.selectFrom(store)
+                .where(store.storeName.containsIgnoreCase(keyword))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        long total = queryFactory.selectFrom(store)
+                .where(store.storeName.containsIgnoreCase(keyword))
+                .fetchCount();
+
+        return new PageImpl<>(stores, pageable, total);
     }
 
     @Override

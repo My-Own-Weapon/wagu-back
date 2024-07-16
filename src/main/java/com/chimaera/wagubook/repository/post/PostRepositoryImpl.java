@@ -4,6 +4,9 @@ package com.chimaera.wagubook.repository.post;
 import com.chimaera.wagubook.entity.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,13 +17,25 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Post> searchPostsByMemberIdAndStoreName(Long memberId, String keyword) {
+    public Page<Post> searchPostsByMemberIdAndStoreName(Long memberId, String keyword, Pageable pageable) {
         QPost post = QPost.post;
+        QStore store = QStore.store;
 
-        return queryFactory.selectFrom(post)
+        List<Post> posts = queryFactory.selectFrom(post)
+                .leftJoin(post.store, store)
                 .where(post.member.id.eq(memberId)
-                        .and(post.store.storeName.contains(keyword)))
+                        .and(store.storeName.containsIgnoreCase(keyword)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        long total = queryFactory.selectFrom(post)
+                .leftJoin(post.store, store)
+                .where(post.member.id.eq(memberId)
+                        .and(store.storeName.containsIgnoreCase(keyword)))
+                .fetchCount();
+
+        return new PageImpl<>(posts, pageable, total);
     }
 
     @Override

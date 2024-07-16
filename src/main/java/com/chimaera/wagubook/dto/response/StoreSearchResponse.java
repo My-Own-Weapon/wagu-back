@@ -9,10 +9,12 @@ public class StoreSearchResponse {
     private Long storeId;
     private String storeName;
     private MenuImage menuImage;
+    private int postCount;
 
     public StoreSearchResponse(Store store) {
         this.storeId = store.getId();
         this.storeName = store.getStoreName();
+        this.postCount = store.getPosts().size();
 
         // 가장 처음에 달린 Menu Image 가져오기
         if (store.getMenus() != null) {

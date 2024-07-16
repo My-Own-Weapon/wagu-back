@@ -29,7 +29,6 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final PostRepository postRepository;
     private final MenuRepository menuRepository;
-    private final FollowRepository followRepository;
 
 
     public List<StoreResponse> getStoresByScreen(String left, String right, String up, String down) {
