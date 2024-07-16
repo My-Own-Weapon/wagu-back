@@ -30,7 +30,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
         return queryFactory
                 .selectFrom(post)
-                .where(post.permission.eq(Permission.PUBLIC)
+                .where(post.store.id.eq(storeId)
+                .and(post.permission.eq(Permission.PUBLIC)
                         .or(post.permission.eq(Permission.FRIENDS)
                                 .and(post.member.id
                                         .in(queryFactory
@@ -41,7 +42,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                                 )
                         )
                         .or(post.permission.eq(Permission.PRIVATE).and(post.member.id.eq(memberId)))
-                )
+                ))
                 .limit((long)size)
                 .offset((long)(page*size))
                 .fetch();
