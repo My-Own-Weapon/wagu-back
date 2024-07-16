@@ -40,8 +40,6 @@ public class MemberService {
         return memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
     }
 
-
-    // 회원가입
     public void join(MemberRequest request) {
         if (!request.getPassword().equals(request.getPasswordConfirm())) {
             throw new CustomException(ErrorCode.WRONG_PASSWORD_CONFIRM);
@@ -59,19 +57,15 @@ public class MemberService {
         if (findUser.isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
         }
-        // 비밀번호는 영문, 숫자, 특수문자 포함 8자 이상
-        if (!member.getPassword().matches("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$")) {
-            throw new CustomException(ErrorCode.WRONG_PASSWORD);
-        }
-        // 이름은 한국어로만 입력 가능
-        if (!member.getName().matches("^[가-힣]*$")) {
-            throw new CustomException(ErrorCode.WRONG_NAME);
-        }
-        // 휴대폰 번호는 숫자만 입력 가능
-        if (!member.getPhoneNumber().matches("^[0-9]*$")) {
-            throw new CustomException(ErrorCode.WRONG_PHONE_NUMBER);
-        }
 
+        // 비밀번호 검증: 영문, 숫자, 특수문자 포함 8자 이상
+        validatePassword(request.getPassword());
+
+        // 이름 검증: 한국어만 입력 가능
+        validateName(member.getName());
+
+        // 휴대폰 번호 검증: 숫자만 입력 가능
+        validatePhoneNumber(member.getPhoneNumber());
 
         memberRepository.save(member);
 
@@ -84,7 +78,31 @@ public class MemberService {
         memberImageRepository.save(memberImage);
     }
 
-    // 로그인
+    // 비밀번호 검증 메소드
+    private void validatePassword(String password) {
+        String passwordPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$";
+        if (!password.matches(passwordPattern)) {
+            throw new CustomException(ErrorCode.WRONG_PASSWORD);
+        }
+    }
+
+    // 이름 검증 메소드
+    private void validateName(String name) {
+        String namePattern = "^[가-힣]*$";
+        if (!name.matches(namePattern)) {
+            throw new CustomException(ErrorCode.WRONG_NAME);
+        }
+    }
+
+    // 휴대폰 번호 검증 메소드
+    private void validatePhoneNumber(String phoneNumber) {
+        String phonePattern = "^\\d{3}-\\d{3,4}-\\d{4}$";
+        if (!phoneNumber.matches(phonePattern)) {
+            throw new CustomException(ErrorCode.WRONG_PHONE_NUMBER);
+        }
+    }
+
+    // 로그인 메소드
     public MemberResponse login(HttpServletRequest httpServletRequest, LoginRequest loginRequest) {
         String username = loginRequest.getUsername();
         Optional<Member> getUser = memberRepository.findByUsername(username);
@@ -93,15 +111,14 @@ public class MemberService {
             Member member = getUser.get();
             if (bCryptPasswordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
                 HttpSession session = httpServletRequest.getSession();
-
                 session.setAttribute("memberId", member.getId());
-                session.setMaxInactiveInterval(30000); // 세션 유효 시간 500분
+                session.setMaxInactiveInterval(300000); //
 
                 return new MemberResponse(member);
             }
         }
 
-        return null;
+        throw new CustomException(ErrorCode.LOGIN_FAIL);
     }
 
     // 아이디 중복 확인
