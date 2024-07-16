@@ -19,6 +19,9 @@ public enum ErrorCode {
     IO_EXCEPTION_ON_IMAGE_UPLOAD(BAD_REQUEST, "파일에 입출력 문제가 발생하였습니다."),
     IO_EXCEPTION_ON_IMAGE_DELETE(BAD_REQUEST, "파일에 입출력 문제가 발생하였습니다."),
     IMAGE_NOT_EQUAL_WITH_MENU(BAD_REQUEST, "허용되는 이미지 업로드 개수가 아닙니다."),
+    WRONG_NAME(CONFLICT, "이름은 한글로만 입력 가능합니다."),
+    WRONG_PHONE_NUMBER(CONFLICT, "휴대폰 번호는 숫자로만 입력 가능합니다."),
+    WRONG_PASSWORD(CONFLICT, "비밀번호는 영문, 숫자, 특수문자 포함 8자 이상입니다."),
 
     
     // 401 UNAUTHORIZED: 인증되지 않은 사용자
@@ -36,6 +39,7 @@ public enum ErrorCode {
 
 
     // 409 CONFLICT: 중복된 리소스 (요청이 현재 서버 상태와 충돌될 때)
+
     DUPLICATE_USERNAME(CONFLICT, "중복된 아이디입니다."),
     ALREADY_FOLLOW(CONFLICT, "해당 사용자가 이미 팔로우한 회원입니다."),
     DUPLICATE_POST_MENU(CONFLICT, "이미 해당 포스트에 작성된 메뉴 이름입니다."),
