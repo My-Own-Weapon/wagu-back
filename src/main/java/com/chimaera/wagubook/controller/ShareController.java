@@ -1,9 +1,6 @@
 package com.chimaera.wagubook.controller;
 
-import com.chimaera.wagubook.dto.FriendResponse;
-import com.chimaera.wagubook.dto.ShareResponse;
-import com.chimaera.wagubook.dto.StoreResponse;
-import com.chimaera.wagubook.entity.Store;
+import com.chimaera.wagubook.dto.response.StoreResponse;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.service.ShareService;
@@ -16,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

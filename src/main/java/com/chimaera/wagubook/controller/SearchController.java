@@ -1,8 +1,8 @@
 package com.chimaera.wagubook.controller;
 
-import com.chimaera.wagubook.dto.MemberSearchResponse;
-import com.chimaera.wagubook.dto.PostResponse;
-import com.chimaera.wagubook.dto.StoreSearchResponse;
+import com.chimaera.wagubook.dto.response.MemberSearchResponse;
+import com.chimaera.wagubook.dto.response.PostResponse;
+import com.chimaera.wagubook.dto.response.StoreSearchResponse;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.service.SearchService;

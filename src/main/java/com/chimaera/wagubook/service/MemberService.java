@@ -1,6 +1,11 @@
 package com.chimaera.wagubook.service;
 
-import com.chimaera.wagubook.dto.*;
+import com.chimaera.wagubook.dto.request.LoginRequest;
+import com.chimaera.wagubook.dto.request.MemberRequest;
+import com.chimaera.wagubook.dto.response.FollowerResponse;
+import com.chimaera.wagubook.dto.response.FollowingResponse;
+import com.chimaera.wagubook.dto.response.MemberInfoResponse;
+import com.chimaera.wagubook.dto.response.MemberResponse;
 import com.chimaera.wagubook.entity.Follow;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.MemberImage;

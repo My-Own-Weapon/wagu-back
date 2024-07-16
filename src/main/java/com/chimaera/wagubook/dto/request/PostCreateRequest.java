@@ -1,4 +1,4 @@
-package com.chimaera.wagubook.dto;
+package com.chimaera.wagubook.dto.request;
 
 import com.chimaera.wagubook.entity.Category;
 import com.chimaera.wagubook.entity.Location;

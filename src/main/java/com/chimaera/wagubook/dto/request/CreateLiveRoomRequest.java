@@ -1,4 +1,4 @@
-package com.chimaera.wagubook.dto;
+package com.chimaera.wagubook.dto.request;
 
 import lombok.Data;
 

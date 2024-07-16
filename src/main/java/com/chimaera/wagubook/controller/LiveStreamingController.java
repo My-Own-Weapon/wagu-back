@@ -1,7 +1,7 @@
 package com.chimaera.wagubook.controller;
 
-import com.chimaera.wagubook.dto.CreateLiveRoomRequest;
-import com.chimaera.wagubook.dto.SendMessageRequest;
+import com.chimaera.wagubook.dto.request.CreateLiveRoomRequest;
+import com.chimaera.wagubook.dto.request.SendMessageRequest;
 import com.chimaera.wagubook.entity.ChatMessage;
 import com.chimaera.wagubook.entity.LiveRoom;
 import com.chimaera.wagubook.entity.Member;
