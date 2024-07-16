@@ -3,14 +3,20 @@ package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.dto.response.StoreResponse;
+import com.chimaera.wagubook.entity.Follow;
 import com.chimaera.wagubook.entity.Menu;
 
+import com.chimaera.wagubook.entity.Permission;
+import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.menu.MenuRepository;
 import com.chimaera.wagubook.repository.post.PostRepository;
 import com.chimaera.wagubook.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 import java.util.Optional;
@@ -23,6 +29,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final PostRepository postRepository;
     private final MenuRepository menuRepository;
+    private final FollowRepository followRepository;
 
 
     public List<StoreResponse> getStoresByScreen(String left, String right, String up, String down) {
@@ -31,10 +38,13 @@ public class StoreService {
                 .collect(Collectors.toList());
     }
     
-    public List<StorePostResponse> getAllPostsByStore(Long storeId) {
+    public List<StorePostResponse> getAllPostsByStore(Long storeId, int page, int size, Long memberId) {
+        List<Follow> followList = followRepository.findByFromMemberId(memberId);
+//        Pageable pageable = (Pageable) PageRequest.of(page, size, Sort.Direction.DESC, "createDate");
+
         return postRepository.findAllByStoreId(storeId).stream()
-                .filter(post -> post.getPostMainMenu() != null)
-                .filter(post -> post.getMenus() != null)
+                .filter(post -> post.getPermission() != Permission.PRIVATE)
+                .filter(post -> post.getPermission() == Permission.FRIENDS && !followList.contains(post.getMember()))
                 .map(post -> {
                     // 보내지는 정보는 사용자가 작성한 Main Menu 기준으로
                     // 일치하는 것이 없을 경우, 첫번째 menu를 보내주기
