@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -172,11 +174,17 @@ public class MemberController {
      * */
     @GetMapping("/followers")
     @Operation(summary = "팔로워 목록 조회")
-    public ResponseEntity<List<FollowerResponse>> getFollowers(HttpSession session) {
+    public ResponseEntity<List<FollowerResponse>> getFollowers(HttpSession session,
+                                                               @RequestParam(defaultValue = "0") Integer page,
+                                                               @RequestParam(defaultValue = "10") Integer size) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
-        List<FollowerResponse> followers = memberService.getFollowers(memberId);
-        return new ResponseEntity<>(followers, HttpStatus.OK);
+
+        // 정렬 기준: 최신순
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+        return new ResponseEntity<>(memberService.getFollowers(memberId, pageRequest), HttpStatus.OK);
     }
 
     /**
@@ -186,10 +194,17 @@ public class MemberController {
      * */
     @GetMapping("/followings")
     @Operation(summary = "팔로잉 목록 조회")
-    public ResponseEntity<List<FollowingResponse>> getFollowings(HttpSession session) {
+    public ResponseEntity<List<FollowingResponse>> getFollowings(HttpSession session,
+                                                                 @RequestParam(defaultValue = "0") Integer page,
+                                                                 @RequestParam(defaultValue = "10") Integer size) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
-        return new ResponseEntity<>(memberService.getFollowings(memberId), HttpStatus.OK);
+
+        // 정렬 기준: 최신순
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+        return new ResponseEntity<>(memberService.getFollowings(memberId, pageRequest), HttpStatus.OK);
     }
 
     /**
