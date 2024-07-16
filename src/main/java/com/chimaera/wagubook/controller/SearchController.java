@@ -9,6 +9,9 @@ import com.chimaera.wagubook.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,10 +33,14 @@ public class SearchController {
      * */
     @GetMapping("/stores/member")
     @Operation(summary = "식당 검색 (사용자)")
-    public ResponseEntity<List<PostResponse>> searchPostsByMemberIdAndStore(@RequestParam String keyword, HttpSession session) {
+    public ResponseEntity<Page<PostResponse>> searchPostsByMemberIdAndStore(@RequestParam String keyword,
+                                                                            @RequestParam int page,
+                                                                            @RequestParam int size,
+                                                                            HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
-        return new ResponseEntity<>(searchService.searchPostsByMemberIdAndStoreName(memberId, keyword), HttpStatus.OK);
+        Pageable pageable = PageRequest.of(page, size);
+        return new ResponseEntity<>(searchService.searchPostsByMemberIdAndStoreName(memberId, keyword, pageable), HttpStatus.OK);
     }
 
     /**
@@ -43,10 +50,14 @@ public class SearchController {
      * */
     @GetMapping("/stores")
     @Operation(summary = "식당 검색 (전체)")
-    public ResponseEntity<List<StoreSearchResponse>> searchStores(@RequestParam String keyword, HttpSession session) {
+    public ResponseEntity<Page<StoreSearchResponse>> searchStores(@RequestParam String keyword,
+                                                                  @RequestParam int page,
+                                                                  @RequestParam int size,
+                                                                  HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
-        return new ResponseEntity<>(searchService.searchStores(keyword), HttpStatus.OK);
+        Pageable pageable = PageRequest.of(page, size);
+        return new ResponseEntity<>(searchService.searchStores(keyword, pageable), HttpStatus.OK);
     }
 
     /**
@@ -56,10 +67,14 @@ public class SearchController {
      * */
     @GetMapping("/members")
     @Operation(summary = "사용자 검색")
-    public ResponseEntity<List<MemberSearchResponse>> searchMembers(@RequestParam String username, HttpSession session) {
+    public ResponseEntity<Page<MemberSearchResponse>> searchMembers(@RequestParam String username,
+                                                                    @RequestParam int page,
+                                                                    @RequestParam int size,
+                                                                    HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
-        return new ResponseEntity<>(searchService.searchMembers(username), HttpStatus.OK);
+        Pageable pageable = PageRequest.of(page, size);
+        return new ResponseEntity<>(searchService.searchMembers(username, pageable), HttpStatus.OK);
     }
 
     // 회원 검증
