@@ -33,7 +33,7 @@ public class SearchController {
      * */
     @GetMapping("/stores/member")
     @Operation(summary = "식당 검색 (사용자)")
-    public ResponseEntity<Page<PostResponse>> searchPostsByMemberIdAndStore(@RequestParam String keyword,
+    public ResponseEntity<List<PostResponse>> searchPostsByMemberIdAndStore(@RequestParam String keyword,
                                                                             @RequestParam int page,
                                                                             @RequestParam int size,
                                                                             HttpSession session) {
@@ -50,7 +50,7 @@ public class SearchController {
      * */
     @GetMapping("/stores")
     @Operation(summary = "식당 검색 (전체)")
-    public ResponseEntity<Page<StoreSearchResponse>> searchStores(@RequestParam String keyword,
+    public ResponseEntity<List<StoreSearchResponse>> searchStores(@RequestParam String keyword,
                                                                   @RequestParam int page,
                                                                   @RequestParam int size,
                                                                   HttpSession session) {
@@ -67,7 +67,7 @@ public class SearchController {
      * */
     @GetMapping("/members")
     @Operation(summary = "사용자 검색")
-    public ResponseEntity<Page<MemberSearchResponse>> searchMembers(@RequestParam String username,
+    public ResponseEntity<List<MemberSearchResponse>> searchMembers(@RequestParam String username,
                                                                     @RequestParam int page,
                                                                     @RequestParam int size,
                                                                     HttpSession session) {
