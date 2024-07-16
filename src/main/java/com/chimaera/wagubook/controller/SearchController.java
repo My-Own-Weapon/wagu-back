@@ -57,6 +57,8 @@ public class SearchController {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         Pageable pageable = PageRequest.of(page, size);
+        //TODO: store에 해당하는 전체 post의 개수도 return
+
         return new ResponseEntity<>(searchService.searchStores(keyword, pageable), HttpStatus.OK);
     }
 
