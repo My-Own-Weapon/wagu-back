@@ -40,7 +40,9 @@ public class StoreService {
     
     public List<StorePostResponse> getAllPostsByStore(Long storeId, int page, int size, Long memberId) {
 
-        return postRepository.findByStoreIdAndPage(memberId,storeId,page,size).stream()
+        if(page == 0)
+            return null;
+        return postRepository.findByStoreIdAndPage(memberId,storeId,page-1,size).stream()
                 .map(post -> {
                     // 보내지는 정보는 사용자가 작성한 Main Menu 기준으로
                     // 일치하는 것이 없을 경우, 첫번째 menu를 보내주기
