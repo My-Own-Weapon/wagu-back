@@ -59,6 +59,19 @@ public class MemberService {
         if (findUser.isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
         }
+        // 비밀번호는 영문, 숫자, 특수문자 포함 8자 이상
+        if (!member.getPassword().matches("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$")) {
+            throw new CustomException(ErrorCode.WRONG_PASSWORD);
+        }
+        // 이름은 한국어로만 입력 가능
+        if (!member.getName().matches("^[가-힣]*$")) {
+            throw new CustomException(ErrorCode.WRONG_NAME);
+        }
+        // 휴대폰 번호는 숫자만 입력 가능
+        if (!member.getPhoneNumber().matches("^[0-9]*$")) {
+            throw new CustomException(ErrorCode.WRONG_PHONE_NUMBER);
+        }
+
 
         memberRepository.save(member);
 

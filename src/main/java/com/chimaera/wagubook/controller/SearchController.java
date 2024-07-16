@@ -3,8 +3,10 @@ package com.chimaera.wagubook.controller;
 import com.chimaera.wagubook.dto.response.MemberSearchResponse;
 import com.chimaera.wagubook.dto.response.PostResponse;
 import com.chimaera.wagubook.dto.response.StoreSearchResponse;
+import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
+import com.chimaera.wagubook.service.MemberService;
 import com.chimaera.wagubook.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
@@ -24,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SearchController {
     private final SearchService searchService;
+    private final MemberService memberService;
 
     /**
      * 식당 검색 (사용자)
@@ -74,9 +77,10 @@ public class SearchController {
                                                                     @RequestParam int size,
                                                                     HttpSession session) {
         Long memberId = (Long) session.getAttribute("memberId");
+        Member currentMember = memberService.findById(memberId);
         checkValidByMemberId(memberId);
         Pageable pageable = PageRequest.of(page, size);
-        return new ResponseEntity<>(searchService.searchMembers(username, pageable), HttpStatus.OK);
+        return new ResponseEntity<>(searchService.searchMembers(username, pageable, currentMember), HttpStatus.OK);
     }
 
     // 회원 검증

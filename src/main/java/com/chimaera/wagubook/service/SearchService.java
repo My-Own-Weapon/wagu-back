@@ -3,7 +3,6 @@ package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.dto.response.MemberSearchResponse;
 import com.chimaera.wagubook.dto.response.PostResponse;
-import com.chimaera.wagubook.dto.response.StoreResponse;
 import com.chimaera.wagubook.dto.response.StoreSearchResponse;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.Post;
@@ -37,9 +36,9 @@ public class SearchService {
         return stores.map(StoreSearchResponse::new).getContent();
     }
 
-    public List<MemberSearchResponse> searchMembers(String username, Pageable pageable) {
+    public List<MemberSearchResponse> searchMembers(String username, Pageable pageable, Member currentUser) {
         Page<Member> members = memberRepository.searchMembers(username, pageable);
-        return members.map(MemberSearchResponse::new).getContent();
+        return members.map(member -> new MemberSearchResponse(member, currentUser)).getContent();
     }
 
 }
