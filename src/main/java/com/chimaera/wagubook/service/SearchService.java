@@ -1,10 +1,9 @@
 package com.chimaera.wagubook.service;
 
 
-import com.chimaera.wagubook.dto.MemberSearchResponse;
-import com.chimaera.wagubook.dto.PostResponse;
-import com.chimaera.wagubook.dto.StoreResponse;
-import com.chimaera.wagubook.dto.StoreSearchResponse;
+import com.chimaera.wagubook.dto.response.MemberSearchResponse;
+import com.chimaera.wagubook.dto.response.PostResponse;
+import com.chimaera.wagubook.dto.response.StoreSearchResponse;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.Post;
 import com.chimaera.wagubook.entity.Store;

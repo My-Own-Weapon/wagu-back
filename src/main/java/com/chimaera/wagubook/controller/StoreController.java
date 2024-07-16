@@ -1,7 +1,7 @@
 package com.chimaera.wagubook.controller;
 
-import com.chimaera.wagubook.dto.StorePostResponse;
-import com.chimaera.wagubook.dto.StoreResponse;
+import com.chimaera.wagubook.dto.response.StorePostResponse;
+import com.chimaera.wagubook.dto.response.StoreResponse;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.service.StoreService;

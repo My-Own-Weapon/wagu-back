@@ -1,6 +1,9 @@
 package com.chimaera.wagubook.service;
 
-import com.chimaera.wagubook.dto.*;
+import com.chimaera.wagubook.dto.request.PostCreateRequest;
+import com.chimaera.wagubook.dto.request.PostUpdateRequest;
+import com.chimaera.wagubook.dto.response.PostResponse;
+import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.entity.*;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;

@@ -1,23 +1,17 @@
 package com.chimaera.wagubook;
 
 import com.chimaera.wagubook.controller.MemberController;
-import com.chimaera.wagubook.dto.MemberRequest;
-import com.chimaera.wagubook.dto.PostCreateRequest;
-import com.chimaera.wagubook.dto.StoreResponse;
+import com.chimaera.wagubook.dto.request.MemberRequest;
 import com.chimaera.wagubook.entity.*;
-import com.chimaera.wagubook.exception.CustomException;
-import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.repository.member.MemberRepository;
 import com.chimaera.wagubook.repository.menu.MenuImageRepository;
 import com.chimaera.wagubook.repository.menu.MenuRepository;
 import com.chimaera.wagubook.repository.post.PostRepository;
 import com.chimaera.wagubook.repository.store.StoreRepository;
 import com.chimaera.wagubook.service.MemberService;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;

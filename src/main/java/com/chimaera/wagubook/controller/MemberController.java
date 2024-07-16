@@ -1,6 +1,11 @@
 package com.chimaera.wagubook.controller;
 
-import com.chimaera.wagubook.dto.*;
+import com.chimaera.wagubook.dto.request.LoginRequest;
+import com.chimaera.wagubook.dto.request.MemberRequest;
+import com.chimaera.wagubook.dto.response.FollowerResponse;
+import com.chimaera.wagubook.dto.response.FollowingResponse;
+import com.chimaera.wagubook.dto.response.MemberInfoResponse;
+import com.chimaera.wagubook.dto.response.MemberResponse;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.service.MemberService;

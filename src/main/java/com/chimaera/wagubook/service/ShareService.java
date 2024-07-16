@@ -1,6 +1,6 @@
 package com.chimaera.wagubook.service;
 
-import com.chimaera.wagubook.dto.StoreResponse;
+import com.chimaera.wagubook.dto.response.StoreResponse;
 import com.chimaera.wagubook.entity.Share;
 import com.chimaera.wagubook.entity.Store;
 import com.chimaera.wagubook.repository.share.ShareRepository;
