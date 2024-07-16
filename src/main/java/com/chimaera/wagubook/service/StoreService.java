@@ -39,12 +39,8 @@ public class StoreService {
     }
     
     public List<StorePostResponse> getAllPostsByStore(Long storeId, int page, int size, Long memberId) {
-        List<Follow> followList = followRepository.findByFromMemberId(memberId);
-//        Pageable pageable = (Pageable) PageRequest.of(page, size, Sort.Direction.DESC, "createDate");
 
-        return postRepository.findAllByStoreId(storeId).stream()
-                .filter(post -> post.getPermission() != Permission.PRIVATE)
-                .filter(post -> post.getPermission() == Permission.FRIENDS && !followList.contains(post.getMember()))
+        return postRepository.findByStoreIdAndPage(memberId,storeId,page,size).stream()
                 .map(post -> {
                     // 보내지는 정보는 사용자가 작성한 Main Menu 기준으로
                     // 일치하는 것이 없을 경우, 첫번째 menu를 보내주기

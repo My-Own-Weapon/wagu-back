@@ -15,22 +15,22 @@ spring:
       path : /h2-console
   datasource:
 
-#     url: jdbc:h2:tcp://localhost/~/test
-#     username: sa
-#     password: 123
-#     driver-class-name: org.h2.Driver
-     url: jdbc:mysql://3.38.77.231:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
-     username: ${MYSQL_USERNAME}
-     password: ${MYSQL_PASSWORD}
-     driver-class-name: com.mysql.cj.jdbc.Driver
+     url: jdbc:h2:tcp://localhost/~/book
+     username: sa
+     password:
+     driver-class-name: org.h2.Driver
+#     url: jdbc:mysql://3.38.77.231:3306/wagubook?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+#     username: ${MYSQL_USERNAME}
+#     password: ${MYSQL_PASSWORD}
+#     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: create-drop # application start
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        # dialect: org.hibernate.dialect.H2Dialect
+#        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         use_sql_comments: true
 
@@ -48,14 +48,14 @@ OPENVIDU_URL: https://video.wagubook.shop:4443/
 #OPENVIDU_URL: http://3.38.77.231:4443/
 OPENVIDU_SECRET: ${VIDU_SECRET}
 
-server:
-  port: ${PORT}
-  servlet:
-    session:
-      cookie:
-        domain: wagubook.shop
-        same-site: none
-        secure: true
+#server:
+#  port: ${PORT}
+#  servlet:
+#    session:
+#      cookie:
+#        domain: wagubook.shop
+#        same-site: none
+#        secure: true
 
 cloud:
   aws:
