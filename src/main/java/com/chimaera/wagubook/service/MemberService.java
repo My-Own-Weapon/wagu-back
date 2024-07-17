@@ -59,12 +59,12 @@ public class MemberService {
         }
 
         // 비밀번호 검증: 영문, 숫자, 특수문자 포함 8자 이상
-        validatePassword(request.getPassword());
+        // validatePassword(request.getPassword());
 
         // 이름 검증: 한국어만 입력 가능
         validateName(member.getName());
 
-        // 휴대폰 번호 검증: 숫자만 입력 가능
+        // 휴대폰 번호 검증: - 숫자를 해야지 입력 가능
         validatePhoneNumber(member.getPhoneNumber());
 
         memberRepository.save(member);
