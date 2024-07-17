@@ -41,4 +41,8 @@ public class SearchService {
         return members.map(member -> new MemberSearchResponse(member, currentUser)).getContent();
     }
 
+    public StoreSearchResponse searchStoreById(String store_id) {
+        Store store = storeRepository.findById(Long.parseLong(store_id)).get();
+        return new StoreSearchResponse(store);
+    }
 }
