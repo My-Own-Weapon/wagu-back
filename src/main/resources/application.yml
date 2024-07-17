@@ -1,4 +1,9 @@
 spring:
+  http:
+    multipart:
+      max-file-size: 50MB # 파일 최대 크기를 50MB로 설정
+      max-request-size: 50MB # 요청 최대 크기를 50MB로 설정
+  # .env import
   #.env import
   config:
     import: optional:file:.env[.properties]

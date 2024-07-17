@@ -4,8 +4,6 @@ name: Build and Deploy to EC2
 on:
   push:
     branches: [ "main"]
-  pull_request:
-    branches: [ "main" ]
 
 # AWS 관련 값 변수로 설정
 env:
