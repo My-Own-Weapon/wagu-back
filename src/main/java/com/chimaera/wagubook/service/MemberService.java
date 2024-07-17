@@ -18,10 +18,13 @@ import com.chimaera.wagubook.repository.post.PostRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -191,6 +194,7 @@ public class MemberService {
                 .toMember(toMember)
                 .fromMember(fromMember)
                 .isEach(isEach)
+                .createdDate(LocalDateTime.now())
                 .build();
 
         followRepository.save(follow);
@@ -206,18 +210,22 @@ public class MemberService {
     }
 
     // 팔로우 목록 조회
-    public List<FollowerResponse> getFollowers(Long memberId) {
+    public List<FollowerResponse> getFollowers(Long memberId, PageRequest pageRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        return followRepository.findByFromMemberId(member.getId()).stream()
-                .map(FollowerResponse::new)
+        Page<Follow> followPage = followRepository.findByFromMemberId(member.getId(), pageRequest);
+
+        return followPage.getContent().stream()
+                .map(follow -> new FollowerResponse(follow))
                 .collect(Collectors.toList());
     }
 
     // 팔로잉 목록 조회
-    public List<FollowingResponse> getFollowings(Long memberId) {
+    public List<FollowingResponse> getFollowings(Long memberId, PageRequest pageRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        return followRepository.findByToMemberId(member.getId()).stream()
-                .map(FollowingResponse::new)
+        Page<Follow> followPage = followRepository.findByToMemberId(member.getId(), pageRequest);
+
+        return followPage.getContent().stream()
+                .map(follow -> new FollowingResponse(follow))
                 .collect(Collectors.toList());
     }
 

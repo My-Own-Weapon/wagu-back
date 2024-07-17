@@ -9,6 +9,8 @@ import com.chimaera.wagubook.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,14 +44,41 @@ public class PostController {
     /**
      * 포스트 조회 (전체)
      * Method : GET
+     * url : /posts/all
+     * */
+    @GetMapping("/posts/all")
+    @Operation(summary = "포스트 조회 (전체)")
+    public ResponseEntity<List<StorePostResponse>> getAllPosts(HttpSession session,
+                                                               @RequestParam(defaultValue = "0") Integer page,
+                                                               @RequestParam(defaultValue = "10") Integer size) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        checkValidByMemberId(memberId);
+
+        // 정렬 기준: 최신순
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+        return new ResponseEntity<>(postService.getAllPosts(memberId, pageRequest), HttpStatus.OK);
+    }
+
+    /**
+     * 포스트 조회 (사용자)
+     * Method : GET
      * url : /posts
      * */
     @GetMapping("/posts")
-    @Operation(summary = "포스트 조회 (전체)")
-    public ResponseEntity<List<StorePostResponse>> getAllPostsByUser(HttpSession session) {
+    @Operation(summary = "포스트 조회 (사용자)")
+    public ResponseEntity<List<StorePostResponse>> getAllPostsByUser(HttpSession session,
+                                                                     @RequestParam(defaultValue = "0") Integer page,
+                                                                     @RequestParam(defaultValue = "10") Integer size) {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
-        return new ResponseEntity<>(postService.getAllPostsByUser(memberId), HttpStatus.OK);
+
+        // 정렬 기준: 최신순
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+        return new ResponseEntity<>(postService.getAllPostsByUser(memberId, pageRequest), HttpStatus.OK);
     }
 
     /**
