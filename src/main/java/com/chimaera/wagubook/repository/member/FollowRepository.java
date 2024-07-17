@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
@@ -13,7 +12,10 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     Optional<Follow> findByToMemberIdAndFromMemberId(Long toMemberId, Long fromMemberId);
     Page<Follow> findByFromMemberId(Long memberId, PageRequest pageRequest);
     Page<Follow> findByToMemberId(Long memberId, PageRequest pageRequest);
+<<<<<<< HEAD
     List<Follow> findByToMemberId(Long memberId);
+=======
+>>>>>>> 1a02bea727529b1d4197cba04455f37b32e74e0e
     int countByFromMemberId(Long memberId);
     int countByToMemberId(Long memberId);
 }
