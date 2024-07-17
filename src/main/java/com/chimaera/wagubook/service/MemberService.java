@@ -80,7 +80,7 @@ public class MemberService {
 
     // 비밀번호 검증 메소드
     private void validatePassword(String password) {
-        String passwordPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$";
+        String passwordPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$"; // 영문, 숫자, 특수문자 포함 8자 이상
         if (!password.matches(passwordPattern)) {
             throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
@@ -112,7 +112,7 @@ public class MemberService {
             if (bCryptPasswordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
                 HttpSession session = httpServletRequest.getSession();
                 session.setAttribute("memberId", member.getId());
-                session.setMaxInactiveInterval(300000); //
+                session.setMaxInactiveInterval(300000); // 세션 유지 시간 300000초
 
                 return new MemberResponse(member);
             }
