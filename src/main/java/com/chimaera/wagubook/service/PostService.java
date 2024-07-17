@@ -7,12 +7,15 @@ import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.entity.*;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
+import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.member.MemberRepository;
 import com.chimaera.wagubook.repository.menu.MenuRepository;
 import com.chimaera.wagubook.repository.menu.MenuImageRepository;
 import com.chimaera.wagubook.repository.post.PostRepository;
 import com.chimaera.wagubook.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +31,7 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
+    private final FollowRepository followRepository;
     private final MenuImageRepository menuImageRepository;
     private final S3ImageService s3ImageService;
 
@@ -121,11 +125,64 @@ public class PostService {
     }
 
     // 포스트 조회 (전체)
-    public List<StorePostResponse> getAllPostsByUser(Long memberId) {
+    public List<StorePostResponse> getAllPosts(Long memberId, PageRequest pageRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        List<Post> posts = postRepository.findAllByMemberId(member.getId());
+        List<Follow> followingsList = followRepository.findByToMemberId(memberId);
+        List<Post> allPosts = postRepository.findAll();
 
-        return posts.stream()
+        // 포스트 권한에 따른 필터링
+        List<Post> filteredPosts = allPosts.stream()
+                .filter(post -> {
+                    if (post.getPermission() == Permission.PUBLIC) {
+                        return true;
+                    } else if (post.getPermission() == Permission.PRIVATE) {
+                        return post.getMember().getId().equals(member.getId());
+                    } else if (post.getPermission() == Permission.FRIENDS) {
+                        boolean isFollower = followingsList.stream()
+                                .anyMatch(follow -> follow.getFromMember().getId().equals(post.getMember().getId()));
+                        return isFollower || post.getMember().getId().equals(member.getId());
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+
+        // 페이징 적용
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), filteredPosts.size());
+        List<Post> pagedPosts = filteredPosts.subList(start, end);
+
+        return pagedPosts.stream()
+                .map(post -> {
+                    // 보내지는 정보는 사용자가 작성한 Main Menu 기준으로
+                    // 일치하는 것이 없을 경우, 첫번째 menu를 보내주기
+                    // 사용자의 생성 포스트를 확인함으로 임시 포스트일 경우도 고려한다.
+                    List<Menu> menus = post.getMenus();
+                    if (menus == null || menus.isEmpty()) {
+                        return new StorePostResponse(post, null);
+                    }
+
+                    String mainMenu = post.getPostMainMenu();
+                    if (mainMenu == null || menus.isEmpty()) {
+                        return new StorePostResponse(post, menus.get(0));
+                    }
+
+                    Optional<Menu> findMenu = menuRepository.findByMenuNameAndPostId(mainMenu, post.getId());
+                    if (findMenu.isPresent()) {
+                        Menu menu = findMenu.get();
+                        return new StorePostResponse(post, menu);
+                    } else {
+                        return new StorePostResponse(post, menus.get(0));
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 포스트 조회 (사용자)
+    public List<StorePostResponse> getAllPostsByUser(Long memberId, PageRequest pageRequest) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Page<Post> postsPage = postRepository.findAllByMemberId(member.getId(), pageRequest);
+
+        return postsPage.getContent().stream()
                 .map(post -> {
                     // 보내지는 정보는 사용자가 작성한 Main Menu 기준으로
                     // 일치하는 것이 없을 경우, 첫번째 menu를 보내주기
@@ -154,10 +211,23 @@ public class PostService {
     // 포스트 조회 (상세)
     public PostResponse getPostById(Long postId, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        Post post = postRepository.findByIdAndMemberId(postId, member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
+        List<Follow> followingsList = followRepository.findByToMemberId(memberId);
 
-        if (!post.getMember().getId().equals(member.getId())) {
-            throw new CustomException(ErrorCode.FORBIDDEN_MEMBER);
+        // 포스트의 권한 설정이 PRIVATE인 경우
+        if (post.getPermission() == Permission.PRIVATE) {
+            if (!post.getMember().getId().equals(member.getId())) {
+                throw new CustomException(ErrorCode.FORBIDDEN_MEMBER);
+            }
+        }
+
+        // 포스트의 권한 설정이 FRIENDS인 경우
+        if (post.getPermission() == Permission.FRIENDS) {
+            boolean isFollower = followingsList.stream()
+                    .anyMatch(follow -> follow.getFromMember().getId().equals(post.getMember().getId()));
+            if (!isFollower && !post.getMember().getId().equals(member.getId())) {
+                throw new CustomException(ErrorCode.FORBIDDEN_MEMBER);
+            }
         }
 
         return new PostResponse(post);
