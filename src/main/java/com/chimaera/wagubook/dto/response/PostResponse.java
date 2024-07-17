@@ -33,7 +33,7 @@ public class PostResponse {
         this.createdDate = post.getCreateDate();
         this.updatedDate = post.getUpdateDate();
         this.menus = post.getMenus().stream()
-                .map(menu -> new MenuResponse(menu))
+                .map(MenuResponse::new)
                 .collect(Collectors.toList());
     }
 

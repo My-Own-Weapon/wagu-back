@@ -88,7 +88,6 @@ class WagubookApplicationTests {
                 .permission(Permission.PUBLIC)
                 .isAuto(false)
                 .createDate(LocalDateTime.now())
-                .isFinished(true)
                 .build();
         postRepository.save(post);
 
