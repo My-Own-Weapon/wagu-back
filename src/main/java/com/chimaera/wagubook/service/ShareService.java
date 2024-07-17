@@ -3,6 +3,8 @@ package com.chimaera.wagubook.service;
 import com.chimaera.wagubook.dto.response.StoreResponse;
 import com.chimaera.wagubook.entity.Share;
 import com.chimaera.wagubook.entity.Store;
+import com.chimaera.wagubook.exception.CustomException;
+import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.repository.share.ShareRepository;
 import com.chimaera.wagubook.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -76,23 +78,37 @@ public class ShareService {
     @Transactional
     public String addVoteStore(String shareId, String storeId) {
         //가게 찾기
+        Optional<Store> os =storeRepository.findById(Long.parseLong(storeId));
+        if(os.isEmpty()){
+            throw new CustomException(ErrorCode.NOT_FOUND_STORE);
+        }
         Store findStore = storeRepository.findById(Long.parseLong(storeId)).get();
-        //가게 추가
-        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
+
+
+        //공유방에서 리스트 찾기
+        Optional<Share> osh = shareRepository.findById(Long.parseLong(shareId));
+        if(osh.isEmpty()){
+            throw new CustomException(ErrorCode.NOT_FOUND_SHARE);
+        }
+        Share share = osh.get();
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
+
 
         //이미 포함하고 있으면
         if(voteStoreList.containsKey(findStore.getId()))
-            return "이미 추가된 가게입니다.";
+            throw new CustomException(ErrorCode.ALREADY_ADD);
 
         //최대 개수를 넘은 경우
-        if(voteStoreList.size() == 10){
-            return "최대 10개까지만 투표에 추가할 수 있습니다.";
-        }
+        if(voteStoreList.size() == 10)
+            throw new CustomException(ErrorCode.OVER_MAX);
 
         voteStoreList.put(findStore.getId(), 0);
         //변경사항 저장
         shareRepository.save(share);
+        System.out.println("[after add]");
+        for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
+            System.out.println("key : " + entry.getKey() + " value : " + entry.getValue());
+        }
         return "투표에 추가되었습니다.";
     }
 
@@ -106,9 +122,11 @@ public class ShareService {
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
 
         //투표 리스트에 있으면 제거
-        if(voteStoreList.containsKey(findStore.getId())){
-            voteStoreList.remove(findStore.getId());
-
+        if(voteStoreList.remove(findStore.getId())!=null){
+            System.out.println("[after delete]");
+            for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
+                System.out.println("key : " + entry.getKey() + " value : " + entry.getValue());
+            }
             shareRepository.save(share);
             return "투표에서 삭제되었습니다.";
         }
@@ -124,6 +142,10 @@ public class ShareService {
         voteStoreList.replace(key, voteStoreList.get(key)+1);
         System.out.println("value : " + voteStoreList.get(key));
 
+        System.out.println("[after like]");
+        for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
+            System.out.println("key : " + entry.getKey() + " value : " + entry.getValue());
+        }
         shareRepository.save(share);
         return "투표 성공";
     }
@@ -136,6 +158,11 @@ public class ShareService {
         Long key = Long.parseLong(storeId);
         voteStoreList.replace(key, voteStoreList.get(key)-1);
         shareRepository.save(share);
+
+        System.out.println("[after cancel]");
+        for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
+            System.out.println("key : " + entry.getKey() + " value : " + entry.getValue());
+        }
         return "투표 취소";
     }
 
