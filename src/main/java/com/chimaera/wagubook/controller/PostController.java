@@ -55,7 +55,7 @@ public class PostController {
         checkValidByMemberId(memberId);
 
         // 정렬 기준: 최신순
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
         PageRequest pageRequest = PageRequest.of(page, size, sort);
 
         return new ResponseEntity<>(postService.getAllPosts(memberId, pageRequest), HttpStatus.OK);
@@ -75,7 +75,7 @@ public class PostController {
         checkValidByMemberId(memberId);
 
         // 정렬 기준: 최신순
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
         PageRequest pageRequest = PageRequest.of(page, size, sort);
 
         return new ResponseEntity<>(postService.getAllPostsByUser(memberId, pageRequest), HttpStatus.OK);

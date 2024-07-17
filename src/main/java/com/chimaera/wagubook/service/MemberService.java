@@ -194,7 +194,7 @@ public class MemberService {
                 .toMember(toMember)
                 .fromMember(fromMember)
                 .isEach(isEach)
-                .createdDate(LocalDateTime.now())
+                .createDate(LocalDateTime.now())
                 .build();
 
         followRepository.save(follow);
