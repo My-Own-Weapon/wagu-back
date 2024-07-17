@@ -83,10 +83,13 @@ public class SearchController {
         return new ResponseEntity<>(searchService.searchMembers(username, pageable, currentMember), HttpStatus.OK);
     }
 
+
     // 회원 검증
     private void checkValidByMemberId(Long memberId) {
         if (memberId == null) {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
     }
+
+
 }
