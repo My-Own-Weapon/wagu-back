@@ -22,6 +22,8 @@ public enum ErrorCode {
     WRONG_NAME(CONFLICT, "이름은 한글로만 입력 가능합니다."),
     WRONG_PHONE_NUMBER(CONFLICT, "휴대폰 번호는 숫자로만 입력 가능합니다."),
     WRONG_PASSWORD(CONFLICT, "비밀번호는 영문, 숫자, 특수문자 포함 8자 이상입니다."),
+    OVER_MAX(BAD_REQUEST, "최대 10개까지만 투표에 추가할 수 있습니다."),
+    ALREADY_ADD(BAD_REQUEST, "이미 추가된 가게입니다."),
 
     
     // 401 UNAUTHORIZED: 인증되지 않은 사용자
@@ -36,6 +38,8 @@ public enum ErrorCode {
     NOT_FOUND_POST(NOT_FOUND, "해당 포스트를 찾을 수 없습니다."),
     NOT_FOUND_MEMBER(NOT_FOUND, "해당 회원을 찾을 수 없습니다."),
     NOT_FOUND_FOLLOW(NOT_FOUND, "성립되지 않은 팔로우 관계입니다."),
+    NOT_FOUND_SHARE(NOT_FOUND, "공유방을 찾을 수 없습니다."),
+    NOT_FOUND_STORE(NOT_FOUND, "해당 스토어를 찾을 수 없습니다."),
 
 
     // 409 CONFLICT: 중복된 리소스 (요청이 현재 서버 상태와 충돌될 때)
@@ -43,10 +47,7 @@ public enum ErrorCode {
     DUPLICATE_USERNAME(CONFLICT, "중복된 아이디입니다."),
     ALREADY_FOLLOW(CONFLICT, "해당 사용자가 이미 팔로우한 회원입니다."),
     DUPLICATE_POST_MENU(CONFLICT, "이미 해당 포스트에 작성된 메뉴 이름입니다."),
-    DUPLICATE_POST_STORE(CONFLICT, "이미 해당 사용자가 포스트를 작성한 식당입니다."),
-
-    // 500 INTERNAL SERVER ERROR
-    ;
+    DUPLICATE_POST_STORE(CONFLICT, "이미 해당 사용자가 포스트를 작성한 식당입니다.");
 
 
     private final HttpStatus httpStatus;
