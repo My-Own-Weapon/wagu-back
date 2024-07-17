@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface StoreRepository extends JpaRepository<Store, Long>, StoreRepositoryCustom {
     Optional<Store> findByStoreLocation(Location StoreLocation);
     Page<Store> searchStores(String keyword, Pageable pageable);
+    Optional<Store> findById(Long storeId);
 }
