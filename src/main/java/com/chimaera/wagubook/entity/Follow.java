@@ -28,7 +28,7 @@ public class Follow {
     private Member fromMember;
 
     private boolean isEach;
-    private LocalDateTime createdDate;
+    private LocalDateTime createDate;
 
     public void updateEach(boolean isEach) {
 
