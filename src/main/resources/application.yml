@@ -25,11 +25,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop # application start
+      ddl-auto: update # application start
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-        # dialect: org.hibernate.dialect.H2Dialect
+#        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         use_sql_comments: true
 
@@ -47,13 +47,13 @@ OPENVIDU_URL: https://video.wagubook.shop:4443/
 OPENVIDU_SECRET: ${VIDU_SECRET}
 
 server:
-  port: ${PORT}
-  servlet:
-    session:
-      cookie:
-        domain: wagubook.shop
-        same-site: none
-        secure: true
+ port: ${PORT}
+ servlet:
+   session:
+     cookie:
+       domain: wagubook.shop
+       same-site: none
+       secure: true
 
 cloud:
   aws:

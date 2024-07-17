@@ -3,14 +3,20 @@ package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.dto.response.StoreResponse;
+import com.chimaera.wagubook.entity.Follow;
 import com.chimaera.wagubook.entity.Menu;
 
+import com.chimaera.wagubook.entity.Permission;
+import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.menu.MenuRepository;
 import com.chimaera.wagubook.repository.post.PostRepository;
 import com.chimaera.wagubook.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 import java.util.Optional;
@@ -31,10 +37,11 @@ public class StoreService {
                 .collect(Collectors.toList());
     }
     
-    public List<StorePostResponse> getAllPostsByStore(Long storeId) {
-        return postRepository.findAllByStoreId(storeId).stream()
-                .filter(post -> post.getPostMainMenu() != null)
-                .filter(post -> post.getMenus() != null)
+    public List<StorePostResponse> getAllPostsByStore(Long storeId, int page, int size, Long memberId) {
+
+        if(page == 0)
+            return null;
+        return postRepository.findByStoreIdAndPage(memberId,storeId,page-1,size).stream()
                 .map(post -> {
                     // 보내지는 정보는 사용자가 작성한 Main Menu 기준으로
                     // 일치하는 것이 없을 경우, 첫번째 menu를 보내주기

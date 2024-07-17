@@ -48,14 +48,16 @@ public class StoreController {
 
 
     /**
-     * 식당 이름, 주소로 포스트 조회
+     * 식당 아이디로 포스트 조회
      * Method : GET
-     * url : /map/posts?storeId={storeId}
+     * url : /map/posts?storeId={storeId}&page={page}&size={size}
      * */
     @GetMapping("/map/posts")
-    @Operation(summary = "식당 이름, 주소로 포스트 조회")
+    @Operation(summary = "식당 아이디로 포스트 조회")
     public ResponseEntity<List<StorePostResponse>> getPostsByStore(
             @RequestParam(value = "storeId") Long storeId,
+            @RequestParam(value = "page") int page,
+            @RequestParam(value = "size") int size,
             HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");
@@ -63,6 +65,6 @@ public class StoreController {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
 
-        return new ResponseEntity<>(storeService.getAllPostsByStore(storeId), HttpStatus.OK);
+        return new ResponseEntity<>(storeService.getAllPostsByStore(storeId,page,size,memberId), HttpStatus.OK);
     }
 }
