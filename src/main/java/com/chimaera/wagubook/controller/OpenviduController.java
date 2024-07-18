@@ -52,6 +52,9 @@ public class OpenviduController {
         // 멤버 확인
         Long memberId = (Long) httpSession.getAttribute("memberId");
 
+        // 라이브를 켬
+        memberService.turnLive(memberId);
+
         // 세션 생성
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
@@ -116,5 +119,31 @@ public class OpenviduController {
         Map<String, Object> response = new HashMap<>();
         response.put("creatorMemberId", creatorMemberId);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * 라이브를 종료하고 세션을 삭제.
+     */
+    @DeleteMapping("/api/sessions/{sessionId}")
+    public ResponseEntity<String> closeSession(@PathVariable("sessionId") String sessionId, HttpSession httpSession) {
+        // 멤버 확인
+        Long memberId = (Long) httpSession.getAttribute("memberId");
+
+        // 라이브를 끔
+        memberService.turnLive(memberId);
+
+        // 세션 삭제
+        Session session = openvidu.getActiveSession(sessionId);
+        if (session == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        try {
+            session.close();
+        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
+            throw new RuntimeException(e);
+        }
+        sessionCreatorMap.remove(sessionId);
+
+        return new ResponseEntity<>("라이브스트리밍이 종료되었습니다.", HttpStatus.OK);
     }
 }

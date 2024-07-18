@@ -247,4 +247,15 @@ public class MemberService {
 
         return new MemberProfileResponse(imageUrl, member.getUsername());
     }
+
+    // 생방송 중이면 종료, 종료 중이면 시작
+    public void turnLive(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        if (member.isLive()) {
+            member.turnLive(false);
+        } else {
+            member.turnLive(true);
+        }
+        memberRepository.save(member);
+    }
 }

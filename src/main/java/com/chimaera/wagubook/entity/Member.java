@@ -19,7 +19,7 @@ public class Member {
 
     private String username; // 사용자 아이디
     private String password;
-    private boolean onLive; // 생방송 중인지 여부
+    private boolean isLive; // 생방송 중인지 여부
     private String name; // 사용자 이름
     private String phoneNumber; // 사용자 전화번호
 
@@ -46,11 +46,12 @@ public class Member {
         this.memberImage = memberImage;
     }
 
-    public void turnLive(boolean onLive) {
-        this.onLive = onLive;
+    public void turnLive(boolean isLive) {
+        this.isLive = isLive;
     }
 
     public Member(Long id){
         this.id = id;
     }
+
 }
