@@ -51,6 +51,8 @@ dependencies {
 
     // Add OpenVidu Java Client library
     implementation 'io.openvidu:openvidu-java-client:2.30.0'
+
+    implementation 'com.drewnoakes:metadata-extractor:2.18.0'
 }
 
 tasks.named('test') {

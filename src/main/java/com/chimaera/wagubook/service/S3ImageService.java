@@ -2,19 +2,23 @@ package com.chimaera.wagubook.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import com.amazonaws.util.IOUtils;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -44,7 +48,9 @@ public class S3ImageService {
         this.validateImageFileExtension(image.getOriginalFilename());
 
         try {
-            return this.uploadImageToS3(image);
+            // 사이즈 제한
+            BufferedImage resizedImage = resizeImageWithAspectRatio(image, 800, 600);
+            return this.uploadImageToS3(resizedImage, image.getOriginalFilename());
         } catch (IOException e) {
             
             // 파일에 입출력 문제가 발생하는 경우
@@ -67,8 +73,7 @@ public class S3ImageService {
         }
     }
 
-    private String uploadImageToS3(MultipartFile image) throws IOException {
-        String originalFilename = image.getOriginalFilename();
+    private String uploadImageToS3(BufferedImage resizedImage, String originalFilename) throws IOException {
         String extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
         
         // 파일 이름 랜덤 값으로 수정 (파일 이름 충돌 방지 및 정보 보호를 위함)
@@ -84,8 +89,9 @@ public class S3ImageService {
         }
 
         // 이미지를 InputStream으로 읽고, Meta Data 설정을 위해 Byte 배열로 변환
-        InputStream inputStream = image.getInputStream();
-        byte[] bytes = IOUtils.toByteArray(inputStream);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(resizedImage, extension, os);
+        byte[] bytes = os.toByteArray();
 
         // Meta Data 설정
         ObjectMetadata metadata = new ObjectMetadata();
@@ -107,11 +113,86 @@ public class S3ImageService {
             
             // 실행된 리소스 해제
             byteArrayInputStream.close();
-            inputStream.close();
         }
 
         // S3에 저장된 Image의 public URL 반환
         return amazonS3.getUrl(bucketName, s3FileName).toString();
+    }
+
+    // EXIF 데이터로부터 이미지 방향을 확인하여 올바른 방향으로 회전
+    private BufferedImage correctImageOrientation(BufferedImage image, MultipartFile file) throws IOException {
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
+            ExifIFD0Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+
+            if (directory != null && directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
+                int orientation = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+                int angle = 0;
+
+                switch (orientation) {
+                    case 6 -> angle = 90;
+                    case 3 -> angle = 180;
+                    case 8 -> angle = 270;
+                }
+
+                if (angle != 0) {
+                    return rotateImage(image, angle);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+
+    // 이미지를 주어진 각도로 회전
+    private BufferedImage rotateImage(BufferedImage img, int angle) {
+        double rads = Math.toRadians(angle);
+        double sin = Math.abs(Math.sin(rads));
+        double cos = Math.abs(Math.cos(rads));
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int newWidth = (int) Math.floor(w * cos + h * sin);
+        int newHeight = (int) Math.floor(h * cos + w * sin);
+
+        BufferedImage rotated = new BufferedImage(newWidth, newHeight, img.getType());
+        AffineTransform at = new AffineTransform();
+        at.translate(newWidth / 2.0, newHeight / 2.0);
+        at.rotate(rads, 0, 0);
+        at.translate(-w / 2.0, -h / 2.0);
+
+        AffineTransformOp rotateOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        rotateOp.filter(img, rotated);
+
+        return rotated;
+    }
+
+    // 이미지 리사이징 (원본 비율 유지)
+    public BufferedImage resizeImageWithAspectRatio(MultipartFile image, int maxWidth, int maxHeight) throws IOException {
+        BufferedImage originalImage = ImageIO.read(image.getInputStream());
+        originalImage = correctImageOrientation(originalImage, image);
+
+        int type = originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
+
+        int originalWidth = originalImage.getWidth();
+        int originalHeight = originalImage.getHeight();
+
+        double aspectRatio = (double) originalWidth / originalHeight;
+
+        int newWidth = maxWidth;
+        int newHeight = (int) (maxWidth / aspectRatio);
+
+        if (newHeight > maxHeight) {
+            newHeight = maxHeight;
+            newWidth = (int) (maxHeight * aspectRatio);
+        }
+
+        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, type);
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(originalImage, 0, 0, newWidth, newHeight, null);
+        g.dispose();
+
+        return resizedImage;
     }
 
     // 이미지 삭제
