@@ -98,8 +98,8 @@ jobs:
 
             # 잘 동작하면 로드밸런서 변경
             if curl -s http://localhost:$NEW_PORT > /dev/null; then
-              aws elbv2 register-targets --target-group-arn arn:aws:elasticloadbalancing:ap-northeast-2:767398017748:targetgroup/wagu-book-lb-tg/cbd583c7310ea316 --targets Id=i-09037c296cda9b574,Port=$NEW_PORT
-              aws elbv2 deregister-targets --target-group-arn arn:aws:elasticloadbalancing:ap-northeast-2:767398017748:targetgroup/wagu-book-lb-tg/cbd583c7310ea316 --targets Id=i-09037c296cda9b574,Port=$OLD_PORT
+              aws elbv2 register-targets --target-group-arn "arn:aws:elasticloadbalancing:ap-northeast-2:767398017748:targetgroup/wagu-book-lb-tg/cbd583c7310ea316" --targets Id=i-09037c296cda9b574,Port=$NEW_PORT
+              aws elbv2 deregister-targets --target-group-arn "arn:aws:elasticloadbalancing:ap-northeast-2:767398017748:targetgroup/wagu-book-lb-tg/cbd583c7310ea316" --targets Id=i-09037c296cda9b574,Port=$OLD_PORT
               docker stop $OLD_CONTAINER || true
               exit 0
             else
