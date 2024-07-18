@@ -220,12 +220,12 @@ public class MemberController {
     /**
      * 프로필 이미지, 프로필 이름 반환
      * Method: GET
-     * url: /member/{memberId}/profile
+     * url: /member/{username}/profile
      */
-    @GetMapping("/member/{memberId}/profile")
+    @GetMapping("/member/{username}/profile")
     @Operation(summary = "프로필 이미지, 프로필 이름(username) 반환")
-    public ResponseEntity<MemberProfileResponse> getMemberProfile(@PathVariable Long memberId) {
-        return new ResponseEntity<>(memberService.getMemberProfile(memberId), HttpStatus.OK);
+    public ResponseEntity<MemberProfileResponse> getMemberProfile(@PathVariable String username) {
+        return new ResponseEntity<>(memberService.getMemberProfile(username), HttpStatus.OK);
     }
 
     // 회원 검증

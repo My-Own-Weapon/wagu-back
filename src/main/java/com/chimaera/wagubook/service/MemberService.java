@@ -235,10 +235,10 @@ public class MemberService {
         return new MemberInfoResponse(followerNum, followingNum, postNum);
     }
 
-    // memberId를 통해 프로필 이미지, username 조회
-    public MemberProfileResponse getMemberProfile(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        Optional<MemberImage> findMemberImage = memberImageRepository.findByMemberId(memberId);
+    // username 을 통해 프로필 이미지, username 조회
+    public MemberProfileResponse getMemberProfile(String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Optional<MemberImage> findMemberImage = memberImageRepository.findByMemberId(member.getId());
         String imageUrl = null;
 
         if (findMemberImage.isPresent()) {
