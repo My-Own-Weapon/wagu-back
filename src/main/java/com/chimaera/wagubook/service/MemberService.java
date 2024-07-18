@@ -2,10 +2,7 @@ package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.dto.request.LoginRequest;
 import com.chimaera.wagubook.dto.request.MemberRequest;
-import com.chimaera.wagubook.dto.response.FollowerResponse;
-import com.chimaera.wagubook.dto.response.FollowingResponse;
-import com.chimaera.wagubook.dto.response.MemberInfoResponse;
-import com.chimaera.wagubook.dto.response.MemberResponse;
+import com.chimaera.wagubook.dto.response.*;
 import com.chimaera.wagubook.entity.Follow;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.MemberImage;
@@ -236,5 +233,18 @@ public class MemberService {
         int followingNum = followRepository.countByToMemberId(member.getId());
         int postNum = postRepository.countByMemberId(member.getId());
         return new MemberInfoResponse(followerNum, followingNum, postNum);
+    }
+
+    // memberId를 통해 프로필 이미지, username 조회
+    public MemberProfileResponse getMemberProfile(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Optional<MemberImage> findMemberImage = memberImageRepository.findByMemberId(memberId);
+        String imageUrl = null;
+
+        if (findMemberImage.isPresent()) {
+            imageUrl = findMemberImage.get().getUrl();
+        }
+
+        return new MemberProfileResponse(imageUrl, member.getUsername());
     }
 }

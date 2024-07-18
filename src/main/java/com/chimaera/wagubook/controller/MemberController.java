@@ -2,10 +2,7 @@ package com.chimaera.wagubook.controller;
 
 import com.chimaera.wagubook.dto.request.LoginRequest;
 import com.chimaera.wagubook.dto.request.MemberRequest;
-import com.chimaera.wagubook.dto.response.FollowerResponse;
-import com.chimaera.wagubook.dto.response.FollowingResponse;
-import com.chimaera.wagubook.dto.response.MemberInfoResponse;
-import com.chimaera.wagubook.dto.response.MemberResponse;
+import com.chimaera.wagubook.dto.response.*;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.service.MemberService;
@@ -218,6 +215,17 @@ public class MemberController {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         return new ResponseEntity<>(memberService.getMemberInfo(memberId), HttpStatus.OK);
+    }
+
+    /**
+     * 프로필 이미지, 프로필 이름 반환
+     * Method: GET
+     * url: /member/{memberId}/profile
+     */
+    @GetMapping("/member/{memberId}/profile")
+    @Operation(summary = "프로필 이미지, 프로필 이름(username) 반환")
+    public ResponseEntity<MemberProfileResponse> getMemberProfile(@PathVariable Long memberId) {
+        return new ResponseEntity<>(memberService.getMemberProfile(memberId), HttpStatus.OK);
     }
 
     // 회원 검증
