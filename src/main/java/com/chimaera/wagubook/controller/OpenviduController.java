@@ -1,7 +1,8 @@
 package com.chimaera.wagubook.controller;
 
+import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.chimaera.wagubook.service.MemberService;
 import jakarta.annotation.PostConstruct;
@@ -32,6 +33,8 @@ public class OpenviduController {
     private String OPENVIDU_SECRET;
 
     private OpenVidu openvidu;
+    private final Map<String, Long> connectionMemberMap = new ConcurrentHashMap<>(); // <token, memberId> 를 매핑
+    private final Map<String, Long> sessionCreatorMap = new ConcurrentHashMap<>(); // <sessionId, creatorMemberId> 를 매핑
 
     @PostConstruct
     public void init() {
@@ -40,12 +43,11 @@ public class OpenviduController {
 
     /**
      * @param params The Session properties
-     * @return The Session ID
+     * @return The Session ID and member ID
      */
     @PostMapping("/api/sessions")
-    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
+    public ResponseEntity<Map<String, Object>> initializeSession(@RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
             throws OpenViduJavaClientException, OpenViduHttpException {
-
 
         // 멤버 확인
         Long memberId = (Long) httpSession.getAttribute("memberId");
@@ -54,29 +56,65 @@ public class OpenviduController {
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
         System.out.println("=====================session 연결 : " + session.getSessionId());
-        return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
+
+        // 세션 생성자 정보 저장
+        sessionCreatorMap.put(session.getSessionId(), memberId);
+
+        // 응답 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("sessionId", session.getSessionId());
+        response.put("memberId", memberId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
      * @param sessionId The Session in which to create the Connection
      * @param params    The Connection properties
-     * @return The Token associated to the Connection
+     * @return The Token associated to the Connection and member ID
      */
-    @GetMapping("/api/sessions/{sessionId}/connections")
-    public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
-                                                   @RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
+    @PostMapping("/api/sessions/{sessionId}/connections")
+    public ResponseEntity<Map<String, Object>> createConnection(@PathVariable("sessionId") String sessionId,
+                                                                @RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
             throws OpenViduJavaClientException, OpenViduHttpException {
 
-        // 멤버 확인
+        // 멤버 확인.
         Long memberId = (Long) httpSession.getAttribute("memberId");
 
-        //세션 연결
+        // 세션 연결
         Session session = openvidu.getActiveSession(sessionId);
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
         Connection connection = session.createConnection(properties);
-        return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
+
+        System.out.println("=====================connection 연결 : " + connection.getToken());
+        System.out.println("=====================connection 연결 : " + memberId);
+
+        // 연결한 사용자 ID 저장
+        connectionMemberMap.put(connection.getToken(), memberId);
+
+        // 응답 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", connection.getToken());
+        response.put("memberId", memberId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * 방 만든 사람의 memberId를 반환.
+     * @param sessionId The Session ID
+     * @return The member ID of the session creator
+     */
+    @GetMapping("/api/sessions/{sessionId}/creator")
+    public ResponseEntity<Map<String, Object>> getSessionCreator(@PathVariable("sessionId") String sessionId) {
+        Long creatorMemberId = sessionCreatorMap.get(sessionId);
+        if (creatorMemberId == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("creatorMemberId", creatorMemberId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
