@@ -1,10 +1,9 @@
 spring:
-  http:
+  servlet:
     multipart:
-      max-file-size: 50MB # 파일 최대 크기를 50MB로 설정
-      max-request-size: 50MB # 요청 최대 크기를 50MB로 설정
-  # .env import
-  #.env import
+      max-file-size: 10MB
+      max-request-size: 30MB
+
   config:
     import: optional:file:.env[.properties]
 
@@ -69,3 +68,9 @@ cloud:
       bucketName: ${S3_BUCKET_NAME}
     region:
       static: ap-northeast-2
+
+openai:
+  model: gpt-4o
+  api:
+    key: ${OPENAI_API_KEY}
+    url: https://api.openai.com/v1/chat/completions

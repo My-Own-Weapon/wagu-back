@@ -24,6 +24,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -130,7 +132,7 @@ public class MemberService {
     }
 
     // 프로필 사진 변경
-    public MemberResponse updateMemberImage(Long memberId, MultipartFile image) {
+    public MemberResponse updateMemberImage(Long memberId, MultipartFile image) throws IOException {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Optional<MemberImage> findMemberImage = memberImageRepository.findByMemberId(memberId);
 
@@ -142,7 +144,8 @@ public class MemberService {
                 s3ImageService.deleteImageFromS3(memberImage.getUrl());
             }
 
-            String url = s3ImageService.upload(image);
+            BufferedImage resizedImage = s3ImageService.resizeImageWithAspectRatio(image, 512, 512);
+            String url = s3ImageService.uploadImage(resizedImage, image.getOriginalFilename());
             memberImage.updateMemberImage(url);
             memberImageRepository.save(memberImage);
             member.updateMemberImage(memberImage);

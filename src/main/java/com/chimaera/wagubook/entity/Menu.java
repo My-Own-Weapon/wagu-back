@@ -43,6 +43,10 @@ public class Menu {
         this.menuImage = menuImage;
     }
 
+    public void setMenuContent(String menuContent) {
+        this.menuContent = menuContent;
+    }
+
     public void updateMenu(String menuName, int menuPrice, String menuContent) {
         this.menuName = menuName;
         this.menuPrice = menuPrice;

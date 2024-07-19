@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -102,7 +103,7 @@ public class MemberController {
      * */
     @PatchMapping(value = "/members/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "회원 프로필 사진 수정")
-    public ResponseEntity<MemberResponse> updateMemberImage(@RequestPart MultipartFile image, HttpSession session) {
+    public ResponseEntity<MemberResponse> updateMemberImage(@RequestPart MultipartFile image, HttpSession session) throws IOException {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         return new ResponseEntity<>(memberService.updateMemberImage(memberId, image), HttpStatus.OK);
