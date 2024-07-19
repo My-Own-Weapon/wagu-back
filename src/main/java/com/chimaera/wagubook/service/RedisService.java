@@ -26,12 +26,28 @@ public class RedisService {
         redisTemplate.expire(key, duration);
     }
 
+    // 유효 시간까지 고려할 경우 (Duration 객체 사용)
+    // 사용 예시) redisService.setValues("key", "value", Duration.ofMinutes(5));
+    public void setValuesObject(String key, Object value, Duration duration) {
+        ValueOperations<String, Object> values = redisTemplate.opsForValue();
+        values.set(key, value);
+        redisTemplate.expire(key, duration);
+    }
+
     /* 조회 */
     // Key를 기반으로 Value 조회
     public String getValue(String key) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
         if (values.get(key) == null) return null;
         return String.valueOf(values.get(key));
+    }
+
+    /* 조회 */
+    // Key를 기반으로 Value 조회
+    public Object getObject(String key) {
+        ValueOperations<String, Object> values = redisTemplate.opsForValue();
+        if (values.get(key) == null) return null;
+        return values.get(key);
     }
 
     /* 삭제 */
