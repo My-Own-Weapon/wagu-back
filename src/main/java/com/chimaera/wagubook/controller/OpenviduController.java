@@ -44,6 +44,7 @@ public class OpenviduController {
     /**
      * @param params The Session properties
      * @return The Session ID and member ID
+     * TODO: liveRoom을 생성. store와 liveRoom을 1:N. store에서 live를 하고 있는 사람들을 찾아내야 함.
      */
     @PostMapping("/api/sessions")
     public ResponseEntity<Map<String, Object>> initializeSession(@RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
@@ -125,6 +126,7 @@ public class OpenviduController {
 
     /**
      * 라이브를 종료하고 세션을 삭제.
+     * TODO: 종료 시 DB에서 LiveRoom에서도 제거. store에 있는 liveRoom list에서 제거.
      */
     @DeleteMapping("/api/sessions/{sessionId}")
     public ResponseEntity<String> closeSession(@PathVariable("sessionId") String sessionId, HttpSession httpSession) {
