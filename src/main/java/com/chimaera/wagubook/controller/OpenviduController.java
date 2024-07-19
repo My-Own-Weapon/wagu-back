@@ -211,4 +211,62 @@ public class OpenviduController {
 
         return new ResponseEntity<>("라이브스트리밍이 종료되었습니다.", HttpStatus.OK);
     }
+
+
+    @PostMapping("/api/sessions/voice")
+    public ResponseEntity<Map<String, Object>> initializeSessionVoice(@RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
+            throws OpenViduJavaClientException, OpenViduHttpException {
+
+        // 멤버 확인
+        Long memberId = (Long) httpSession.getAttribute("memberId");
+
+        // 세션 생성
+        SessionProperties properties = SessionProperties.fromJson(params).build();
+        Session session = openvidu.createSession(properties);
+        System.out.println("=====================session voice 연결 : " + session.getSessionId());
+
+        // 세션 생성자 정보 저장
+        sessionCreatorMap.put(session.getSessionId(), memberId);
+
+        // 응답 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("sessionId", session.getSessionId());
+        response.put("memberId", memberId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * @param sessionId The Session in which to create the Connection
+     * @param params    The Connection properties
+     * @return The Token associated to the Connection and member ID
+     */
+    @PostMapping("/api/sessions/{sessionId}/connections/voice")
+    public ResponseEntity<Map<String, Object>> createConnectionVoice(@PathVariable("sessionId") String sessionId,
+                                                                @RequestBody(required = false) Map<String, Object> params, HttpSession httpSession)
+            throws OpenViduJavaClientException, OpenViduHttpException {
+
+        // 멤버 확인.
+        Long memberId = (Long) httpSession.getAttribute("memberId");
+
+        // 세션 연결
+        Session session = openvidu.getActiveSession(sessionId);
+        if (session == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
+        Connection connection = session.createConnection(properties);
+
+        System.out.println("=====================connection voice 연결 : " + connection.getToken());
+        System.out.println("=====================connection voice 연결 : " + memberId);
+
+        // 연결한 사용자 ID 저장
+        connectionMemberMap.put(connection.getToken(), memberId);
+
+        // 응답 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", connection.getToken());
+        response.put("memberId", memberId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
