@@ -8,5 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LiveRoomRepository extends JpaRepository<LiveRoom, Long> {
+    LiveRoom findByMemberId(Long memberId);
+    void deleteBySessionId(String sessionId);
     List<LiveRoom> findByStoreId(Long storeId);
 }

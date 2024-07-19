@@ -18,7 +18,7 @@ public class FollowingResponse {
 
         this.memberId = member.getId();
         this.username = member.getUsername();
-        this.memberImageUrl = (u==null) ? null : u;
+        this.memberImageUrl = u;
         this.isEach = follow.isEach();
         this.isLive = member.isLive();
     }
