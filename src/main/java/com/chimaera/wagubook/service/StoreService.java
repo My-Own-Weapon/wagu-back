@@ -3,10 +3,8 @@ package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.dto.response.StoreResponse;
-import com.chimaera.wagubook.entity.Follow;
-import com.chimaera.wagubook.entity.Menu;
+import com.chimaera.wagubook.entity.*;
 
-import com.chimaera.wagubook.entity.Permission;
 import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.menu.MenuRepository;
 import com.chimaera.wagubook.repository.post.PostRepository;
@@ -54,5 +52,13 @@ public class StoreService {
                     }
                 })
                 .collect(Collectors.toList());
+    }
+
+    public Store findByStoreLocationAndStoreName(Location storeLocation, String storeName) {
+        return storeRepository.findByStoreLocationAndStoreName(storeLocation, storeName).orElse(null);
+    }
+
+    public Store save(Store store){
+        return storeRepository.save(store);
     }
 }

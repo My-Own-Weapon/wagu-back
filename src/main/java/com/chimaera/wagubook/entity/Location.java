@@ -11,4 +11,5 @@ public class Location {
     private String address; // 주소
     private double posx; // x좌표
     private double posy; // y좌표
+
 }

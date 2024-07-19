@@ -3,17 +3,20 @@ package com.chimaera.wagubook.service;
 import com.chimaera.wagubook.dto.request.LoginRequest;
 import com.chimaera.wagubook.dto.request.MemberRequest;
 import com.chimaera.wagubook.dto.response.*;
-import com.chimaera.wagubook.entity.Follow;
-import com.chimaera.wagubook.entity.Member;
-import com.chimaera.wagubook.entity.MemberImage;
+import com.chimaera.wagubook.entity.*;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
+import com.chimaera.wagubook.repository.liveRoom.LiveRoomRepository;
 import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.member.MemberImageRepository;
 import com.chimaera.wagubook.repository.member.MemberRepository;
 import com.chimaera.wagubook.repository.post.PostRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +38,8 @@ public class MemberService {
     private final MemberImageRepository memberImageRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final S3ImageService s3ImageService;
+    private final LiveRoomRepository liveRoomRepository;
+
 
     public Member findById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
@@ -170,7 +175,7 @@ public class MemberService {
         if (toMemberId.equals(fromMemberId)) {
             throw new CustomException(ErrorCode.NOT_ALLOW_FOLLOW);
         }
-        
+
         // 이미 팔로우 관계가 성립되었을 경우
         if (followRepository.existsByToMemberIdAndFromMemberId(toMemberId, fromMemberId)) {
             throw new CustomException(ErrorCode.ALREADY_FOLLOW);
@@ -258,4 +263,24 @@ public class MemberService {
         }
         memberRepository.save(member);
     }
+
+    // 라이브 룸 저장
+    public void saveLiveRoom(LiveRoom liveRoom) {
+        memberRepository.saveLiveRoom(liveRoom);
+    }
+
+
+    //TODO: deleteLiveRoom 메소드가 동작하지 않음.
+    @Transactional
+    public void deleteLiveRoom(String sessionId) {
+        System.out.println("deleteLiveRoom" + sessionId);
+        liveRoomRepository.deleteBySessionId(sessionId);
+        memberRepository.deleteLiveRoom(sessionId);
+    }
+
+    public LiveRoom findLiveRoomByMemberId(Long memberId){
+        return liveRoomRepository.findByMemberId(memberId);
+
+    }
+
 }

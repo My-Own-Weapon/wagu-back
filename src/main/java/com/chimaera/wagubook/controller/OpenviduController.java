@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.chimaera.wagubook.entity.LiveRoom;
+import com.chimaera.wagubook.entity.Location;
+import com.chimaera.wagubook.entity.Store;
 import com.chimaera.wagubook.service.MemberService;
+import com.chimaera.wagubook.service.StoreService;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,8 @@ import io.openvidu.java.client.SessionProperties;
 public class OpenviduController {
 
     private final MemberService memberService;
+    private final StoreService storeService;
+
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
 
@@ -39,6 +45,16 @@ public class OpenviduController {
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+    }
+
+    /**
+     * Address, storeName을 받아서 store를 가져오는 api
+     */
+    @GetMapping("/api/stores")
+    public ResponseEntity<Map<String, Object>> getStore(@ RequestParam Location location, @ RequestParam String storeName) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("store", storeService.findByStoreLocationAndStoreName(location, storeName));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -61,6 +77,47 @@ public class OpenviduController {
         Session session = openvidu.createSession(properties);
         System.out.println("=====================session 연결 : " + session.getSessionId());
 
+        // storeLocation과 storeName 추출
+        Map<String, Object> storeLocationMap = (Map<String, Object>) params.get("storeLocation");
+        String storeName = (String) params.get("storeName");
+
+        // storeLocation 객체 생성
+        String address = (String) storeLocationMap.get("address");
+        double posx = ((Number) storeLocationMap.get("posx")).doubleValue();
+        double posy = ((Number) storeLocationMap.get("posy")).doubleValue();
+        Location storeLocation = new Location();
+        storeLocation.setAddress(address);
+        storeLocation.setPosx(posx);
+        storeLocation.setPosy(posy);
+
+        // Store 객체 찾기
+        Store store = storeService.findByStoreLocationAndStoreName(storeLocation, storeName);
+        // store가 없으면 새로 생성
+        if (store == null) {
+            store = Store.newBuilder()
+                    .storeName(storeName)
+                    .storeLocation(storeLocation)
+                    .build();
+            storeService.save(store); // 새 Store 객체 저장
+        }
+        // 기존 LiveRoom 확인
+        LiveRoom existingLiveRoom = memberService.findLiveRoomByMemberId(memberId);
+        if(existingLiveRoom !=null)
+            System.out.println("exiting : " + existingLiveRoom.getSessionId());
+
+        System.out.println("=====================liveRoom 연결 : " + existingLiveRoom);
+        // 기존 LiveRoom이 있으면 삭제
+        if(existingLiveRoom != null){
+            memberService.deleteLiveRoom(existingLiveRoom.getSessionId());
+        }
+
+            // 기존 LiveRoom이 없으면 새로 생성
+        LiveRoom liveRoom = LiveRoom.newBuilder()
+                .member(memberService.findById(memberId))
+                .sessionId(session.getSessionId())
+                .store(store)
+                .build();
+        memberService.saveLiveRoom(liveRoom);
         // 세션 생성자 정보 저장
         sessionCreatorMap.put(session.getSessionId(), memberId);
 
@@ -138,15 +195,19 @@ public class OpenviduController {
 
         // 세션 삭제
         Session session = openvidu.getActiveSession(sessionId);
+
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         try {
+            // LiveRoom에서 삭제. store에 있는 liveRoom list에서 제거.
+            memberService.deleteLiveRoom(sessionId);
             session.close();
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             throw new RuntimeException(e);
         }
         sessionCreatorMap.remove(sessionId);
+
 
         return new ResponseEntity<>("라이브스트리밍이 종료되었습니다.", HttpStatus.OK);
     }

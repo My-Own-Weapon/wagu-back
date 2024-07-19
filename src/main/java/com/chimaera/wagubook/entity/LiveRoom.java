@@ -30,4 +30,6 @@ public class LiveRoom {
     private Member member; // 라이브 스트리밍 주최자
 
     private String sessionId; // 라이브 스트리밍 세션 ID
+
+
 }
