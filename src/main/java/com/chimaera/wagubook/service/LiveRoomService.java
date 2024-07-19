@@ -1,7 +1,6 @@
 package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.entity.*;
-import com.chimaera.wagubook.repository.chatMessage.ChaMessageRepository;
 import com.chimaera.wagubook.repository.liveRoom.LiveRoomRepository;
 import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.member.MemberRepository;
@@ -12,7 +11,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,7 +18,6 @@ import java.util.List;
 public class LiveRoomService {
 
     private final LiveRoomRepository liveRoomRepository;
-    private final ChaMessageRepository chaMessageRepository;
     private final FollowRepository followRepository;
     private final MemberRepository memberRepository;
     private final StoreRepository storeRepository;
@@ -37,8 +34,6 @@ public class LiveRoomService {
         LiveRoom liveRoom = LiveRoom.newBuilder()
                 .member(member)
                 .store(store)
-                .title(title)
-                .startTime(LocalDateTime.now())
                 .build();
 
         member.turnLive(true);
@@ -111,20 +106,7 @@ public class LiveRoomService {
         }
     }
 
-    @Transactional
-    public void sendMessage(Long liveRoomId, Member member, String message) {
-        LiveRoom liveRoom = liveRoomRepository.findById(liveRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 룸 ID 입니다."));
-        ChatMessage chatMessage = ChatMessage.newBuilder()
-                .liveRoom(liveRoom)
-                .sender(member)
-                .message(message)
-                .timestamp(LocalDateTime.now())
-                .build();
-        chaMessageRepository.save(chatMessage);
-    }
 
-    public List<ChatMessage> getMessages(Long liveRoomId) {
-        return chaMessageRepository.findAllByLiveRoomId(liveRoomId);
-    }
+
+
 }

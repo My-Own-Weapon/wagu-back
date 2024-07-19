@@ -2,7 +2,6 @@ package com.chimaera.wagubook.controller;
 
 import com.chimaera.wagubook.dto.request.CreateLiveRoomRequest;
 import com.chimaera.wagubook.dto.request.SendMessageRequest;
-import com.chimaera.wagubook.entity.ChatMessage;
 import com.chimaera.wagubook.entity.LiveRoom;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.Store;
@@ -82,16 +81,5 @@ public class LiveStreamingController {
         liveRoomService.endLiveRoom(room_id, member);
     }
 
-    @PostMapping("/{room_id}/messages")
-    public void sendMessage(@PathVariable Long room_id, @RequestBody SendMessageRequest request, HttpSession session) {
-        Long memberId = (Long) session.getAttribute("memberId");
-        Member member = new Member(memberId);
 
-        liveRoomService.sendMessage(room_id, member, request.getMessage());
-    }
-
-    @GetMapping("/{room_id}/messages")
-    public List<ChatMessage> getMessages(@PathVariable Long room_id) {
-        return liveRoomService.getMessages(room_id);
-    }
 }

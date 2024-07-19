@@ -21,12 +21,6 @@ public class LiveRoom {
     @Column(name = "live_room_id")
     private Long id;
 
-    private String title; // 라이브 스트리밍 제목
-
-    private LocalDateTime startTime; // 시작 시간
-
-    private LocalDateTime endTime; // 종료 시간
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store; // 라이브 스트리밍이 진행되는 가게
@@ -35,8 +29,7 @@ public class LiveRoom {
     @JoinColumn(name = "member_id")
     private Member member; // 라이브 스트리밍 주최자
 
-    @OneToMany(mappedBy = "liveRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatMessage> chatMessages = new ArrayList<>(); // 채팅 메시지들
-
     private String sessionId; // 라이브 스트리밍 세션 ID
+
+
 }

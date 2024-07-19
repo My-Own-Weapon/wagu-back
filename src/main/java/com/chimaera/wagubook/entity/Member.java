@@ -35,7 +35,7 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE) // TODO: 수정
     private LiveRoom liveRoom; // 현재 생방송 중인 라이브 룸
     
     public void updatePassword(String password) {

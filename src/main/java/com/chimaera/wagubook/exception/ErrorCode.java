@@ -41,6 +41,8 @@ public enum ErrorCode {
     NOT_FOUND_SHARE(NOT_FOUND, "공유방을 찾을 수 없습니다."),
     NOT_FOUND_STORE(NOT_FOUND, "해당 스토어를 찾을 수 없습니다."),
     NOT_FOUND_URL(NOT_FOUND, "해당 url이 존재하지 않습니다."),
+    NOT_FOUND_LIVE_ROOM(NOT_FOUND, "해당 라이브룸을 찾을 수 없습니다."),
+
 
 
     // 409 CONFLICT: 중복된 리소스 (요청이 현재 서버 상태와 충돌될 때)
