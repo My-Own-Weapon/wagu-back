@@ -110,14 +110,16 @@ public class OpenviduController {
      * @return The member ID of the session creator
      */
     @GetMapping("/api/sessions/{sessionId}/creator")
-    public ResponseEntity<Map<String, Object>> getSessionCreator(@PathVariable("sessionId") String sessionId) {
+    public ResponseEntity<Map<String, Object>> getSessionCreator(@PathVariable("sessionId") String sessionId, HttpSession httpSession) {
         Long creatorMemberId = sessionCreatorMap.get(sessionId);
         if (creatorMemberId == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        Boolean isCreator = (creatorMemberId == (Long) httpSession.getAttribute("memberId"));
 
         Map<String, Object> response = new HashMap<>();
         response.put("creatorMemberId", creatorMemberId);
+        response.put("isCreator", isCreator);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

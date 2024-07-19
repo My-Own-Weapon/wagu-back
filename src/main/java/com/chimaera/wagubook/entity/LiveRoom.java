@@ -37,4 +37,6 @@ public class LiveRoom {
 
     @OneToMany(mappedBy = "liveRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessage> chatMessages = new ArrayList<>(); // 채팅 메시지들
+
+    private String sessionId; // 라이브 스트리밍 세션 ID
 }
