@@ -208,6 +208,10 @@ public class ShareService {
 //        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
 
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
+        if(voteStoreList.isEmpty()){
+            return new ArrayList<>();
+        }
+
         int max = 0;
         for (Integer value : voteStoreList.values()) {
             max = Math.max(max, value);
@@ -228,6 +232,9 @@ public class ShareService {
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
 
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
+        if(voteStoreList.isEmpty()){
+            return new ArrayList<>();
+        }
         List<StoreSearchResponse> ret = new ArrayList<>();
         for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
             ret.add(new StoreSearchResponse(storeRepository.findById(entry.getKey()).get()));
