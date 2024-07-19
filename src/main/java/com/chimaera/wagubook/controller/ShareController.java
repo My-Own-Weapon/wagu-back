@@ -1,6 +1,7 @@
 package com.chimaera.wagubook.controller;
 
 import com.chimaera.wagubook.dto.response.StoreResponse;
+import com.chimaera.wagubook.dto.response.StoreSearchResponse;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.service.ShareService;
@@ -156,7 +157,7 @@ public class ShareController {
 
     /**
      * 투표 결과 보기
-     * url : /share/{share_id}/result
+     * url : /share/{url}/result
      * */
     @GetMapping("/share/{url}/result")
     @Operation(summary = "투표 결과 보기")
@@ -168,6 +169,22 @@ public class ShareController {
         }
 
         return new ResponseEntity<>(shareService.showResult(url),HttpStatus.OK);
+    }
+
+    /**
+     * 투표 리스트 조회
+     * url : /share/{url}/vote/list
+     * */
+    @GetMapping("/share/{url}/vote/list")
+    @Operation(summary = "투표 리스트 조회")
+    public ResponseEntity<List<StoreSearchResponse>> showVoteList(@PathVariable String url, HttpSession session){
+
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+
+        return new ResponseEntity<>(shareService.showVoteList(url),HttpStatus.OK);
     }
 
 }
