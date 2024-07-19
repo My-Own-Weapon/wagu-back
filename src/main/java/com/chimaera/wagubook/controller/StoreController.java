@@ -1,5 +1,6 @@
 package com.chimaera.wagubook.controller;
 
+import com.chimaera.wagubook.dto.response.LiveResponse;
 import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.dto.response.StoreResponse;
 import com.chimaera.wagubook.exception.CustomException;
@@ -66,5 +67,24 @@ public class StoreController {
         }
 
         return new ResponseEntity<>(storeService.getAllPostsByStore(storeId,page,size,memberId), HttpStatus.OK);
+    }
+
+    /**
+     * 식당 아이디로 라이브 리스트 조회
+     * Method : GET
+     * url : /map/posts?storeId={storeId}&page={page}&size={size}
+     * */
+    @GetMapping("/map/live")
+    @Operation(summary = "식당 아이디로 라이브 리스트 조회")
+    public ResponseEntity<List<LiveResponse>> getLiveByStore(
+            @RequestParam(value = "storeId") Long storeId,
+            HttpSession session){
+
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+
+        return new ResponseEntity<>(storeService.getLiveListByStore(storeId,memberId), HttpStatus.OK);
     }
 }
