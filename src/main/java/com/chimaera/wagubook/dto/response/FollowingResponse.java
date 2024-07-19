@@ -20,6 +20,6 @@ public class FollowingResponse {
         this.username = member.getUsername();
         this.memberImageUrl = (u==null) ? null : u;
         this.isEach = follow.isEach();
-        this.isOnLive = member.isOnLive();
+        this.isOnLive = member.isLive();
     }
 }
