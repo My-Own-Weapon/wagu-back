@@ -1,6 +1,7 @@
 package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.dto.response.StoreResponse;
+import com.chimaera.wagubook.dto.response.StoreSearchResponse;
 import com.chimaera.wagubook.entity.Share;
 import com.chimaera.wagubook.entity.Store;
 import com.chimaera.wagubook.exception.CustomException;
@@ -216,6 +217,20 @@ public class ShareService {
             if(entry.getValue() == max){
                 ret.add(new StoreResponse(storeRepository.findById(entry.getKey()).get()));
             }
+        }
+        return ret;
+    }
+
+
+    public List<StoreSearchResponse> showVoteList(String url) {
+        Share share = (Share) redisService.getObject(url);
+        if(share == null)
+            throw new CustomException(ErrorCode.NOT_FOUND_URL);
+
+        HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
+        List<StoreSearchResponse> ret = new ArrayList<>();
+        for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
+            ret.add(new StoreSearchResponse(storeRepository.findById(entry.getKey()).get()));
         }
         return ret;
     }
