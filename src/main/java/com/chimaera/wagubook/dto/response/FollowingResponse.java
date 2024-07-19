@@ -10,7 +10,7 @@ public class FollowingResponse {
     private String username;
     private boolean isEach;
     private String memberImageUrl;
-    private boolean isOnLive;
+    private boolean isLive;
 
     public FollowingResponse(Follow follow) {
         Member member = follow.getFromMember();
@@ -20,6 +20,6 @@ public class FollowingResponse {
         this.username = member.getUsername();
         this.memberImageUrl = (u==null) ? null : u;
         this.isEach = follow.isEach();
-        this.isOnLive = member.isLive();
+        this.isLive = member.isLive();
     }
 }
