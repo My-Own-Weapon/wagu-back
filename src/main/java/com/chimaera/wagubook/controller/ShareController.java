@@ -87,10 +87,10 @@ public class ShareController {
      * 투표에 추가 기능
      * url : /share/{share_id}?store_id={store_id}
      * */
-    @PostMapping("/share/{share_id}")
+    @PostMapping("/share/{url}")
     @Operation(summary = "투표에 추가 기능")
     public ResponseEntity<String> addVoteStore(
-            @PathVariable String share_id,
+            @PathVariable String url,
             @RequestParam String store_id,
             HttpSession session){
 
@@ -99,17 +99,17 @@ public class ShareController {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
 
-        return new ResponseEntity<>(shareService.addVoteStore(share_id,store_id), HttpStatus.OK);
+        return new ResponseEntity<>(shareService.addVoteStore(url,store_id), HttpStatus.OK);
     }
 
     /**
      * 투표에서 삭제 기능
-     * url : /share/{share_id}?store={store_id}
+     * url : /share/{url}?store={store_id}
      * */
-    @DeleteMapping("/share/{share_id}")
+    @DeleteMapping("/share/{url}")
     @Operation(summary = "투표에서 삭제 기능")
     public ResponseEntity<String> deleteVoteStore(
-            @PathVariable String share_id,
+            @PathVariable String url,
             @RequestParam String store_id,
             HttpSession session){
 
@@ -118,56 +118,56 @@ public class ShareController {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
 
-        return new ResponseEntity<>(shareService.deleteVoteStore(share_id,store_id), HttpStatus.OK);
+        return new ResponseEntity<>(shareService.deleteVoteStore(url,store_id), HttpStatus.OK);
     }
 
     /**
      * 투표 좋아요
-     * url : /share/{share_id}/vote?store={store_id}
+     * url : /share/{url}/vote?store={store_id}
      * */
-    @PostMapping("/share/{share_id}/vote")
+    @PostMapping("/share/{url}/vote")
     @Operation(summary = "투표 좋아요")
-    public ResponseEntity<String> like(@PathVariable String share_id, @RequestParam String store_id,HttpSession session){
+    public ResponseEntity<String> like(@PathVariable String url, @RequestParam String store_id,HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
 
-        return new ResponseEntity<>(shareService.like(share_id, store_id), HttpStatus.OK);
+        return new ResponseEntity<>(shareService.like(url, store_id), HttpStatus.OK);
     }
 
 
     /**
      * 투표 좋아요 취소
-     * url : /share/{share_id}/vote?store={store_id}
+     * url : /share/{url}/vote?store={store_id}
      * */
-    @PatchMapping("/share/{share_id}/vote")
+    @PatchMapping("/share/{url}/vote")
     @Operation(summary = "투표 좋아요 취소")
-    public ResponseEntity<String> likeCancel(@PathVariable String share_id, @RequestParam String store_id,HttpSession session){
+    public ResponseEntity<String> likeCancel(@PathVariable String url, @RequestParam String store_id,HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
 
-        return new ResponseEntity<>(shareService.likeCancel(share_id, store_id), HttpStatus.OK);
+        return new ResponseEntity<>(shareService.likeCancel(url, store_id), HttpStatus.OK);
     }
 
     /**
      * 투표 결과 보기
      * url : /share/{share_id}/result
      * */
-    @GetMapping("/share/{share_id}/result")
+    @GetMapping("/share/{url}/result")
     @Operation(summary = "투표 결과 보기")
-    public ResponseEntity<List<StoreResponse>> showResult(@PathVariable String share_id,HttpSession session){
+    public ResponseEntity<List<StoreResponse>> showResult(@PathVariable String url,HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
             throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
 
-        return new ResponseEntity<>(shareService.showResult(share_id),HttpStatus.OK);
+        return new ResponseEntity<>(shareService.showResult(url),HttpStatus.OK);
     }
 
 }

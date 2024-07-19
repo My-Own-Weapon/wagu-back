@@ -21,6 +21,7 @@ import java.util.*;
 public class ShareService {
     private final ShareRepository shareRepository;
     private final StoreRepository storeRepository;
+    private final RedisService redisService;
 
     public String createUrl(Long memberId) {
 
@@ -40,11 +41,14 @@ public class ShareService {
         //share entity 생성
         Share share = Share.newBuilder()
                 .url(randomCode)
-                .localDateTime(LocalDateTime.now())
+//                .localDateTime(LocalDateTime.now())
                 .voteStoreList(new HashMap<>())
                 .build();
 
         shareRepository.save(share);
+
+        //Redis에 저장
+        redisService.setValuesObject(randomCode, share, Duration.ofMinutes(5));
 
         return randomCode;
     }
@@ -59,24 +63,30 @@ public class ShareService {
     }
 
     public String findShareId(String url, Long memberId) {
-        Optional<Share> os = shareRepository.findByUrl(url);
-        if(os.isPresent()){
-            Share findShare = os.get();
-            //유효기간(30분) 만료 전일 때만 반환
-            Duration duration = Duration.between(findShare.getLocalDateTime(),LocalDateTime.now());
-            System.out.println("localDateTime : " + LocalDateTime.now());
-            System.out.println("ShareDAteTime : " + findShare.getLocalDateTime());
-            System.out.println("duration : "+duration.getSeconds());
-            if(duration.getSeconds() < 1800){
+//        Optional<Share> os = shareRepository.findByUrl(url);
+////        if(os.isPresent()){
+////            Share findShare = os.get();
+////            //유효기간(30분) 만료 전일 때만 반환
+////            Duration duration = Duration.between(findShare.getLocalDateTime(),LocalDateTime.now());
+////            System.out.println("localDateTime : " + LocalDateTime.now());
+////            System.out.println("ShareDAteTime : " + findShare.getLocalDateTime());
+////            System.out.println("duration : "+duration.getSeconds());
+////            if(duration.getSeconds() < 1800){
+////
+////                return "" + findShare.getId();
+////            }
+////        }
+        Share value = (Share)redisService.getObject(url);
+        if(value == null)
+            throw new CustomException(ErrorCode.NOT_FOUND_URL);
+        else
+            return ""+value.getId();
 
-                return "" + findShare.getId();
-            }
-        }
-        return "해당 url이 존재하지 않습니다.";
+//        return "해당 url이 존재하지 않습니다.";
     }
 
     @Transactional
-    public String addVoteStore(String shareId, String storeId) {
+    public String addVoteStore(String url, String storeId) {
         //가게 찾기
         Optional<Store> os =storeRepository.findById(Long.parseLong(storeId));
         if(os.isEmpty()){
@@ -86,15 +96,23 @@ public class ShareService {
 
 
         //공유방에서 리스트 찾기
-        Optional<Share> osh = shareRepository.findById(Long.parseLong(shareId));
-        if(osh.isEmpty()){
-            throw new CustomException(ErrorCode.NOT_FOUND_SHARE);
-        }
-        Share share = osh.get();
+        Share share = (Share)redisService.getObject(url);
+        if(share == null)
+            throw new CustomException(ErrorCode.NOT_FOUND_URL);
+//        Optional<Share> osh = shareRepository.findById(Long.parseLong(shareId));
+//        if(osh.isEmpty()){
+//            throw new CustomException(ErrorCode.NOT_FOUND_SHARE);
+//        }
+//        Share share = osh.get();
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
 
+        System.out.println("[before add]");
+        for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
+            System.out.println("key : " + entry.getKey() + " value : " + entry.getValue());
+        }
 
         //이미 포함하고 있으면
+        System.out.println(findStore.getId());
         if(voteStoreList.containsKey(findStore.getId()))
             throw new CustomException(ErrorCode.ALREADY_ADD);
 
@@ -104,7 +122,9 @@ public class ShareService {
 
         voteStoreList.put(findStore.getId(), 0);
         //변경사항 저장
-        shareRepository.save(share);
+//        shareRepository.save(share);
+        redisService.setValuesObject(url, share, Duration.ofMinutes(5));
+
         System.out.println("[after add]");
         for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
             System.out.println("key : " + entry.getKey() + " value : " + entry.getValue());
@@ -113,11 +133,14 @@ public class ShareService {
     }
 
     @Transactional
-    public String deleteVoteStore(String shareId, String storeId) {
+    public String deleteVoteStore(String url, String storeId) {
         //가게 찾기
         Store findStore = storeRepository.findById(Long.parseLong(storeId)).get();
         //공유 엔티티에서 제거
-        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
+        Share share = (Share) redisService.getObject(url);
+        if(share == null)
+            throw new CustomException(ErrorCode.NOT_FOUND_URL);
+//        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
 
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
 
@@ -127,15 +150,20 @@ public class ShareService {
             for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
                 System.out.println("key : " + entry.getKey() + " value : " + entry.getValue());
             }
-            shareRepository.save(share);
+//            shareRepository.save(share);
+            redisService.setValuesObject(url, share, Duration.ofMinutes(5));
             return "투표에서 삭제되었습니다.";
         }
         return "투표 리스트에 존재하지 않는 가게입니다.";
     }
 
-    public String like(String shareId, String storeId) {
-        //가게 찾기
-        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
+    public String like(String url, String storeId) {
+        //공유 데이터 찾기
+        Share share = (Share) redisService.getObject(url);
+        if(share == null)
+            throw new CustomException(ErrorCode.NOT_FOUND_URL);
+
+//        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
 
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
         Long key = Long.parseLong(storeId);
@@ -146,18 +174,23 @@ public class ShareService {
         for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
             System.out.println("key : " + entry.getKey() + " value : " + entry.getValue());
         }
-        shareRepository.save(share);
+//        shareRepository.save(share);
+        redisService.setValuesObject(url, share, Duration.ofMinutes(5));
         return "투표 성공";
     }
 
-    public String likeCancel(String shareId, String storeId) {
-        //가게 찾기
-        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
+    public String likeCancel(String url, String storeId) {
+        //공유 데이터 찾기
+        Share share = (Share) redisService.getObject(url);
+        if(share == null)
+            throw new CustomException(ErrorCode.NOT_FOUND_URL);
+//        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
 
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
         Long key = Long.parseLong(storeId);
         voteStoreList.replace(key, voteStoreList.get(key)-1);
-        shareRepository.save(share);
+//        shareRepository.save(share);
+        redisService.setValuesObject(url, share, Duration.ofMinutes(5));
 
         System.out.println("[after cancel]");
         for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
@@ -166,8 +199,12 @@ public class ShareService {
         return "투표 취소";
     }
 
-    public List<StoreResponse> showResult(String shareId) {
-        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
+    public List<StoreResponse> showResult(String url) {
+        //공유 데이터 찾기
+        Share share = (Share) redisService.getObject(url);
+        if(share == null)
+            throw new CustomException(ErrorCode.NOT_FOUND_URL);
+//        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
 
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
         int max = 0;
