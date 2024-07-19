@@ -1,12 +1,15 @@
 package com.chimaera.wagubook.service;
 
 
+import com.chimaera.wagubook.dto.response.LiveResponse;
 import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.dto.response.StoreResponse;
 import com.chimaera.wagubook.entity.Follow;
+import com.chimaera.wagubook.entity.LiveRoom;
 import com.chimaera.wagubook.entity.Menu;
 
 import com.chimaera.wagubook.entity.Permission;
+import com.chimaera.wagubook.repository.liveRoom.LiveRoomRepository;
 import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.menu.MenuRepository;
 import com.chimaera.wagubook.repository.post.PostRepository;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
@@ -29,6 +33,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final PostRepository postRepository;
     private final MenuRepository menuRepository;
+    private final LiveRoomRepository liveRoomRepository;
 
 
     public List<StoreResponse> getStoresByScreen(String left, String right, String up, String down) {
@@ -53,6 +58,17 @@ public class StoreService {
                         return new StorePostResponse(post, post.getMenus().get(0));
                     }
                 })
+                .collect(Collectors.toList());
+    }
+
+    public List<LiveResponse> getLiveListByStore(Long storeId, Long memberId) {
+        List<LiveRoom> liveRoomList = liveRoomRepository.findByStoreId(storeId);
+        if(liveRoomList.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        return liveRoomList.stream()
+                .map(liveRoom -> (new LiveResponse(liveRoom)))
                 .collect(Collectors.toList());
     }
 }
