@@ -155,7 +155,7 @@ public class ShareService {
         //redis에서 공유 데이터 조회
         Share share = (Share) redisRepository.getObject(url);
         if(share == null){
-            redisLockRepository.unlock(url+storeId);
+            redisLockRepository.unlock("like"+url+storeId);
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
         }
 
@@ -175,7 +175,7 @@ public class ShareService {
         redisRepository.setValuesObject(url, share, Duration.ofMinutes(TIME_LIMIT_MINUTE));
 
         //redis unLock
-        redisLockRepository.unlock(url+storeId);
+        redisLockRepository.unlock("like"+url+storeId);
         return "투표 성공";
     }
 
