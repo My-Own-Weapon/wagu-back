@@ -1,5 +1,6 @@
 package com.chimaera.wagubook.service;
 
+import com.chimaera.wagubook.dto.response.LiveResponse;
 import com.chimaera.wagubook.entity.*;
 import com.chimaera.wagubook.repository.liveRoom.LiveRoomRepository;
 import com.chimaera.wagubook.repository.member.FollowRepository;
@@ -11,7 +12,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,16 +53,6 @@ public class LiveRoomService {
         }
     }
 
-    public List<LiveRoom> getFollowedLiveRooms(Member member) {
-        // 팔로우한 사용자의 라이브 룸 가져오기
-        return queryFactory.selectFrom(QLiveRoom.liveRoom)
-                .where(QLiveRoom.liveRoom.member.in(
-                        JPAExpressions.select(QFollow.follow.toMember)
-                                .from(QFollow.follow)
-                                .where(QFollow.follow.fromMember.eq(member))
-                ))
-                .fetch();
-    }
 
     public List<LiveRoom> getStoreLiveRooms(String storeName) {
         return queryFactory.selectFrom(QLiveRoom.liveRoom)
@@ -106,7 +99,15 @@ public class LiveRoomService {
         }
     }
 
+    public List<LiveResponse> getFollowedLiveRooms(Long memberId) {
+        // 팔로우한 사용자의 라이브 룸 가져오기
+        List<LiveRoom> allFollowedRooms = liveRoomRepository.findAllFollowedRooms(memberId);
 
+        if(allFollowedRooms.isEmpty())
+            return new ArrayList<>();
+
+        return allFollowedRooms.stream().map(room -> new LiveResponse(room)).collect(Collectors.toList());
+    }
 
 
 }

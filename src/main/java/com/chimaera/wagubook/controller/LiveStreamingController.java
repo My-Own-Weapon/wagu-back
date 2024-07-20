@@ -2,6 +2,7 @@ package com.chimaera.wagubook.controller;
 
 import com.chimaera.wagubook.dto.request.CreateLiveRoomRequest;
 import com.chimaera.wagubook.dto.request.SendMessageRequest;
+import com.chimaera.wagubook.dto.response.LiveResponse;
 import com.chimaera.wagubook.entity.LiveRoom;
 import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.entity.Store;
@@ -29,14 +30,6 @@ public class LiveStreamingController {
 
         Store store = request.getStoreName() == null ? null : new Store(request.getStoreName());
         return liveRoomService.createLiveRoom(member, store, request.getTitle());
-    }
-
-    @GetMapping("/followers")
-    public List<LiveRoom> getFollowedLiveRooms(HttpSession session) {
-        Long memberId = (Long) session.getAttribute("memberId");
-        Member member = new Member(memberId);
-
-        return liveRoomService.getFollowedLiveRooms(member);
     }
 
     @GetMapping("/map")
@@ -79,6 +72,15 @@ public class LiveStreamingController {
         Member member = new Member(memberId);
 
         liveRoomService.endLiveRoom(room_id, member);
+    }
+
+
+    @GetMapping("/followings")
+    public List<LiveResponse> getFollowedLiveRooms(HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        Member member = new Member(memberId);
+
+        return liveRoomService.getFollowedLiveRooms(member.getId());
     }
 
 

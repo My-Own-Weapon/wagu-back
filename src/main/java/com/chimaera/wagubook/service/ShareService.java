@@ -212,7 +212,7 @@ public class ShareService {
         return "투표 취소";
     }
 
-    public List<StoreResponse> showResult(String url) {
+    public List<StoreSearchResponse> showResult(String url) {
         //공유 데이터 찾기
         Share share = (Share) redisRepository.getObject(url);
         if(share == null)
@@ -224,12 +224,12 @@ public class ShareService {
         for (Integer value : voteStoreList.values()) {
             max = Math.max(max, value);
         }
-
+      
         //최댓값에 해당하는 데이터 찾기
-        List<StoreResponse> ret = new ArrayList<>();
+        List<StoreSearchResponse> ret = new ArrayList<>();
         for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
             if(entry.getValue() == max){
-                ret.add(new StoreResponse(storeRepository.findById(entry.getKey()).get()));
+                ret.add(new StoreSearchResponse(storeRepository.findById(entry.getKey()).get()));
             }
         }
         return ret;
