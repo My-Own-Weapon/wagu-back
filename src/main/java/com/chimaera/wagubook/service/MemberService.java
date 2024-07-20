@@ -237,7 +237,7 @@ public class MemberService {
         int followerNum = followRepository.countByFromMemberId(member.getId());
         int followingNum = followRepository.countByToMemberId(member.getId());
         int postNum = postRepository.countByMemberId(member.getId());
-        return new MemberInfoResponse(followerNum, followingNum, postNum);
+        return new MemberInfoResponse(followerNum, followingNum, postNum, member.getName(), member.getMemberImage().getUrl());
     }
 
     // username 을 통해 프로필 이미지, username 조회
