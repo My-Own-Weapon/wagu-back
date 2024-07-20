@@ -1,4 +1,4 @@
-package com.chimaera.wagubook.service;
+package com.chimaera.wagubook.repository.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -8,7 +8,7 @@ import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor
-public class RedisService {
+public class RedisRepository {
     private final RedisTemplate<String, Object> redisTemplate;
 
     /* 등록, 수정 */

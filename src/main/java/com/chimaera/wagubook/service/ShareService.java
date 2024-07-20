@@ -6,6 +6,8 @@ import com.chimaera.wagubook.entity.Share;
 import com.chimaera.wagubook.entity.Store;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
+import com.chimaera.wagubook.repository.redis.RedisLockRepository;
+import com.chimaera.wagubook.repository.redis.RedisRepository;
 import com.chimaera.wagubook.repository.share.ShareRepository;
 import com.chimaera.wagubook.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -22,7 +23,8 @@ import java.util.*;
 public class ShareService {
     private final ShareRepository shareRepository;
     private final StoreRepository storeRepository;
-    private final RedisService redisService;
+    private final RedisRepository redisRepository;
+    private final RedisLockRepository redisLockRepository;
 
     public String createUrl(Long memberId) {
 
@@ -49,7 +51,7 @@ public class ShareService {
         shareRepository.save(share);
 
         //Redis에 저장
-        redisService.setValuesObject(randomCode, share, Duration.ofMinutes(5));
+        redisRepository.setValuesObject(randomCode, share, Duration.ofMinutes(5));
 
         return randomCode;
     }
@@ -77,7 +79,7 @@ public class ShareService {
 ////                return "" + findShare.getId();
 ////            }
 ////        }
-        Share value = (Share)redisService.getObject(url);
+        Share value = (Share) redisRepository.getObject(url);
         if(value == null)
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
         else
@@ -97,7 +99,7 @@ public class ShareService {
 
 
         //공유방에서 리스트 찾기
-        Share share = (Share)redisService.getObject(url);
+        Share share = (Share) redisRepository.getObject(url);
         if(share == null)
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
 //        Optional<Share> osh = shareRepository.findById(Long.parseLong(shareId));
@@ -124,7 +126,7 @@ public class ShareService {
         voteStoreList.put(findStore.getId(), 0);
         //변경사항 저장
 //        shareRepository.save(share);
-        redisService.setValuesObject(url, share, Duration.ofMinutes(5));
+        redisRepository.setValuesObject(url, share, Duration.ofMinutes(5));
 
         System.out.println("[after add]");
         for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
@@ -138,7 +140,7 @@ public class ShareService {
         //가게 찾기
         Store findStore = storeRepository.findById(Long.parseLong(storeId)).get();
         //공유 엔티티에서 제거
-        Share share = (Share) redisService.getObject(url);
+        Share share = (Share) redisRepository.getObject(url);
         if(share == null)
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
 //        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
@@ -152,15 +154,20 @@ public class ShareService {
                 System.out.println("key : " + entry.getKey() + " value : " + entry.getValue());
             }
 //            shareRepository.save(share);
-            redisService.setValuesObject(url, share, Duration.ofMinutes(5));
+            redisRepository.setValuesObject(url, share, Duration.ofMinutes(5));
             return "투표에서 삭제되었습니다.";
         }
         return "투표 리스트에 존재하지 않는 가게입니다.";
     }
 
-    public String like(String url, String storeId) {
+    public String like(String url, String storeId) throws InterruptedException{
+        System.out.println(redisLockRepository.lock("lock"+url));
+        while (Boolean.FALSE.equals(redisLockRepository.lock("lock"+url))){
+            Thread.sleep(10);
+        }
+
         //공유 데이터 찾기
-        Share share = (Share) redisService.getObject(url);
+        Share share = (Share) redisRepository.getObject(url);
         if(share == null)
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
 
@@ -176,13 +183,14 @@ public class ShareService {
             System.out.println("key : " + entry.getKey() + " value : " + entry.getValue());
         }
 //        shareRepository.save(share);
-        redisService.setValuesObject(url, share, Duration.ofMinutes(5));
+        redisRepository.setValuesObject(url, share, Duration.ofMinutes(5));
+        redisLockRepository.unlock("lock"+url);
         return "투표 성공";
     }
 
     public String likeCancel(String url, String storeId) {
         //공유 데이터 찾기
-        Share share = (Share) redisService.getObject(url);
+        Share share = (Share) redisRepository.getObject(url);
         if(share == null)
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
 //        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
@@ -191,7 +199,7 @@ public class ShareService {
         Long key = Long.parseLong(storeId);
         voteStoreList.replace(key, voteStoreList.get(key)-1);
 //        shareRepository.save(share);
-        redisService.setValuesObject(url, share, Duration.ofMinutes(5));
+        redisRepository.setValuesObject(url, share, Duration.ofMinutes(5));
 
         System.out.println("[after cancel]");
         for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
@@ -202,7 +210,7 @@ public class ShareService {
 
     public List<StoreResponse> showResult(String url) {
         //공유 데이터 찾기
-        Share share = (Share) redisService.getObject(url);
+        Share share = (Share) redisRepository.getObject(url);
         if(share == null)
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
 //        Share share = shareRepository.findById(Long.parseLong(shareId)).get();
@@ -223,7 +231,7 @@ public class ShareService {
 
 
     public List<StoreSearchResponse> showVoteList(String url) {
-        Share share = (Share) redisService.getObject(url);
+        Share share = (Share) redisRepository.getObject(url);
         if(share == null)
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
 
