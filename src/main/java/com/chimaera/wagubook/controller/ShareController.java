@@ -161,7 +161,7 @@ public class ShareController {
      * */
     @GetMapping("/share/{url}/result")
     @Operation(summary = "투표 결과 보기")
-    public ResponseEntity<List<StoreResponse>> showResult(@PathVariable String url,HttpSession session){
+    public ResponseEntity<List<StoreSearchResponse>> showResult(@PathVariable String url,HttpSession session){
 
         Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
