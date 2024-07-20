@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface LiveRoomRepository extends JpaRepository<LiveRoom, Long> {
+public interface LiveRoomRepository extends JpaRepository<LiveRoom, Long>, LiveRoomRepositoryCustom {
     LiveRoom findByMemberId(Long memberId);
     void deleteBySessionId(String sessionId);
     List<LiveRoom> findByStoreId(Long storeId);
