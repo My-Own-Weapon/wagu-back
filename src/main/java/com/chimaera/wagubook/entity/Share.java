@@ -17,7 +17,6 @@ public class Share {
     @Column(name = "share_id")
     private Long id;
     private String url; // 공유 url
-//    private LocalDateTime localDateTime; // 공유 시간
     @Lob
     private HashMap<Long, Integer> voteStoreList;
 

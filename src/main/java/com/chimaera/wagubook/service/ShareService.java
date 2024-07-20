@@ -25,6 +25,8 @@ public class ShareService {
     private final StoreRepository storeRepository;
     private final RedisRepository redisRepository;
     private final RedisLockRepository redisLockRepository;
+    private Integer TIME_LIMIT_MINUTE = 5;
+    private Integer SLEEP_TIME_MILLI = 10;
 
     public String createUrl(Long memberId) {
 
@@ -44,14 +46,13 @@ public class ShareService {
         //share entity 생성
         Share share = Share.newBuilder()
                 .url(randomCode)
-//                .localDateTime(LocalDateTime.now())
                 .voteStoreList(new HashMap<>())
                 .build();
 
         shareRepository.save(share);
 
         //Redis에 저장
-        redisRepository.setValuesObject(randomCode, share, Duration.ofMinutes(5));
+        redisRepository.setValuesObject(randomCode, share, Duration.ofMinutes(TIME_LIMIT_MINUTE));
 
         return randomCode;
     }
@@ -108,7 +109,7 @@ public class ShareService {
 
         //변경 후 저장
         voteStoreList.put(findStore.getId(), 0);
-        redisRepository.setValuesObject(url, share, Duration.ofMinutes(5));
+        redisRepository.setValuesObject(url, share, Duration.ofMinutes(TIME_LIMIT_MINUTE));
 
         //TODO: 디버그 코드 추후 삭제
         System.out.println("[after add]");
@@ -138,7 +139,7 @@ public class ShareService {
             }
 
             //redis에 저장
-            redisRepository.setValuesObject(url, share, Duration.ofMinutes(5));
+            redisRepository.setValuesObject(url, share, Duration.ofMinutes(TIME_LIMIT_MINUTE));
             return "투표에서 삭제되었습니다.";
         }
         return "투표 리스트에 존재하지 않는 가게입니다.";
@@ -148,7 +149,7 @@ public class ShareService {
 
         //redis Lock
         while (Boolean.FALSE.equals(redisLockRepository.lock("like"+url+storeId))){
-            Thread.sleep(10);
+            Thread.sleep(SLEEP_TIME_MILLI);
         }
 
         //redis에서 공유 데이터 조회
@@ -171,7 +172,7 @@ public class ShareService {
         }
 
         //redis에 저장
-        redisRepository.setValuesObject(url, share, Duration.ofMinutes(5));
+        redisRepository.setValuesObject(url, share, Duration.ofMinutes(TIME_LIMIT_MINUTE));
 
         //redis unLock
         redisLockRepository.unlock(url+storeId);
@@ -182,7 +183,7 @@ public class ShareService {
 
         //redis Lock
         while (Boolean.FALSE.equals(redisLockRepository.lock("likeCancel"+url+storeId))){
-            Thread.sleep(10);
+            Thread.sleep(SLEEP_TIME_MILLI);
         }
 
         //공유 데이터 찾기
@@ -198,7 +199,7 @@ public class ShareService {
         voteStoreList.replace(key, voteStoreList.get(key)-1);
 
         //redis에 저장
-        redisRepository.setValuesObject(url, share, Duration.ofMinutes(5));
+        redisRepository.setValuesObject(url, share, Duration.ofMinutes(TIME_LIMIT_MINUTE));
 
         //TODO: 디버그 코드 추후 삭제
         System.out.println("[after cancel]");
