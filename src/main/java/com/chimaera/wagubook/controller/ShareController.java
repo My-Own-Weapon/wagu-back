@@ -128,7 +128,7 @@ public class ShareController {
      * */
     @PostMapping("/share/{url}/vote")
     @Operation(summary = "투표 좋아요")
-    public ResponseEntity<String> like(@PathVariable String url, @RequestParam String store_id,HttpSession session){
+    public ResponseEntity<String> like(@PathVariable String url, @RequestParam String store_id,HttpSession session) throws InterruptedException{
 
         Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
@@ -145,7 +145,7 @@ public class ShareController {
      * */
     @PatchMapping("/share/{url}/vote")
     @Operation(summary = "투표 좋아요 취소")
-    public ResponseEntity<String> likeCancel(@PathVariable String url, @RequestParam String store_id,HttpSession session){
+    public ResponseEntity<String> likeCancel(@PathVariable String url, @RequestParam String store_id,HttpSession session) throws InterruptedException{
 
         Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
