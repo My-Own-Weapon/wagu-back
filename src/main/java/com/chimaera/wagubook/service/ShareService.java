@@ -25,8 +25,8 @@ public class ShareService {
     private final StoreRepository storeRepository;
     private final RedisRepository redisRepository;
     private final RedisLockRepository redisLockRepository;
-    private Integer TIME_LIMIT_MINUTE = 5;
-    private Integer SLEEP_TIME_MILLI = 10;
+    private final Integer TIME_LIMIT_MINUTE = 60;
+    private final Integer SLEEP_TIME_MILLI = 10;
 
     public String createUrl(Long memberId) {
 
