@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,10 +36,11 @@ public class PostService {
     private final FollowRepository followRepository;
     private final MenuImageRepository menuImageRepository;
     private final S3ImageService s3ImageService;
+    private final OpenAiService openAiService;
 
     // 포스트 생성
     @Transactional
-    public PostResponse createPost(List<MultipartFile> images, PostCreateRequest postCreateRequest, Long memberId) {
+    public PostResponse createPost(List<MultipartFile> images, PostCreateRequest postCreateRequest, Long memberId) throws IOException {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         // 전체에 있어 식당은 하나만 저장한다.
@@ -108,7 +111,16 @@ public class PostService {
             Menu menu = menus.get(i);
 
             MultipartFile image = images.get(i);
-            String url = s3ImageService.upload(image);
+            BufferedImage resizedImage = s3ImageService.resizeImageWithAspectRatio(image, 512, 512);
+
+            if (postCreateRequest.isAuto()) {
+                String review = openAiService.requestImageAnalysis(resizedImage, menu.getMenuName(), postCreateRequest.getPostCategory().toString());
+
+                menu.setMenuContent(review);
+                menuRepository.save(menu);
+            }
+
+            String url = s3ImageService.uploadImage(resizedImage, image.getOriginalFilename());
 
             MenuImage menuImage = MenuImage.newBuilder()
                     .url(url)
@@ -235,7 +247,7 @@ public class PostService {
 
     // 포스트 수정
     @Transactional
-    public PostResponse updatePost(Long postId, List<MultipartFile> images, PostUpdateRequest postUpdateRequest, Long memberId) {
+    public PostResponse updatePost(Long postId, List<MultipartFile> images, PostUpdateRequest postUpdateRequest, Long memberId) throws IOException {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Post post = postRepository.findByIdAndMemberId(postId, member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
 
@@ -307,20 +319,20 @@ public class PostService {
             menu.setPost(post);
             menuRepository.save(menu);
 
-            if (images != null) {
-                // 새로운 이미지 업로드를 위해 기존 이미지 삭제
-                MenuImage menuImage = menu.getMenuImage();
+            // 새로운 이미지 업로드를 위해 기존 이미지 삭제
+            MenuImage menuImage = menu.getMenuImage();
 
-                if (menuImage != null) {
-                    s3ImageService.deleteImageFromS3(menuImage.getUrl());
-                }
-
-                // 수정 이미지로 재업로드
-                String url = s3ImageService.upload(images.get(i));
-
-                menuImage.updateMenuImage(url);
-                menuImageRepository.save(menuImage);
+            if (menuImage != null) {
+                s3ImageService.deleteImageFromS3(menuImage.getUrl());
             }
+
+            MultipartFile image = images.get(i);
+            // 수정 이미지로 재업로드
+            BufferedImage resizedImage = s3ImageService.resizeImageWithAspectRatio(image, 512, 512);
+            String url = s3ImageService.uploadImage(resizedImage, image.getOriginalFilename());
+
+            menuImage.updateMenuImage(url);
+            menuImageRepository.save(menuImage);
         }
 
         return new PostResponse(post);
