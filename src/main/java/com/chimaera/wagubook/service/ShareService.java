@@ -218,9 +218,16 @@ public class ShareService {
         if(share == null)
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
 
+
+
+
+        HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
+        if(voteStoreList.isEmpty()){
+            return new ArrayList<>();
+        }
+
         //최댓값 찾기
         int max = 0;
-        HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
         for (Integer value : voteStoreList.values()) {
             max = Math.max(max, value);
         }
@@ -244,6 +251,9 @@ public class ShareService {
 
         //voteStoreList 를 StoreSearchResponse 로 변환 후 반환
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
+        if(voteStoreList.isEmpty()){
+            return new ArrayList<>();
+        }
         List<StoreSearchResponse> ret = new ArrayList<>();
         for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
             ret.add(new StoreSearchResponse(storeRepository.findById(entry.getKey()).get()));

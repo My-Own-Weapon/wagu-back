@@ -39,7 +39,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: 3.38.77.231
       port: 6379
 
 logging.level:
