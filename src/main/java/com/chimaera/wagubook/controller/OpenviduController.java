@@ -83,8 +83,8 @@ public class OpenviduController {
 
         // storeLocation 객체 생성
         String address = (String) storeLocationMap.get("address");
-        double posx = ((Number) storeLocationMap.get("posx")).doubleValue();
-        double posy = ((Number) storeLocationMap.get("posy")).doubleValue();
+        double posx = Double.parseDouble((String)storeLocationMap.get("posx"));
+        double posy = Double.parseDouble((String)storeLocationMap.get("posy"));
         Location storeLocation = new Location();
         storeLocation.setAddress(address);
         storeLocation.setPosx(posx);
