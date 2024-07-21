@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -35,7 +36,7 @@ public class PostController {
      * */
     @PostMapping(value = "/posts", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "포스트 생성")
-    public ResponseEntity<PostResponse> createPost(@RequestPart List<MultipartFile> images, @Valid @RequestPart PostCreateRequest data, HttpSession session) {
+    public ResponseEntity<PostResponse> createPost(@RequestPart List<MultipartFile> images, @Valid @RequestPart PostCreateRequest data, HttpSession session) throws IOException {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         return new ResponseEntity<>(postService.createPost(images, data, memberId), HttpStatus.CREATED);
@@ -101,7 +102,7 @@ public class PostController {
      * */
     @PatchMapping(value = "/posts/{postId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "포스트 수정")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestPart List<MultipartFile> images, @Valid @RequestPart PostUpdateRequest data, HttpSession session) {
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestPart List<MultipartFile> images, @Valid @RequestPart PostUpdateRequest data, HttpSession session) throws IOException {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         return new ResponseEntity<>(postService.updatePost(postId, images, data, memberId), HttpStatus.OK);

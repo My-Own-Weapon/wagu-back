@@ -41,7 +41,6 @@ public class PostCreateRequest {
         @NotNull(message = "메뉴 가격은 필수 값입니다.")
         private int menuPrice;
 
-        @NotNull(message = "메뉴 리뷰는 필수 값입니다.")
         private String menuContent;
     }
 }
