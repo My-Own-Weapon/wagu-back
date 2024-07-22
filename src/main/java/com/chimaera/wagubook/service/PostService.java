@@ -114,7 +114,8 @@ public class PostService {
             BufferedImage resizedImage = s3ImageService.resizeImageWithAspectRatio(image, 512, 512);
 
             if (postCreateRequest.isAuto()) {
-                String review = openAiService.requestImageAnalysis(resizedImage, menu.getMenuName(), postCreateRequest.getPostCategory().toString());
+//                String review = openAiService.requestImageAnalysis(resizedImage, menu.getMenuName(), postCreateRequest.getPostCategory().toString());
+                String review = openAiService.requestText(menu.getMenuName(), postCreateRequest.getPostCategory().toString());
 
                 menu.setMenuContent(review);
                 menuRepository.save(menu);
