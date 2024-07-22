@@ -70,7 +70,8 @@ cloud:
       static: ap-northeast-2
 
 openai:
-  model: gpt-4o
+#  model: gpt-4o
+  model: gpt-3.5-turbo
   api:
     key: ${OPENAI_API_KEY}
     url: https://api.openai.com/v1/chat/completions
