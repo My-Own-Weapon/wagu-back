@@ -222,6 +222,8 @@ public class MemberController {
      * 프로필 이미지, 프로필 이름 반환
      * Method: GET
      * url: /member/{username}/profile
+     *
+     * TODO: memberId, imageUrl, username, name
      */
     @GetMapping("/member/{username}/profile")
     @Operation(summary = "프로필 이미지, 프로필 이름(username) 반환")

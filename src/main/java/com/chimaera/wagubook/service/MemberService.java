@@ -253,7 +253,7 @@ public class MemberService {
             imageUrl = findMemberImage.get().getUrl();
         }
 
-        return new MemberProfileResponse(imageUrl, member.getUsername(), member.getName());
+        return new MemberProfileResponse(member.getId(), imageUrl, member.getUsername(), member.getName());
     }
 
     // 생방송 중이면 종료, 종료 중이면 시작
