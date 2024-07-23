@@ -1,12 +1,13 @@
 package com.chimaera.wagubook.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.chimaera.wagubook.entity.LiveRoom;
-import com.chimaera.wagubook.entity.Location;
-import com.chimaera.wagubook.entity.Store;
+import com.chimaera.wagubook.entity.*;
+import com.chimaera.wagubook.service.LiveRoomService;
 import com.chimaera.wagubook.service.MemberService;
 import com.chimaera.wagubook.service.StoreService;
 import jakarta.annotation.PostConstruct;
@@ -31,6 +32,7 @@ public class OpenviduController {
 
     private final MemberService memberService;
     private final StoreService storeService;
+    private final LiveRoomService liveRoomService;
 
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
@@ -102,22 +104,39 @@ public class OpenviduController {
         }
         // 기존 LiveRoom 확인
         LiveRoom existingLiveRoom = memberService.findLiveRoomByMemberId(memberId);
-        if(existingLiveRoom !=null)
-            System.out.println("exiting : " + existingLiveRoom.getSessionId());
+
 
         System.out.println("=====================liveRoom 연결 : " + existingLiveRoom);
         // 기존 LiveRoom이 있으면 삭제
         if(existingLiveRoom != null){
-            memberService.deleteLiveRoom(existingLiveRoom.getSessionId());
+            liveRoomService.deleteLiveRoom(existingLiveRoom.getSessionId());
         }
 
-            // 기존 LiveRoom이 없으면 새로 생성
+        // 기존 LiveRoom이 없으면 새로 생성
         LiveRoom liveRoom = LiveRoom.newBuilder()
                 .member(memberService.findById(memberId))
                 .sessionId(session.getSessionId())
                 .store(store)
                 .build();
+
         memberService.saveLiveRoom(liveRoom);
+
+        //이미 LiveRoomParticipant 일 경우 추가하지 않음
+        LiveRoomParticipant existingLiveRoomParticipant = liveRoomService.getLiveRoomParticipantByMemberId(memberId);
+        if(existingLiveRoomParticipant != null){
+            liveRoomService.deleteLiveRoomParticipant(existingLiveRoomParticipant.getMember().getId());
+        }
+
+        //LiveRoomParticipant 추가
+        LiveRoomParticipant liveRoomParticipant = LiveRoomParticipant.newBuilder()
+                .member(memberService.findById(memberId))
+                .sessionId(session.getSessionId())
+                .liveRoom(liveRoom)
+                .build();
+
+
+        liveRoomService.saveLiveRoomParticipant(liveRoomParticipant);
+
         // 세션 생성자 정보 저장
         sessionCreatorMap.put(session.getSessionId(), memberId);
 
@@ -149,11 +168,27 @@ public class OpenviduController {
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
         Connection connection = session.createConnection(properties);
 
-        System.out.println("=====================connection 연결 : " + connection.getToken());
-        System.out.println("=====================connection 연결 : " + memberId);
 
         // 연결한 사용자 ID 저장
         connectionMemberMap.put(connection.getToken(), memberId);
+
+        //이미 LiveRoomParticipant 일 경우 추가하지 않음
+        LiveRoomParticipant existingLiveRoomParticipant = liveRoomService.getLiveRoomParticipantByMemberId(memberId);
+        if(existingLiveRoomParticipant != null){
+            liveRoomService.deleteLiveRoomParticipant(existingLiveRoomParticipant.getMember().getId());
+        }
+
+        // LiveRoomParticipant 추가
+        Member member = memberService.findById(memberId);
+        LiveRoom liveRoom = liveRoomService.getLiveRoomBySessionId(sessionId); // LiveRoom 찾기
+        if(liveRoom != null){
+            LiveRoomParticipant liveRoomParticipant = LiveRoomParticipant.newBuilder()
+                    .member(member)
+                    .sessionId(sessionId)
+                    .liveRoom(liveRoom)
+                    .build();
+            liveRoomService.saveLiveRoomParticipant(liveRoomParticipant);
+        }
 
         // 응답 생성
         Map<String, Object> response = new HashMap<>();
@@ -173,7 +208,7 @@ public class OpenviduController {
         if (creatorMemberId == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Boolean isCreator = (creatorMemberId == (Long) httpSession.getAttribute("memberId"));
+        Boolean isCreator = (creatorMemberId.equals((Long) httpSession.getAttribute("memberId")));
 
         Map<String, Object> response = new HashMap<>();
         response.put("creatorMemberId", creatorMemberId);
@@ -182,32 +217,42 @@ public class OpenviduController {
     }
 
     /**
+     * TODO: 방에 참여한 사람이 나갔을 때 Live_Room_Participant에서 삭제.
+     */
+    @DeleteMapping("/api/sessions/{sessionId}/member/{memberId}")
+    public ResponseEntity<String> closeConnection(@PathVariable("sessionId") String sessionId, @PathVariable("memberId") Long memberId) {
+        LiveRoomParticipant liveRoomParticipant = liveRoomService.getLiveRoomParticipantByMemberId(memberId);
+        if (liveRoomParticipant == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        liveRoomService.deleteLiveRoomParticipant(memberId);
+        return new ResponseEntity<>("라이브스트리밍 참여자가 나갔습니다.", HttpStatus.OK);
+    }
+
+    /**
      * 라이브를 종료하고 세션을 삭제.
      * TODO: 종료 시 DB에서 LiveRoom에서도 제거. store에 있는 liveRoom list에서 제거.
+     *
      */
     @DeleteMapping("/api/sessions/{sessionId}")
     public ResponseEntity<String> closeSession(@PathVariable("sessionId") String sessionId, HttpSession httpSession) {
-        // 멤버 확인
         Long memberId = (Long) httpSession.getAttribute("memberId");
-
-        // 라이브를 끔
         memberService.turnLive(memberId);
 
-        // 세션 삭제
         Session session = openvidu.getActiveSession(sessionId);
-
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         try {
-            // LiveRoom에서 삭제. store에 있는 liveRoom list에서 제거.
-            memberService.deleteLiveRoom(sessionId);
+            LiveRoom liveRoom = liveRoomService.getLiveRoomBySessionId(sessionId);
+            if (liveRoom != null) {
+                liveRoomService.deleteLiveRoom(liveRoom.getSessionId());
+            }
             session.close();
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             throw new RuntimeException(e);
         }
         sessionCreatorMap.remove(sessionId);
-
 
         return new ResponseEntity<>("라이브스트리밍이 종료되었습니다.", HttpStatus.OK);
     }
@@ -262,6 +307,17 @@ public class OpenviduController {
         // 연결한 사용자 ID 저장
         connectionMemberMap.put(connection.getToken(), memberId);
 
+        // LiveRoomParticipant 추가
+        LiveRoom liveRoom = liveRoomService.getLiveRoomBySessionId(sessionId);
+        if (liveRoom != null) {
+            LiveRoomParticipant liveRoomParticipant = LiveRoomParticipant.newBuilder()
+                    .member(memberService.findById(memberId))
+                    .sessionId(session.getSessionId())
+                    .liveRoom(liveRoom)
+                    .build();
+            liveRoomService.saveLiveRoomParticipant(liveRoomParticipant);
+        }
+
         // 응답 생성
         Map<String, Object> response = new HashMap<>();
         response.put("token", connection.getToken());
@@ -269,4 +325,31 @@ public class OpenviduController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * 현재 session 방에 몇 명이 있는지 return 하는 api
+     * Integer 로 return.
+     */
+    @GetMapping("/api/sessions/{sessionId}/connections")
+    public ResponseEntity<Integer> getConnections(@PathVariable("sessionId") String sessionId) {
+        List<LiveRoomParticipant> liveRoomParticipant = liveRoomService.getLiveRoomParticipantBySessionId(sessionId);
+        for (LiveRoomParticipant roomParticipant : liveRoomParticipant) {
+            System.out.println(roomParticipant.getMember().getId());
+        }
+        return new ResponseEntity<>(liveRoomParticipant.size(), HttpStatus.OK);
+    }
+    /**
+     * 현재 얘가 session 방에 있는 앤지 check 하는 api
+     * boolean으로 return.
+     */
+    @GetMapping("/api/sessions/find/{sessionId}")
+    public ResponseEntity<Boolean> findSession(@PathVariable("sessionId") String sessionId, HttpSession httpSession) {
+        Long memberId = (Long) httpSession.getAttribute("memberId");
+        List<LiveRoomParticipant> liveRoomParticipant = liveRoomService.getLiveRoomParticipantBySessionId(sessionId);
+        for (LiveRoomParticipant roomParticipant : liveRoomParticipant) {
+            if (roomParticipant.getMember().getId().equals(memberId)) {
+                return new ResponseEntity<>(true, HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(false, HttpStatus.OK);
+    }
 }

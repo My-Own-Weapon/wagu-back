@@ -11,4 +11,5 @@ public interface LiveRoomRepository extends JpaRepository<LiveRoom, Long>, LiveR
     LiveRoom findByMemberId(Long memberId);
     void deleteBySessionId(String sessionId);
     List<LiveRoom> findByStoreId(Long storeId);
+    LiveRoom findBySessionId(String sessionId);
 }
