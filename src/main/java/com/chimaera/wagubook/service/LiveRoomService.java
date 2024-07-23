@@ -2,6 +2,7 @@ package com.chimaera.wagubook.service;
 
 import com.chimaera.wagubook.dto.response.LiveResponse;
 import com.chimaera.wagubook.entity.*;
+import com.chimaera.wagubook.repository.liveRoom.LiveRoomParticipantRepository;
 import com.chimaera.wagubook.repository.liveRoom.LiveRoomRepository;
 import com.chimaera.wagubook.repository.member.FollowRepository;
 import com.chimaera.wagubook.repository.member.MemberRepository;
@@ -21,10 +22,11 @@ import java.util.stream.Collectors;
 public class LiveRoomService {
 
     private final LiveRoomRepository liveRoomRepository;
-    private final FollowRepository followRepository;
     private final MemberRepository memberRepository;
     private final StoreRepository storeRepository;
     private final JPAQueryFactory queryFactory;
+    private final LiveRoomParticipantRepository liveRoomParticipantRepository;
+
 
 
     @Transactional
@@ -86,6 +88,17 @@ public class LiveRoomService {
         // 캡쳐 로직
     }
 
+
+    public List<LiveResponse> getFollowedLiveRooms(Long memberId) {
+        // 팔로우한 사용자의 라이브 룸 가져오기
+        List<LiveRoom> allFollowedRooms = liveRoomRepository.findAllFollowedRooms(memberId);
+
+        if(allFollowedRooms.isEmpty())
+            return new ArrayList<>();
+
+        return allFollowedRooms.stream().map(room -> new LiveResponse(room)).collect(Collectors.toList());
+    }
+
     @Transactional
     public void endLiveRoom(Long liveRoomId, Member member) {
         LiveRoom liveRoom = liveRoomRepository.findById(liveRoomId)
@@ -99,15 +112,41 @@ public class LiveRoomService {
         }
     }
 
-    public List<LiveResponse> getFollowedLiveRooms(Long memberId) {
-        // 팔로우한 사용자의 라이브 룸 가져오기
-        List<LiveRoom> allFollowedRooms = liveRoomRepository.findAllFollowedRooms(memberId);
-
-        if(allFollowedRooms.isEmpty())
-            return new ArrayList<>();
-
-        return allFollowedRooms.stream().map(room -> new LiveResponse(room)).collect(Collectors.toList());
+    // TODO: 수정
+    @Transactional
+    public void saveLiveRoomParticipant(LiveRoomParticipant liveRoomParticipant) {
+        liveRoomParticipantRepository.save(liveRoomParticipant);
     }
+
+    public LiveRoom getLiveRoomBySessionId(String sessionId) {
+        return liveRoomRepository.findBySessionId(sessionId);
+    }
+
+    // TODO: 수정
+    @Transactional
+    public void deleteLiveRoom(String sessionId){
+        // 먼저 liveRoomParticipant 삭제
+        liveRoomParticipantRepository.deleteBySessionId(sessionId);
+
+        // 그 다음 LiveRoom 삭제
+        liveRoomRepository.deleteBySessionId(sessionId);
+    }
+
+    public LiveRoomParticipant getLiveRoomParticipantByMemberId(Long memberId) {
+        return liveRoomParticipantRepository.findByMemberId(memberId);
+    }
+
+    @Transactional
+    public void deleteLiveRoomParticipant(Long memberId){
+        liveRoomParticipantRepository.deleteByMemberId(memberId);
+    }
+
+    // sessionId로 LiveRoomParticipant 찾기
+    public List<LiveRoomParticipant> getLiveRoomParticipantBySessionId(String sessionId) {
+        return liveRoomParticipantRepository.findBySessionId(sessionId);
+    }
+
+
 
 
 }

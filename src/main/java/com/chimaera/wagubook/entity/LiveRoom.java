@@ -31,5 +31,9 @@ public class LiveRoom {
 
     private String sessionId; // 라이브 스트리밍 세션 ID
 
+    //liveRoom에 대한 참여자 목록
+    @OneToMany(mappedBy = "liveRoom", fetch = FetchType.LAZY)
+    private List<LiveRoomParticipant> liveRoomParticipants = new ArrayList<>();
+
 
 }
