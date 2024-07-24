@@ -1,7 +1,9 @@
 package com.chimaera.wagubook.controller;
 
+import com.chimaera.wagubook.dto.request.PostAIRequest;
 import com.chimaera.wagubook.dto.request.PostCreateRequest;
 import com.chimaera.wagubook.dto.request.PostUpdateRequest;
+import com.chimaera.wagubook.dto.response.PostAIResponse;
 import com.chimaera.wagubook.dto.response.PostResponse;
 import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.exception.CustomException;
@@ -40,6 +42,12 @@ public class PostController {
         Long memberId = (Long) session.getAttribute("memberId");
         checkValidByMemberId(memberId);
         return new ResponseEntity<>(postService.createPost(images, data, memberId), HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/posts/auto")
+    @Operation(summary = "AI 자동 생성")
+    public ResponseEntity<PostAIResponse> createContent(@RequestBody PostAIRequest postAIRequest) throws IOException {
+        return new ResponseEntity<>(postService.createContent(postAIRequest), HttpStatus.OK);
     }
 
     /**
