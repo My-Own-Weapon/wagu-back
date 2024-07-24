@@ -37,12 +37,12 @@ public class OpenAiService {
         // 요청할 데이터 설정
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("model", apiModel);
-        requestData.put("max_tokens", 100);
+        requestData.put("max_tokens", 150);
         requestData.put("messages", Arrays.asList(
-                Map.of("role", "user", "content", String.format("주어진 음식 이미지를 분석해서 이에 대한 긍정적인 리뷰를 남겨줘" +
-                        "해당 음식은 메뉴 이름이 %s이고, 음식 카테고리가 %s인 음식이야." +
+                Map.of("role", "user", "content", String.format("주어진 음식 이미지를 분석해서 이에 대한 긍정적인 리뷰를 100글자 내외로 남겨줘" +
+                        "해당 음식은 이름이 %s이고, 카테고리가 %s인 음식이야." +
                         "이때 숫자, 시간, 날짜 관련 표현은 제외해줘." +
-                        "또한 사용자가 기록을 남기는 어투로 작성해줘야 하고, 완성형 문장이어야 해!" +
+                        "또한 사용자가 기록을 남기는 어투로 작성해줘야 하고, 반드시 완성형 문장이어야 해!" +
                         "마지막으로 출력은 리뷰만 해줘.", imageUrl, menuName, categoryName))
         ));
 
@@ -62,12 +62,12 @@ public class OpenAiService {
         // 요청할 데이터 설정
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("model", apiModel);
-        requestData.put("max_tokens", 100);
+        requestData.put("max_tokens", 150);
         requestData.put("messages", Arrays.asList(
-                Map.of("role", "user", "content", String.format("주어진 음식 이미지를 분석해서 이에 대한 긍정적인 리뷰를 남겨줘" +
-                        "해당 음식은 메뉴 이름이 %s이고, 음식 카테고리가 %s인 음식이야." +
+                Map.of("role", "user", "content", String.format("주어진 음식 이미지를 분석해서 이에 대한 긍정적인 리뷰를 100글자 내외로 남겨줘" +
+                        "해당 음식은 이름이 %s이고, 카테고리가 %s인 음식이야." +
                         "이때 숫자, 시간, 날짜 관련 표현은 제외해줘." +
-                        "또한 사용자가 기록을 남기는 어투로 작성해줘야 하고, 완성형 문장이어야 해!" +
+                        "또한 사용자가 기록을 남기는 어투로 작성해줘야 하고, 반드시 완성형 문장이어야 해!" +
                         "마지막으로 출력은 리뷰만 해줘.", menuName, categoryName))
         ));
 

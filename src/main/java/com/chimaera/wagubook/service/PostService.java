@@ -1,7 +1,9 @@
 package com.chimaera.wagubook.service;
 
+import com.chimaera.wagubook.dto.request.PostAIRequest;
 import com.chimaera.wagubook.dto.request.PostCreateRequest;
 import com.chimaera.wagubook.dto.request.PostUpdateRequest;
+import com.chimaera.wagubook.dto.response.PostAIResponse;
 import com.chimaera.wagubook.dto.response.PostResponse;
 import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.entity.*;
@@ -113,13 +115,13 @@ public class PostService {
             MultipartFile image = images.get(i);
             BufferedImage resizedImage = s3ImageService.resizeImageWithAspectRatio(image, 512, 512);
 
-            if (postCreateRequest.isAuto()) {
-//                String review = openAiService.requestImageAnalysis(resizedImage, menu.getMenuName(), postCreateRequest.getPostCategory().toString());
-                String review = openAiService.requestText(menu.getMenuName(), postCreateRequest.getPostCategory().toString());
-
-                menu.setMenuContent(review);
-                menuRepository.save(menu);
-            }
+//            if (postCreateRequest.isAuto()) {
+////                String review = openAiService.requestImageAnalysis(resizedImage, menu.getMenuName(), postCreateRequest.getPostCategory().toString());
+//                String review = openAiService.requestText(menu.getMenuName(), postCreateRequest.getPostCategory().toString());
+//
+//                menu.setMenuContent(review);
+//                menuRepository.save(menu);
+//            }
 
             String url = s3ImageService.uploadImage(resizedImage, image.getOriginalFilename());
 
@@ -135,6 +137,11 @@ public class PostService {
         }
 
         return new PostResponse(post);
+    }
+
+    public PostAIResponse createContent(PostAIRequest postAIRequest) throws IOException {
+        String review = openAiService.requestText(postAIRequest.getMenuName(), postAIRequest.getPostCategory().toString());
+        return new PostAIResponse(review);
     }
 
     // 포스트 조회 (전체)
