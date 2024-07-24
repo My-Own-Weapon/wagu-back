@@ -131,7 +131,7 @@ public class ShareService {
 
 
         //투표 리스트에 있으면 제거
-        if(voteStoreList.remove(storeId)!=null){
+        if(voteStoreList.remove(Long.parseLong(storeId))!=null){
             //TODO: 디버그 코드 추후 삭제
             System.out.println("[after delete]");
             for (Map.Entry<Long, Integer> entry : voteStoreList.entrySet()) {
