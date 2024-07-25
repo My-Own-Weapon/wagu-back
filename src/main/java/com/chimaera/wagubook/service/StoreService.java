@@ -36,7 +36,7 @@ public class StoreService {
 
     public List<StoreResponse> getStoresByScreen(String left, String right, String up, String down) {
         return storeRepository.findAllByScreen(left,right,up,down).stream()
-                .map(store -> (new StoreResponse(store)))
+                .map(store -> (new StoreResponse(store, (liveRoomRepository.findByStoreId(store.getId()).isEmpty()) ? false : true)))
                 .collect(Collectors.toList());
     }
     
