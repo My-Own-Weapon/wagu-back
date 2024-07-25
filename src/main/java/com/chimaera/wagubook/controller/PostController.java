@@ -5,6 +5,7 @@ import com.chimaera.wagubook.dto.request.PostCreateRequest;
 import com.chimaera.wagubook.dto.request.PostUpdateRequest;
 import com.chimaera.wagubook.dto.response.PostAIResponse;
 import com.chimaera.wagubook.dto.response.PostResponse;
+import com.chimaera.wagubook.dto.response.PostUpdateCheckResponse;
 import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
@@ -128,6 +129,14 @@ public class PostController {
         checkValidByMemberId(memberId);
         postService.deletePost(postId, memberId);
         return new ResponseEntity<>(postId + "번 포스트가 삭제되었습니다.", HttpStatus.OK);
+    }
+
+    @GetMapping("/posts/{postId}/check")
+    @Operation(summary = "포스트 수정 가능 여부 확인")
+    public ResponseEntity<PostUpdateCheckResponse> checkUpdatePost(@PathVariable Long postId, HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
+        checkValidByMemberId(memberId);
+        return new ResponseEntity<>(postService.checkUpdatePost(postId, memberId), HttpStatus.OK);
     }
 
     // 회원 검증
