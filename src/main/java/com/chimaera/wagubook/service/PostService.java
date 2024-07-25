@@ -5,6 +5,7 @@ import com.chimaera.wagubook.dto.request.PostCreateRequest;
 import com.chimaera.wagubook.dto.request.PostUpdateRequest;
 import com.chimaera.wagubook.dto.response.PostAIResponse;
 import com.chimaera.wagubook.dto.response.PostResponse;
+import com.chimaera.wagubook.dto.response.PostUpdateCheckResponse;
 import com.chimaera.wagubook.dto.response.StorePostResponse;
 import com.chimaera.wagubook.entity.*;
 import com.chimaera.wagubook.exception.CustomException;
@@ -258,6 +259,7 @@ public class PostService {
     public PostResponse updatePost(Long postId, List<MultipartFile> images, PostUpdateRequest postUpdateRequest, Long memberId) throws IOException {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Post post = postRepository.findByIdAndMemberId(postId, member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
+        // todo: 포스트, 회원 검증 로직 추가 -> 위의 내용 삭제
 
         // 전체에 있어 식당은 하나만 저장한다.
         // 사용자가 이미 한번 생성한 식당은 포스트를 새로 생성할 수 없다.
@@ -350,11 +352,24 @@ public class PostService {
     public void deletePost(Long postId, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Post post = postRepository.findByIdAndMemberId(postId, member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
+        // todo: 포스트, 회원 검증 로직 추가 -> 위의 내용 삭제
+
         List<Menu> menus = post.getMenus();
         for (Menu menu : menus) {
             String url = menu.getMenuImage().getUrl();
             s3ImageService.deleteImageFromS3(url);
         }
         postRepository.delete(post);
+    }
+
+    public PostUpdateCheckResponse checkUpdatePost(Long postId, Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_POST));
+
+        if (member.getId() != post.getMember().getId()) {
+            return new PostUpdateCheckResponse(false);
+        } else {
+            return new PostUpdateCheckResponse(true);
+        }
     }
 }
