@@ -28,6 +28,7 @@ public class StoreController {
      * url : /map?left={left}&right={right}&up={up}&down={down}
      * ex : map?left=1&right=20&up=1&down=20
      * */
+    // TODO: 여기서 해당 좌표 내부에 있는 식당 중 방송이 진행 중인지에 대한 boolean 값도 return.
     @GetMapping("/map")
     @Operation(summary = "좌표에 맞는 식당 좌표 조회")
     public ResponseEntity<List<StoreResponse>> findStores(
