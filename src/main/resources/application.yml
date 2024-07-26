@@ -1,4 +1,9 @@
 spring:
+
+  jackson:
+    parser:
+      allow-unquoted-control-chars: true
+
   servlet:
     multipart:
       max-file-size: 10MB
