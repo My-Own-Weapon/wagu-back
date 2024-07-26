@@ -74,40 +74,40 @@ jobs:
             sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
             sudo docker stop github-actions-demo
-            sudo docker run --name github-actions-demo --rm --env-file ./.env -p 8080:8080 -d ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-            sudo docker system prune -f
-            
-            # # 블루-그린 배포를 위한 컨테이너 실행
-            # if [ $(docker ps -q -f name=github-actions-demo-green) ]; then
-            #   # 그린 컨테이너가 실행 중인 경우, 블루 컨테이너로 새 버전 실행
-            #   docker run -d --name github-actions-demo-blue --rm --env-file ./.env_blue -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-            #   NEW_CONTAINER=github-actions-demo-blue
-            #   OLD_CONTAINER=github-actions-demo-green
-            #   NEW_PORT=8080
-            #   OLD_PORT=8081
-            # else
-            #   # 블루 컨테이너가 실행 중인 경우, 그린 컨테이너로 새 버전 실행
-            #   docker run -d --name github-actions-demo-green --rm --env-file ./.env_green -p 8081:8081 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-            #   NEW_CONTAINER=github-actions-demo-green
-            #   OLD_CONTAINER=github-actions-demo-blue
-            #   NEW_PORT=8081
-            #   OLD_PORT=8080
-            # fi
-
-            # sleep 30
-
-            # # 잘 동작하면 로드밸런서 변경
-            # if curl -s http://localhost:$NEW_PORT > /dev/null; then
-            #   aws elbv2 register-targets --target-group-arn "arn:aws:elasticloadbalancing:ap-northeast-2:767398017748:targetgroup/wagu-book-lb-tg/cbd583c7310ea316" --targets Id=i-09037c296cda9b574,Port=$NEW_PORT
-            #   aws elbv2 deregister-targets --target-group-arn "arn:aws:elasticloadbalancing:ap-northeast-2:767398017748:targetgroup/wagu-book-lb-tg/cbd583c7310ea316" --targets Id=i-09037c296cda9b574,Port=$OLD_PORT
-            #   docker stop $OLD_CONTAINER || true
-            #   exit 0
-            # else
-            #   docker stop $NEW_CONTAINER || true
-            #   echo "새 애플리케이션이 실행되지 않음"
-            #   exit 1
-            # fi
+            # sudo docker run --name github-actions-demo --rm --env-file ./.env -p 8080:8080 -d ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
             # sudo docker system prune -f
+            
+            # 블루-그린 배포를 위한 컨테이너 실행
+            if [ $(docker ps -q -f name=github-actions-demo-green) ]; then
+              # 그린 컨테이너가 실행 중인 경우, 블루 컨테이너로 새 버전 실행
+              docker run -d --name github-actions-demo-blue --rm --env-file ./.env_blue -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+              NEW_CONTAINER=github-actions-demo-blue
+              OLD_CONTAINER=github-actions-demo-green
+              NEW_PORT=8080
+              OLD_PORT=8081
+            else
+              # 블루 컨테이너가 실행 중인 경우, 그린 컨테이너로 새 버전 실행
+              docker run -d --name github-actions-demo-green --rm --env-file ./.env_green -p 8081:8081 ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
+              NEW_CONTAINER=github-actions-demo-green
+              OLD_CONTAINER=github-actions-demo-blue
+              NEW_PORT=8081
+              OLD_PORT=8080
+            fi
+
+            sleep 40
+
+            # 잘 동작하면 로드밸런서 변경
+            if curl -s http://localhost:$NEW_PORT > /dev/null; then
+              # aws elbv2 register-targets --target-group-arn "arn:aws:elasticloadbalancing:ap-northeast-2:767398017748:targetgroup/wagu-book-lb-tg/cbd583c7310ea316" --targets Id=i-09037c296cda9b574,Port=$NEW_PORT
+              # aws elbv2 deregister-targets --target-group-arn "arn:aws:elasticloadbalancing:ap-northeast-2:767398017748:targetgroup/wagu-book-lb-tg/cbd583c7310ea316" --targets Id=i-09037c296cda9b574,Port=$OLD_PORT
+              docker stop $OLD_CONTAINER || true
+              exit 0
+            else
+              docker stop $NEW_CONTAINER || true
+              echo "새 애플리케이션이 실행되지 않음"
+              exit 1
+            fi
+            sudo docker system prune -f
 
 
 
