@@ -73,7 +73,7 @@ jobs:
           script: |
             sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
-            sudo docker stop github-actions-demo
+            # sudo docker stop github-actions-demo
             # sudo docker run --name github-actions-demo --rm --env-file ./.env -p 8080:8080 -d ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo
             # sudo docker system prune -f
             
