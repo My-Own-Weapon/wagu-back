@@ -54,6 +54,8 @@ dependencies {
     implementation 'io.openvidu:openvidu-java-client:2.30.0'
 
     implementation 'com.drewnoakes:metadata-extractor:2.18.0'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5'
 }
 
 tasks.named('test') {
