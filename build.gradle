@@ -56,6 +56,9 @@ dependencies {
     implementation 'com.drewnoakes:metadata-extractor:2.18.0'
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5'
+
+    // webRTC
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {
