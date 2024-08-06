@@ -70,7 +70,7 @@ public class SecurityConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
 
-                        .allowedOrigins("http://localhost:3000","https://www.wagubook.shop","http://3.37.8.147:3000") // React 앱의 주소
+                        .allowedOrigins("http://localhost:3000","https://www.wagubook.shop","http://3.37.8.147:3000", "https://895c-168-126-208-153.ngrok-free.app") // React 앱의 주소
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("Authorization", "Cache-Control", "Content-Type")  // 필요한 헤더만 허용. allowedHeaders("*")
                         .allowCredentials(true);
