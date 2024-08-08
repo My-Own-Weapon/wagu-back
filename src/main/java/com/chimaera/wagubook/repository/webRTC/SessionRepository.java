@@ -30,7 +30,7 @@ public class SessionRepository {
 
 
     /**
-     * 방에 있는 사용자 이름 정보를 저장
+     * 세션 아이디와 사용자 이름 정보를 매핑
      * <sessionId, username>
      */
     private final Map<String, String> usernamesBySessionId = new HashMap<>();
@@ -79,6 +79,8 @@ public class SessionRepository {
     }
 
     public Map<String, WebSocketSession> getClientList(String roomURL) {
+        if(sessionListInRoom.isEmpty())
+            return null;
         return sessionListInRoom.get(roomURL);
     }
 
@@ -94,6 +96,8 @@ public class SessionRepository {
     }
 
     public String getRoomUrlToSession(WebSocketSession session) {
+        if(roomIdHashMapBySessionId.isEmpty())
+            return null;
         return roomIdHashMapBySessionId.get(session);
     }
 
