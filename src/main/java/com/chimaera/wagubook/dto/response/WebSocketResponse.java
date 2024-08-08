@@ -17,8 +17,8 @@ import java.util.Map;
 public class WebSocketResponse {
     private String senderId;    // sender 로그인 아이디
     private String senderName;  // sender 이름
-    private String type;        // [""]
-    private String data;        // 메시지
+    private String type;        // ["join", "chat", "all_users", "leave"]
+    private String data;        // 메시지 내용
     private String roomURL;     // 방 url
-    private List<String> allUsersNickNames; // 방에 참여하고 있는 사람들 리스트(처음 입장 시)
+    private Map<String, String> allUsersNickNames; // 방에 참여하고 있는 사람들 리스트(처음 입장 시) [아이디, 이름]
 }

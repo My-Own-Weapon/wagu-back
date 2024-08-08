@@ -30,10 +30,10 @@ public class SessionRepository {
 
 
     /**
-     * 세션 아이디와 사용자 이름 정보를 매핑
-     * <sessionId, username>
+     * 세션 아이디와 사용자 이름(ID) 정보를 매핑
+     * <sessionId, <username, name>>
      */
-    private final Map<String, String> usernamesBySessionId = new HashMap<>();
+    private final Map<String, Map<String, String>> membersBySessionId = new HashMap<>();
 
 
     /**
@@ -60,6 +60,7 @@ public class SessionRepository {
      */
     public void addClient(String roomURL, WebSocketSession session) {
         sessionListInRoom.get(roomURL).put(session.getId(), session);
+        System.out.println("addClientInRoom : " + sessionListInRoom.get(roomURL));
     }
 
     /**
@@ -69,6 +70,7 @@ public class SessionRepository {
         Map<String, WebSocketSession> newClient = new HashMap<>();
         newClient.put(session.getId(), session);
         sessionListInRoom.put(roomURL, newClient);
+        System.out.println("addClientInNewRoom : " + sessionListInRoom.get(roomURL));
     }
 
     /**
@@ -84,15 +86,18 @@ public class SessionRepository {
         return sessionListInRoom.get(roomURL);
     }
 
-    public void addUsernameInRoom(String sessionId, String username) {
-        this.usernamesBySessionId.put(sessionId, username);
+    public void saveMemberToSessionId(String sessionId, String username, String name) {
+        Map<String, String> newClient = new HashMap<>();
+        newClient.put("username", username);
+        newClient.put("name", name);
+        this.membersBySessionId.put(sessionId, newClient);
     }
 
     /**
      * sessionId로 사용자 이름을 조회
      */
-    public String getUsernameInRoom(String sessionId) {
-        return this.usernamesBySessionId.get(sessionId);
+    public Map<String, String> getMemberToSessionId(String sessionId) {
+        return this.membersBySessionId.get(sessionId);
     }
 
     public String getRoomUrlToSession(WebSocketSession session) {
@@ -102,16 +107,12 @@ public class SessionRepository {
     }
 
     public void deleteClient(String roomUrl, WebSocketSession session) {
+        System.out.println(roomUrl);
         Map<String, WebSocketSession> clientList = sessionListInRoom.get(roomUrl);
-        String removeSessionId = "";
-        for (Map.Entry<String, WebSocketSession> client : clientList.entrySet()) {
-            if(client.getKey().equals(session.getId())){
-                removeSessionId = client.getKey();
-                break;
-            }
-        }
-        clientList.remove(removeSessionId);
-        sessionListInRoom.remove(removeSessionId);
+        System.out.println("[deleteClient] clientList : " + clientList);
+        clientList.remove(session.getId());
+        if(clientList.isEmpty())
+            sessionListInRoom.remove(roomUrl);
 
     }
 
@@ -121,6 +122,6 @@ public class SessionRepository {
 
 
     public void deleteUsernameInRoom(String sessionId) {
-        usernamesBySessionId.remove(sessionId);
+        membersBySessionId.remove(sessionId);
     }
 }
