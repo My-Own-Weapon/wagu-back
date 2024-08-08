@@ -1,8 +1,13 @@
 package com.chimaera.wagubook.controller;
 import com.chimaera.wagubook.dto.request.WebSocketRequest;
 import com.chimaera.wagubook.dto.response.WebSocketResponse;
+import com.chimaera.wagubook.entity.Member;
+import com.chimaera.wagubook.exception.CustomException;
+import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.repository.webRTC.SessionRepository;
+import com.chimaera.wagubook.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -15,16 +20,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SignalingHandler extends TextWebSocketHandler {
+import static com.chimaera.wagubook.exception.ErrorCode.SESSION_ROOM_NOT_FOUND;
+
+public class ChatSignalHandler extends TextWebSocketHandler {
+    @Autowired
+    private MemberService memberService;
     private final SessionRepository sessionRepository = SessionRepository.getInstance();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private List<WebSocketSession> sessionList = new ArrayList<>();
 
     // 데이터 타입
     private static final String MSG_TYPE_JOIN_ROOM = "join_room";
-    private static final String MSG_TYPE_OFFER = "offer";
-    private static final String MSG_TYPE_ANSWER = "answer";
-    private static final String MSG_TYPE_CANDIDATE = "candidate";
+    private static final String MSG_TYPE_CHAT = "chat";
 
     /**
      * 웹 소켓이 연결되면 실행되는 메서드
@@ -33,16 +40,21 @@ public class SignalingHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session){
         System.out.println("웹 소켓 연결 성공 session : " + session);
-        String roomUrl = sessionRepository.getRoomUrlToSession(session);
-        Map<String, WebSocketSession> clientList = sessionRepository.getClientList(roomUrl);
-        for (WebSocketSession clientSession : clientList.values()) {
-            sendMessage(clientSession, WebSocketResponse.builder().data("[00 님이 입장하셨습니다.]").build());
+        Long memberId = (Long)session.getAttributes().get("memberId");
+        System.out.println("member Id : " + memberId);
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
         }
 //        sessionList.add(session);
     }
 
     @Override
     protected void handleTextMessage(final WebSocketSession session, final TextMessage message) throws Exception {
+        Long memberId = (Long)(session.getAttributes().get("memberId"));
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+
         // 수신된 메시지를 JSON 객체로 파싱
         String payload = message.getPayload();
         WebSocketRequest data = new ObjectMapper().readValue(payload, WebSocketRequest.class);
@@ -73,75 +85,65 @@ public class SignalingHandler extends TextWebSocketHandler {
                 }
                 //이 세션이 어느 방에 들어가 있는지 저장
                 sessionRepository.saveRoomIdHashMapBySession(session, roomURL);
-                //방 안에 닉네임들 저장
-                sessionRepository.addUsernameInRoom(session.getId(), data.getUsername());
+
+                //방 안에 유저 이름 저장
+                sessionRepository.addUsernameInRoom(session.getId(), data.getSenderName());
 
                 Map<String, WebSocketSession> joinClientList = sessionRepository.getClientList(roomURL);
 
-                //내가 아닌 참가자들 sessionId 저장
+                //방 안 참가자에게 접속한 사람 정보 전달
                 List<String> participantSessionList = new ArrayList<>();
                 for (Map.Entry<String, WebSocketSession> entry : joinClientList.entrySet()) {
                     if(entry.getValue() != session){
                         participantSessionList.add(entry.getKey());
+                        sendMessage(entry.getValue(),new WebSocketResponse().builder()
+                                .type("join")
+                                .senderId(data.getSenderId())
+                                .senderName(data.getSenderName())
+                                .data(data.getData())
+                                .build());
                     }
                 }
 
                 //방에 참여하고 있던 참가자 리스트(username, sessionId)
-                Map<String, String>  participantNameList = new HashMap<>();
+                List<String> participantNameList = new ArrayList<>();
                 for (Map.Entry<String, WebSocketSession> entry : joinClientList.entrySet()) {
                     if(entry.getValue() != session)
-                        participantNameList.put(entry.getKey(), sessionRepository.getUsernameInRoom(entry.getKey()));
+                        participantNameList.add(sessionRepository.getUsernameInRoom(entry.getKey()));
                 }
 
-                //접속한 사람에게 방 안 참가자들 정보를 반환\
+                //접속한 사람에게 방 안 참가자들 정보를 반환
                 sendMessage(session, new WebSocketResponse().builder()
                         .type("all_users")
-                        .sender(data.getSenderId())
+                        .senderId(data.getSenderId())
+                        .senderName(data.getSenderName())
                         .data(data.getData())
-                        .allUsers(participantSessionList)
                         .allUsersNickNames(participantNameList)
-                        .candidate(data.getCandidate())
-                        .sdp(data.getSdp())
                         .build());
                 break;
 
-            case MSG_TYPE_OFFER:
-            case MSG_TYPE_ANSWER:
-            case MSG_TYPE_CANDIDATE:
+            case MSG_TYPE_CHAT:
 
                 if (sessionRepository.isExistRoom(roomURL)) {
-                    Map<String, WebSocketSession> oacClientList = sessionRepository.getClientList(roomURL);
+                    Map<String, WebSocketSession> ClientList = sessionRepository.getClientList(roomURL);
 
-                    if (oacClientList.containsKey(data.getReceiver())) {
-                        WebSocketSession ws = oacClientList.get(data.getReceiver());
+                    //방에 존재하는 모든 사람들에게 메시지를 보냄
+                    for (WebSocketSession ws : ClientList.values()) {
                         sendMessage(ws,
                                 new WebSocketResponse().builder()
                                         .type(data.getType())
-                                        .sender(session.getId())            // 보낸사람 session Id
-                                        .senderNickName(data.getUsername())
-                                        .receiver(data.getReceiver())    // 받을사람 session Id
+                                        .senderId(data.getSenderId())
+                                        .senderName(data.getSenderName())
                                         .data(data.getData())
-                                        .offer(data.getOffer())
-                                        .answer(data.getAnswer())
-                                        .candidate(data.getCandidate())
-                                        .sdp(data.getSdp())
                                         .build());
                     }
                 } else {
-//                    throw new CustomException(SESSION_ROOM_NOT_FOUND);
-                    System.out.println("SESSION_ROOM_NOT_FOUND");
+                    throw new CustomException(SESSION_ROOM_NOT_FOUND);
                 }
                 break;
 
 
             default:
-        }
-
-        // 시그널링 메시지 처리 로직
-        for (WebSocketSession s : sessionList) {
-            if (s.isOpen() && !s.getId().equals(session.getId())) {
-                s.sendMessage(message);
-            }
         }
     }
 
@@ -158,13 +160,14 @@ public class SignalingHandler extends TextWebSocketHandler {
     @Override
     @Transactional
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
+        Long memberId = (Long)session.getAttributes().get("memberId");
+        if (memberId == null) {
+            throw new CustomException(ErrorCode.REQUEST_LOGIN);
+        }
+        Member findMember = memberService.findById(memberId);
 
         // 끊어진 세션이 어느방에 있었는지 조회
         String roomUrl = sessionRepository.getRoomUrlToSession(session);
-
-        // 1) 게임방에서 나가는 멤버 정보 정리 / 방장이 나가면 방장도 바꿈
-        //TODO: 세션이 끊어지면 멤버를 통신에서 삭제해야함
-//        gameRoomService.exitGameRoomAboutSession(nickname, roomId);
 
         // 2) 방 참가자들 세션 정보들 사이에서 삭제
         sessionRepository.deleteClient(roomUrl, session);
@@ -179,8 +182,8 @@ public class SignalingHandler extends TextWebSocketHandler {
             sendMessage(client.getValue(),
                     new WebSocketResponse().builder()
                             .type("leave")
-                            .sender(session.getId())
-                            .receiver(client.getKey())
+                            .senderId(findMember.getUsername())
+                            .senderName(findMember.getName())
                             .build());
         }
     }
