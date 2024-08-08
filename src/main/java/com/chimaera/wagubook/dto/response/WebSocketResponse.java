@@ -15,16 +15,10 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WebSocketResponse {
-    private String sender;
-    private String senderNickName;
-    private String type;
-    private String data;
-    private Long roomId;
-    private List<String> allUsers;
-    private Map<String, String> allUsersNickNames;
-    private String receiver;
-    private Object offer;
-    private Object answer;
-    private Object candidate;
-    private Object sdp;
+    private String senderId;    // sender 로그인 아이디
+    private String senderName;  // sender 이름
+    private String type;        // [""]
+    private String data;        // 메시지
+    private String roomURL;     // 방 url
+    private List<String> allUsersNickNames; // 방에 참여하고 있는 사람들 리스트(처음 입장 시)
 }
