@@ -1,13 +1,10 @@
 package com.chimaera.wagubook.controller;
 import com.chimaera.wagubook.dto.request.WebSocketRequest;
 import com.chimaera.wagubook.dto.response.WebSocketResponse;
-import com.chimaera.wagubook.entity.Member;
 import com.chimaera.wagubook.exception.CustomException;
 import com.chimaera.wagubook.exception.ErrorCode;
 import com.chimaera.wagubook.repository.webRTC.SessionRepository;
-import com.chimaera.wagubook.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -20,11 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.chimaera.wagubook.exception.ErrorCode.SESSION_ROOM_NOT_FOUND;
-
 public class ChatSignalHandler extends TextWebSocketHandler {
-    @Autowired
-    private MemberService memberService;
+
     private final SessionRepository sessionRepository = SessionRepository.getInstance();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private List<WebSocketSession> sessionList = new ArrayList<>();
@@ -40,33 +34,17 @@ public class ChatSignalHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session){
         System.out.println("웹 소켓 연결 성공 session : " + session);
-        Long memberId = (Long)session.getAttributes().get("memberId");
-        System.out.println("member Id : " + memberId);
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
 //        sessionList.add(session);
     }
 
     @Override
     protected void handleTextMessage(final WebSocketSession session, final TextMessage message) throws Exception {
-        Long memberId = (Long)(session.getAttributes().get("memberId"));
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
 
         // 수신된 메시지를 JSON 객체로 파싱
         String payload = message.getPayload();
         WebSocketRequest data = new ObjectMapper().readValue(payload, WebSocketRequest.class);
         String type = data.getType();
         String roomURL = data.getRoomURL();
-
-        // 타입에 따라 다른 로직을 적용할 수 있다 (P2P연결을 위한 기능)
-        //SDP 오퍼(SDP Offer): 피어 A가 연결을 시작하기 위해 자신의 미디어 세션 설정을 피어 B에게 보내는 메시지
-        //SDP 응답(SDP Answer): 피어 B가 SDP 오퍼를 수신하고 자신의 설정을 포함하여 응답하는 메시지
-        //ICE 후보자(ICE Candidates): P2P 연결을 설정하기 위해 피어들이 교환하는 네트워크 경로 정보
-        //React에서 P2P연결을 하기 위해 필요하다 특정 누군가에 대한게 아니라 브로드케스드
-
 
         switch (type){
             /**
@@ -86,8 +64,8 @@ public class ChatSignalHandler extends TextWebSocketHandler {
                 //이 세션이 어느 방에 들어가 있는지 저장
                 sessionRepository.saveRoomIdHashMapBySession(session, roomURL);
 
-                //방 안에 유저 이름 저장
-                sessionRepository.addUsernameInRoom(session.getId(), data.getSenderName());
+                //세션과 (유저 아이디, 이름)을 매핑
+                sessionRepository.saveMemberToSessionId(session.getId(), data.getSenderId(), data.getSenderName());
 
                 Map<String, WebSocketSession> joinClientList = sessionRepository.getClientList(roomURL);
 
@@ -105,11 +83,13 @@ public class ChatSignalHandler extends TextWebSocketHandler {
                     }
                 }
 
-                //방에 참여하고 있던 참가자 리스트(username, sessionId)
-                List<String> participantNameList = new ArrayList<>();
+                //방에 참여하고 있던 참가자 리스트(username)
+                Map<String, String> participantNameList = new HashMap<>();
                 for (Map.Entry<String, WebSocketSession> entry : joinClientList.entrySet()) {
-                    if(entry.getValue() != session)
-                        participantNameList.add(sessionRepository.getUsernameInRoom(entry.getKey()));
+                    if(entry.getValue() != session){
+                        Map<String, String> memberDetail = sessionRepository.getMemberToSessionId(entry.getKey());
+                        participantNameList.put(memberDetail.get("username"), memberDetail.get("name"));
+                    }
                 }
 
                 //접속한 사람에게 방 안 참가자들 정보를 반환
@@ -138,7 +118,7 @@ public class ChatSignalHandler extends TextWebSocketHandler {
                                         .build());
                     }
                 } else {
-                    throw new CustomException(SESSION_ROOM_NOT_FOUND);
+                    throw new CustomException(ErrorCode.SESSION_ROOM_NOT_FOUND);
                 }
                 break;
 
@@ -160,11 +140,6 @@ public class ChatSignalHandler extends TextWebSocketHandler {
     @Override
     @Transactional
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
-        Long memberId = (Long)session.getAttributes().get("memberId");
-        if (memberId == null) {
-            throw new CustomException(ErrorCode.REQUEST_LOGIN);
-        }
-        Member findMember = memberService.findById(memberId);
 
         // 끊어진 세션이 어느방에 있었는지 조회
         String roomUrl = sessionRepository.getRoomUrlToSession(session);
@@ -176,14 +151,16 @@ public class ChatSignalHandler extends TextWebSocketHandler {
         sessionRepository.deleteRoomIdToSession(session);
 
         // 4) 별도 해당 닉네임 리스트에서도 삭제
+        Map<String, String> memberDetail = sessionRepository.getMemberToSessionId(session.getId());
         sessionRepository.deleteUsernameInRoom(session.getId());
+
         // 본인 제외 모두에게 전달
         for(Map.Entry<String, WebSocketSession> client : sessionRepository.getClientList(roomUrl).entrySet()){
             sendMessage(client.getValue(),
                     new WebSocketResponse().builder()
                             .type("leave")
-                            .senderId(findMember.getUsername())
-                            .senderName(findMember.getName())
+                            .senderId(memberDetail.get("username"))
+                            .senderName(memberDetail.get("name"))
                             .build());
         }
     }
