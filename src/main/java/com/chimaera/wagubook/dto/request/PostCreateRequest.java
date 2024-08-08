@@ -42,7 +42,6 @@ public class PostCreateRequest {
         @NotNull(message = "메뉴 가격은 필수 값입니다.")
         private int menuPrice;
 
-        @Size(max = 5000, message = "메뉴 설명은 최대 5000자까지 가능합니다.")
         private String menuContent;
     }
 }
