@@ -1,6 +1,6 @@
 # README
 
-![Frame 1000002916.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/Frame_1000002916.png)
+![Frame 1000002916.png](README_data/logo.png)
 
 # 🍖 와구 북
 
@@ -18,11 +18,11 @@
 
 ### 나만의 포스팅을 작성해보세요! 🤌
 
-![Frame 1707482161.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/Frame_1707482161.png)
+![Frame 1707482161.png](README_data/category.png)
 
-![스크린샷 2024-08-10 오전 4.48.32.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2024-08-10_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%258C%25E1%2585%25A5%25E1%2586%25AB_4.48.32.png)
+![스크린샷 2024-08-10 오전 4.48.32.png](README_data/post1.png)
 
-![스크린샷 2024-08-10 오전 4.48.43.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2024-08-10_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%258C%25E1%2585%25A5%25E1%2586%25AB_4.48.43.png)
+![스크린샷 2024-08-10 오전 4.48.43.png](README_data/post2.png)
 
 ## 🔗 와구 북 서비스 및 노션
 
@@ -43,9 +43,9 @@
 - 포스트를 작성할 때, [이미지, 음식점, 메뉴] 정보를 입력해서 AI를 통해 리뷰를 자동으로 작성할 수 있습니다
 - AI리뷰를 사용하지 않거나, 수정할 수도 있습니다
 
-![메인페이지.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/ec108c48-1309-43bb-8fba-6bfcee1fb886.png)
+![메인페이지.png](README_data/main.png)
 
-![마지막페이지.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/%25E1%2584%2586%25E1%2585%25A1%25E1%2584%258C%25E1%2585%25B5%25E1%2584%2586%25E1%2585%25A1%25E1%2586%25A8%25E1%2584%2591%25E1%2585%25A6%25E1%2584%258B%25E1%2585%25B5%25E1%2584%258C%25E1%2585%25B5.png)
+![마지막페이지.png](README_data/postDetail.png)
 
 ### 🍷 친구들과 함께 맛집 찾기
 
@@ -56,9 +56,9 @@
 - 지도에서는 친구들이 실시간으로 보고있는 위치를 확인할 수 있습니다
 - 음성채팅으로 대화하며 의견을 공유해 보세요
 
-![스크린샷 2024-08-10 오전 5.20.07.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2024-08-10_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%258C%25E1%2585%25A5%25E1%2586%25AB_5.20.07.png)
+![스크린샷 2024-08-10 오전 5.20.07.png](README_data/shareMap.png)
 
-![스크린샷 2024-08-10 오전 5.21.19.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/4c607270-b3c4-4c38-a842-4d092215749a.png)
+![스크린샷 2024-08-10 오전 5.21.19.png](README_data/vote.png)
 
 ### 🍷 라이브 스트리밍
 
@@ -67,15 +67,15 @@
 - 라이브 스트리밍을 통해 자신의 먹방을 자랑할 수 있습니다
 - 스트리밍에 참여하는 채팅을 통해 상호작용하며 맛집 탐색에 도움을 받아보세요
 
-![스트리밍 샘플.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%2590%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2584%2586%25E1%2585%25B5%25E1%2586%25BC_%25E1%2584%2589%25E1%2585%25A2%25E1%2586%25B7%25E1%2584%2591%25E1%2585%25B3%25E1%2586%25AF.png)
+![스트리밍 샘플.png](README_data/live.png)
 
 ## ⚙️ 서비스 아키텍쳐
 
 ---
 
-![피피티용.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/%25E1%2584%2591%25E1%2585%25B5%25E1%2584%2591%25E1%2585%25B5%25E1%2584%2590%25E1%2585%25B5%25E1%2584%258B%25E1%2585%25AD%25E1%2586%25BC.png)
+![피피티용.png](README_data/architecture.png)
 
-![오른쪽.png](README%205f2260ac3ece4bc5a99a0a45cd74ef3c/%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2585%25E1%2585%25B3%25E1%2586%25AB%25E1%2584%258D%25E1%2585%25A9%25E1%2586%25A8.png)
+![오른쪽.png](README_data/challenge.png)
 
 ## 📌 핵심 기술
 
@@ -133,53 +133,53 @@
 
 ### Backend Tech Stack
 
-[https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white](https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white)
+<img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"><p>
 
-[https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white](https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+<img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"><p>
 
-[https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+<img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"><p>
 
-[https://img.shields.io/badge/spring security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white](https://img.shields.io/badge/spring security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
+<img src="https://img.shields.io/badge/spring security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"><p>
 
-[https://img.shields.io/badge/websocket-FFCD00?style=for-the-badge&logo=websocket&logoColor=white](https://img.shields.io/badge/websocket-FFCD00?style=for-the-badge&logo=websocket&logoColor=white)
+<img src="https://img.shields.io/badge/websocket-FFCD00?style=for-the-badge&logo=websocket&logoColor=white"><p>
 
-[https://img.shields.io/badge/WebRTC-333333?style=for-the-badge&logo=WebRTC&logoColor=white](https://img.shields.io/badge/WebRTC-333333?style=for-the-badge&logo=WebRTC&logoColor=white)
+<img src="https://img.shields.io/badge/WebRTC-333333?style=for-the-badge&logo=WebRTC&logoColor=white"><p>
 
 ### Infrastructure
 
-[https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white](https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+<img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"><p>
 
-[https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white](https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+<img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white"><p>
 
-[https://img.shields.io/badge/amazon ec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white](https://img.shields.io/badge/amazon ec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white)
+<img src="https://img.shields.io/badge/amazon ec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"><p>
 
-[https://img.shields.io/badge/amazon s3-569A31?style=for-the-badge&logo=amazons3&logoColor=white](https://img.shields.io/badge/amazon s3-569A31?style=for-the-badge&logo=amazons3&logoColor=white)
+<img src="https://img.shields.io/badge/amazon s3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"><p>
 
-[https://img.shields.io/badge/amazon rds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white](https://img.shields.io/badge/amazon rds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white)
+<img src="https://img.shields.io/badge/amazon rds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white"><p>
 
-[https://img.shields.io/badge/amazon cloudfront-FF4F8B?style=for-the-badge&logo=amazonaws&logoColor=white](https://img.shields.io/badge/amazon cloudfront-FF4F8B?style=for-the-badge&logo=amazonaws&logoColor=white)
+<img src="https://img.shields.io/badge/amazon cloudfront-FF4F8B?style=for-the-badge&logo=amazonaws&logoColor=white"><p>
 
-[https://img.shields.io/badge/amazon route53-7D929E?style=for-the-badge&logo=amazonaws&logoColor=white](https://img.shields.io/badge/amazon route53-7D929E?style=for-the-badge&logo=amazonaws&logoColor=white)
+<img src="https://img.shields.io/badge/amazon route53-7D929E?style=for-the-badge&logo=amazonaws&logoColor=white"><p>
 
-[https://img.shields.io/badge/aws codedeploy-FF9E9F?style=for-the-badge&logo=amazonaws&logoColor=white](https://img.shields.io/badge/aws codedeploy-FF9E9F?style=for-the-badge&logo=amazonaws&logoColor=white)
+<img src="https://img.shields.io/badge/aws codedeploy-FF9E9F?style=for-the-badge&logo=amazonaws&logoColor=white"><p>
 
-[https://img.shields.io/badge/github actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white](https://img.shields.io/badge/github actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
+<img src="https://img.shields.io/badge/github actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white"><p>
 
 ### Team Collaboration Tool
 
-[https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white)
+<img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white"><p>
 
-[https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white](https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white)
+<img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"><p>
 
-[https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white](https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
+<img src="https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"><p>
 
-[https://img.shields.io/badge/slack-4A154B?style=for-the-badge&logo=slack&logoColor=white](https://img.shields.io/badge/slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
+<img src="https://img.shields.io/badge/slack-4A154B?style=for-the-badge&logo=slack&logoColor=white"><p>
 
-[https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white](https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white)
+<img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white"><p>
 
-[https://img.shields.io/badge/postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white](https://img.shields.io/badge/postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
+<img src="https://img.shields.io/badge/postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white"><p>
 
-[https://img.shields.io/badge/intellij idea-000000?style=for-the-badge&logo=intellijidea&logoColor=white](https://img.shields.io/badge/intellij idea-000000?style=for-the-badge&logo=intellijidea&logoColor=white)
+<img src="https://img.shields.io/badge/intellij idea-000000?style=for-the-badge&logo=intellijidea&logoColor=white"><p>
 
 ## 🧑🏻‍💻 개발 기간 & 조원
 
