@@ -106,36 +106,39 @@
 
 ---
 
-- 기술적 의사 결정
-    
-    
-    | 기술 | 도입 이유 | 후보군 | 의견 조율 및 기술 결정 |
-    | --- | --- | --- | --- |
-    | Web Socket | 채팅, 데이터 전송 | Polling / Long Polling / Web Socket |  |
-    | WebRTC (SFU) | 실시간 스트리밍 및 음성  | HLS/Mesh / SFU / MCU |  |
-- HLS와 같은 선택지가 있었지만, webRTC를 사용하게 된 이유는 기본적으로 low latency에 있다고 할 수 있음.
-  
-- HLS는 기본적으로 HTTP 기반의 프로토콜이기 때문에, 기본적으로 초 단위의 지연이 생길 수 있지만, webRTC는 기본적으로 P2P 연결을 기반으로 해 매우 낮은 latency를 보여줌.
+### 기술적 의사 결정 요약
 
-- WebRTC는 단순한 영상 전송 뿐 아니라 오디오와 데이터를 포함한 양방향 통신을 지원함.
+| 기술 | 도입 이유 | 후보군 | 의견 조율 및 기술 결정 |
+| --- | --- | --- | --- |
+| **Web Socket** | 채팅, 데이터 전송 | Polling / Long Polling / Web Socket | WebSocket 사용 결정 |
+| **WebRTC (SFU)** | 실시간 스트리밍 및 음성 | HLS / Mesh / SFU / MCU | WebRTC (SFU) 사용 결정 |
+| **Redis (Lettuce)** | TTL이 필요한 데이터를 저장하기 위한 DB 선정 | Lettuce / Redisson | Lettuce 사용 결정 |
+| **Github Action & DockerHub / AWS CodeDeploy** | 지속적 통합과 지속적 배포를 통한 업무 효율 상승 | Jenkins / Github Action / Travis CI | Github Action과 AWS CodeDeploy 사용 결정 |
 
-- 짧은 기간 안에 실제로 webRTC를 직접 구현하고자 하는 것은 힘들 수 있다고 판단함.
+---
 
-- Openvidu를 Springboot에 이식해서 client 측에서 session을 만들고자 하는 요청이 왔을 때, spring의 controller가 해당 요청을 받아 openvidu로 넘겨주고, 해당 요청을 받은 openvidu가 session을 관리하는 방식으로 구현하고자 결정함.
-    | Redis (Lettuce) | TTL이 필요한 데이터를 저장하기 위한 DB선정 | Lettuce / Redisson |- 투표하기 기능에서, 투표가 끝나면 없어지는 데이터를 DB에 가지고 있는 것이 낭비라는 생각을 하게 되었음.
+### 세부 내용
 
-  - 투표하기 기능에서 여러 명의 사용자가 동시에 같은 가게에 투표를 할 경우, 투표 결과가 1번만 반영이 되는 문제가 발생. Reddisson과 Luttuce 중 하나를 선택할 수 있었음.
-    
-  - Lettuce는 상대적으로 Reddison 보다 가벼움. 단순한 락 기능을 위해 추가적인 종속성, 복잡성을 도입하는 것보다, Lettuce를 이용해 필요한 기능만을 추가하는 것이 효율적임.
- 
-  - Lettuce는 Spinlock을 직접 구현함으로 락 획득과 해제를 직접 관리할 수 있어 특정 상황에서 성능 최적화를 이룰 수 있다.
- 
-  - Spinlock은 자원을 기다릴 때 CPU를 사용해 반복적으로 시도하는 방식. 여기서 락의 타임 아웃, 재시도 횟수, 대기 시간 등을 조정할 수 있어, 특정 상황에 맞춘 최적화가 가능하다고 생각함.
- 
-  - 다음과 같은 이유로 Redis의 Lettuce를 사용하고자 함.
+- **WebRTC (SFU)**
+  - HLS와 같은 선택지가 있었지만, WebRTC를 사용하게 된 이유는 기본적으로 **낮은 지연 시간(Low Latency)** 때문입니다.
+  - HLS는 기본적으로 HTTP 기반의 프로토콜이기 때문에 초 단위의 지연이 발생할 수 있지만, WebRTC는 P2P 연결을 기반으로 하여 매우 낮은 지연 시간을 제공합니다.
+  - WebRTC는 단순한 영상 전송뿐만 아니라 오디오와 데이터를 포함한 양방향 통신을 지원합니다.
+  - 짧은 기간 내에 WebRTC를 직접 구현하는 것은 어렵다고 판단하였으며, OpenVidu를 Spring Boot에 이식하여 구현하기로 결정했습니다.
+  - 클라이언트 측에서 세션을 생성하는 요청이 들어오면, Spring의 컨트롤러가 해당 요청을 받아 OpenVidu로 전달하고, OpenVidu가 세션을 관리하는 방식으로 구현합니다.
 
-  |
-    | Github Action & DockerHub / AWS codeDeploy | 지속적 통합과 지속적 배포를 통한 업무 효율 상승을 위해 도입 | Jenkins /Github Action / Travis CI | - 현재 프로젝트 관리를 깃허브를 통하여 진행하고 있고, 소규모 프로젝트이고 추가적인 설치 과정 없이 Github에서 제공하는 환경에서 CI 작업이 가능하기 때문에 Github Action을 사용하는 것이 용이할 거라 생각함- 프로젝트 규모를 생각했을 때 초기 설정이 적고 편의성이 높아 리소스를 줄이는 방향으로 진행. 따라서 Github Action과 AWS에서 제공하는 Code Deploy를 이용하여 자동화 배포를 하기로 결정 |
+- **Redis (Lettuce)**
+  - TTL이 필요한 데이터를 저장하는 DB로 Lettuce를 선정했습니다.
+  - 투표 기능에서, 투표가 종료되면 데이터를 DB에 계속 저장하는 것은 낭비라고 판단했습니다.
+  - 투표하기 기능에서 여러 사용자가 동시에 같은 가게에 투표할 경우, 투표 결과가 1번만 반영되는 문제를 해결하기 위해 락이 필요했습니다.
+  - Lettuce는 Redisson보다 가벼우며, 단순한 락 기능을 위해 추가적인 종속성과 복잡성을 도입하는 것보다 효율적입니다.
+  - Lettuce를 사용하여 Spinlock을 직접 구현함으로써, 락 획득과 해제를 직접 관리하여 성능 최적화를 달성할 수 있습니다.
+  - Spinlock은 자원을 기다릴 때 CPU를 사용하여 반복적으로 시도하는 방식이며, 락의 타임아웃, 재시도 횟수, 대기 시간을 조정할 수 있어 특정 상황에 맞춘 최적화가 가능합니다.
+
+- **Github Action & DockerHub / AWS CodeDeploy**
+  - 지속적 통합과 지속적 배포를 위해 Github Action과 AWS CodeDeploy를 사용하기로 결정했습니다.
+  - 현재 프로젝트 관리는 GitHub를 통해 진행 중이며, 소규모 프로젝트이고 추가 설치 과정 없이 GitHub에서 제공하는 환경에서 CI 작업이 가능하기 때문에 Github Action을 사용하는 것이 적합하다고 판단했습니다.
+  - 프로젝트 규모를 고려하여 초기 설정이 적고 편의성이 높아 리소스를 줄이는 방향으로 진행했으며, 자동화 배포를 위해 Github Action과 AWS CodeDeploy를 사용하기로 결정했습니다.
+
 
 ## ⚽ 트러블 슈팅
 
