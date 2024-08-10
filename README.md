@@ -18,11 +18,16 @@
 
 ### 나만의 포스팅을 작성해보세요! 🤌
 
-![Frame 1707482161.png](README_data/category.png)
+<div style='display: flex; align-items: center; justify-content: center;'>
+    <img src="README_data/category.png" style="width: 90%; background-color: white">
+</div>
 
-![스크린샷 2024-08-10 오전 4.48.32.png](README_data/post1.png)
 
-![스크린샷 2024-08-10 오전 4.48.43.png](README_data/post2.png)
+<figure style='display:flex; justify-content: space-between'>
+    <img src="README_data/post1.png" style="width: 47%;">
+    <img src="README_data/post2.png" style="width: 47%;">
+</figure>
+
 
 ## 🔗 와구 북 서비스 및 노션
 
@@ -43,9 +48,11 @@
 - 포스트를 작성할 때, [이미지, 음식점, 메뉴] 정보를 입력해서 AI를 통해 리뷰를 자동으로 작성할 수 있습니다
 - AI리뷰를 사용하지 않거나, 수정할 수도 있습니다
 
-![메인페이지.png](README_data/main.png)
+<figure style="display: flex; justify-content: space-around;">
+    <img src="README_data/main.png" style="width: 45%;">
+    <img src="README_data/postDetail.png" style="width: 45%;">
+</figure>
 
-![마지막페이지.png](README_data/postDetail.png)
 
 ### 🍷 친구들과 함께 맛집 찾기
 
@@ -56,9 +63,10 @@
 - 지도에서는 친구들이 실시간으로 보고있는 위치를 확인할 수 있습니다
 - 음성채팅으로 대화하며 의견을 공유해 보세요
 
-![스크린샷 2024-08-10 오전 5.20.07.png](README_data/shareMap.png)
-
-![스크린샷 2024-08-10 오전 5.21.19.png](README_data/vote.png)
+<figure style="display: flex; justify-content: space-around;">
+    <img src="README_data/shareMap.png" style="width: 45%;">
+    <img src="README_data/vote.png" style="width: 45%;">
+</figure>
 
 ### 🍷 라이브 스트리밍
 
@@ -67,11 +75,14 @@
 - 라이브 스트리밍을 통해 자신의 먹방을 자랑할 수 있습니다
 - 스트리밍에 참여하는 채팅을 통해 상호작용하며 맛집 탐색에 도움을 받아보세요
 
-![스트리밍 샘플.png](README_data/live.png)
+<figure style="display: flex; justify-content: flex-start;">
+    <img src="README_data/live.png" style="width: 45%;">
+</figure>
 
 ## ⚙️ 서비스 아키텍쳐
 
 ---
+
 
 ![피피티용.png](README_data/architecture.png)
 
