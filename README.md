@@ -23,10 +23,10 @@
 </div>
 
 
-<figure style='display:flex; justify-content: space-between'>
-    <img src="README_data/post1.png" style="width: 47%;">
-    <img src="README_data/post2.png" style="width: 47%;">
-</figure>
+<div style='display:flex; justify-content: space-between'>
+    <img src="README_data/post1.png" style="width: 46%;">
+    <img src="README_data/post2.png" style="width: 45%;">
+</div>
 
 
 ## 🔗 와구 북 서비스 및 노션
@@ -48,10 +48,10 @@
 - 포스트를 작성할 때, [이미지, 음식점, 메뉴] 정보를 입력해서 AI를 통해 리뷰를 자동으로 작성할 수 있습니다
 - AI리뷰를 사용하지 않거나, 수정할 수도 있습니다
 
-<figure style="display: flex; justify-content: space-around;">
+<div style="display: flex; justify-content: space-around;">
     <img src="README_data/main.png" style="width: 45%;">
     <img src="README_data/postDetail.png" style="width: 45%;">
-</figure>
+</div>
 
 
 ### 🍷 친구들과 함께 맛집 찾기
@@ -63,10 +63,10 @@
 - 지도에서는 친구들이 실시간으로 보고있는 위치를 확인할 수 있습니다
 - 음성채팅으로 대화하며 의견을 공유해 보세요
 
-<figure style="display: flex; justify-content: space-around;">
+<div style="display: flex; justify-content: space-around;">
     <img src="README_data/shareMap.png" style="width: 45%;">
     <img src="README_data/vote.png" style="width: 45%;">
-</figure>
+</div>
 
 ### 🍷 라이브 스트리밍
 
@@ -75,9 +75,9 @@
 - 라이브 스트리밍을 통해 자신의 먹방을 자랑할 수 있습니다
 - 스트리밍에 참여하는 채팅을 통해 상호작용하며 맛집 탐색에 도움을 받아보세요
 
-<figure style="display: flex; justify-content: flex-start;">
+<div style="display: flex; justify-content: flex-start;">
     <img src="README_data/live.png" style="width: 45%;">
-</figure>
+</div>
 
 ## ⚙️ 서비스 아키텍쳐
 
