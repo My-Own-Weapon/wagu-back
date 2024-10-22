@@ -20,9 +20,9 @@ public class StoreSearchResponse {
         this.storeId = store.getId();
         this.storeName = store.getStoreName();
         this.postCount = store.getPosts().size();
-        this.menuName = store.getMenus().get(0).getMenuName();
         // 가장 처음에 달린 Menu Image 가져오기
-        if (store.getMenus() != null) {
+        if (!store.getMenus().isEmpty()) {
+            this.menuName = store.getMenus().get(0).getMenuName();
             this.menuImage = store.getMenus().get(0).getMenuImage();
         }
     }
