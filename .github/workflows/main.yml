@@ -28,9 +28,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 2. Gradle 빌드
+      # 2. Spring Boot 애플리케이션 빌드
       - name: Build with Gradle
-        run: ./gradlew build
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: clean bootJar
 
       # 3. 테스트 결과를 PR에 등록
       - name: Publish Test Results
