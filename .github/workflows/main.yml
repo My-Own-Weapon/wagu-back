@@ -11,7 +11,16 @@ env:
   AWS_S3_BUCKET: wagu-book-gitget-deploy-bucket
   AWS_CODE_DEPLOY_APPLICATION: WAGU-Book-Application-CD
   AWS_CODE_DEPLOY_GROUP: WAGU-Book-Deployment-Group
+  VIDU_SECRET: ${{secrets.VIDU_SECRET}}
+  OPENAI_API_KEY: ${{secrets.OPENAI_API_KEY}}
+  PORT: ${{secrets.PORT}}
+  REDIS_PORT: ${{secrets.REDIS_PORT}}
+  REDIS_HOST: ${{secrets.REDIS_HOST}}
+  AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
+  AWS_SECRET_KEY: ${{secrets.AWS_SECRET_KEY}}
+  S3_BUCKET_NAME: ${{secrets.S3_BUCKET_NAME}}
 
+  
 jobs:
   CI:
     runs-on: ubuntu-latest
