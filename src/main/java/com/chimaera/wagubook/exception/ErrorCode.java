@@ -42,6 +42,7 @@ public enum ErrorCode {
     NOT_FOUND_STORE(NOT_FOUND, "해당 스토어를 찾을 수 없습니다."),
     NOT_FOUND_URL(NOT_FOUND, "해당 url이 존재하지 않습니다."),
     NOT_FOUND_LIVE_ROOM(NOT_FOUND, "해당 라이브룸을 찾을 수 없습니다."),
+    SESSION_ROOM_NOT_FOUND(NOT_FOUND, "해당 세션룸을 찾을 수 없습니다."),
 
 
 
