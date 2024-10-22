@@ -36,23 +36,27 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Build with Gradle
         run: ./gradlew build    
-        
-      - uses: actions/upload-artifact@v4  # upload test results
-        if: success() || failure()        # run this step even if previous step failed
+      - name: Report Test Result
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
         with:
-          name: test-results
-          path: java-junit.xml
+          files: '**/build/test-results/test/TEST-*.xml'
+      # - uses: actions/upload-artifact@v4  # upload test results
+      #   if: success() || failure()        # run this step even if previous step failed
+      #   with:
+      #     name: test-results
+      #     path: java-junit.xml
 
-  report:
-    needs: CI
-    runs-on: ubuntu-latest
-    steps:
-    - uses: dorny/test-reporter@v1
-      with:
-        artifact: test-results            # artifact name
-        name: Java Tests                  # Name of the check run which will be created
-        path: '*.xml'                     # Path to test results (inside artifact .zip)
-        reporter: java-junit              # Format of test results
+  # report:
+  #   needs: CI
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: dorny/test-reporter@v1
+  #     with:
+  #       artifact: test-results            # artifact name
+  #       name: Java Tests                  # Name of the check run which will be created
+  #       path: '*.xml'                     # Path to test results (inside artifact .zip)
+  #       reporter: java-junit              # Format of test results
     
   deploy:
     runs-on: ubuntu-latest
