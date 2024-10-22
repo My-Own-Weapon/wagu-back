@@ -219,8 +219,6 @@ public class ShareService {
             throw new CustomException(ErrorCode.NOT_FOUND_URL);
 
 
-
-
         HashMap<Long, Integer> voteStoreList = share.getVoteStoreList();
         if(voteStoreList.isEmpty()){
             return new ArrayList<>();
