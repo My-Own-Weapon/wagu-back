@@ -37,7 +37,9 @@ jobs:
       # 3. 테스트 결과를 PR에 등록
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2.17.1
-    
+        if: always()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'
     
   deploy:
     runs-on: ubuntu-latest
