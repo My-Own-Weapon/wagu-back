@@ -10,6 +10,8 @@ import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @RunWith(SpringRunner.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@MockBean(JpaMetamodelMappingContext.class)
 class ShareServiceTest {
     @Autowired
     ShareService shareService;
@@ -250,8 +253,8 @@ class ShareServiceTest {
         shareService.addVoteStore(url, storeId2);
         //좋아요
         shareService.like(url, storeId1);
-//        shareService.like(url, storeId1);
-//        shareService.like(url, storeId2);
+        shareService.like(url, storeId1);
+        shareService.like(url, storeId2);
 
         //when
         List<StoreSearchResponse> responses = shareService.showResult(url);
