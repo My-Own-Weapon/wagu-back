@@ -41,7 +41,6 @@ public class SessionRepository {
      * Thread-Safe 를 위해 static으로 초기화
      * LazyHolder inner class를 사용하여 LazyLoad 구현
      */
-    private SessionRepository(){}
     private static class LazyHolder {
         private static final SessionRepository sessionRepository = new SessionRepository();
     }
