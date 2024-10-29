@@ -1,5 +1,6 @@
 package com.chimaera.wagubook.repository.webRTC;
 
+import com.mysql.cj.Session;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @NoArgsConstructor
 public class SessionRepository {
-    private static SessionRepository sessionRepository;
     /**
      * 방 번호를 사용해서 세션 리스트를 찾을 수 있다.
      * <roomId, <sessionId, session>>
@@ -38,15 +38,26 @@ public class SessionRepository {
 
     /**
      * Session 데이터를 공통으로 사용하기 위해 싱글톤으로 구현
+     * Thread-Safe 를 위해 static으로 초기화
+     * LazyHolder inner class를 사용하여 LazyLoad 구현
      */
-    public static SessionRepository getInstance(){
-        if(sessionRepository == null){
-            synchronized (SessionRepository.class){
-                sessionRepository = new SessionRepository();
-            }
-        }
-        return sessionRepository;
+    private SessionRepository(){}
+    private static class LazyHolder {
+        private static final SessionRepository sessionRepository = new SessionRepository();
     }
+    public static SessionRepository getInstance(){
+        return LazyHolder.sessionRepository;
+    }
+
+//    private static SessionRepository sessionRepository;
+//    public static SessionRepository getInstance(){
+//        if(sessionRepository == null){
+//            synchronized (SessionRepository.class){
+//                sessionRepository = new SessionRepository();
+//            }
+//        }
+//        return sessionRepository;
+//    }
 
     /**
      * 방이 존재하는지 확인하는 로직
